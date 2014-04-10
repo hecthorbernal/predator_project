@@ -2,6 +2,12 @@ package preprocessing;
 
 public class dataParser {
 
+	public String file;
+
+	public dataParser(String file) {
+		this.file = file;
+	}
+
 	/**
 	 * @param args
 	 */
@@ -9,5 +15,6 @@ public class dataParser {
 		// TODO Auto-generated method stub
 
 	}
+	
 
 }
