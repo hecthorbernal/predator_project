@@ -4,6 +4,10 @@ public class dataParser {
 
 	public String file;
 
+	/**
+	 * constructor
+	 * @param the file to get parsed
+	 */
 	public dataParser(String file) {
 		this.file = file;
 	}
