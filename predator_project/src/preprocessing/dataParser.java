@@ -11,6 +11,7 @@ public class dataParser {
 	public dataParser(String file) {
 		this.file = file;
 	}
+	
 
 	/**
 	 * @param args
@@ -20,5 +21,6 @@ public class dataParser {
 
 	}
 	
+	//prøve på commit i igennem eclipse
 
 }
