@@ -22,7 +22,7 @@ public class dataParser {
 	// list for conversations imported from XML
 	private List<Conversation> conversations;
 
-	// constants used for array of features
+	// constants used for addressing variables in array of features
 	final static int letterLines = 0;
 	final static int wordLines = 1;
 	final static int numberOfLines = 2;
@@ -53,18 +53,17 @@ public class dataParser {
 		// Now we have a List<Conversations> :-)
 		// Each Conversation carries a List<Messages> (author, time, text)
 
+		// TODO create (different) subsets from conversations
+		//TODO extract and add features 
+
 		// TEST - create subset containing all message lines
 		List<Message> mySubSet = myDataParser.createSubSetExample();
 		System.out.println(mySubSet.size());
 
+
 		// TEST CSV export
 		generateCsvFile(mySubSet, "data/test.csv");
 
-		//TODO create (different) subsets from conversations
-
-		//TODO extract and add features 
-
-		//TODO Convert to csv format and export
 
 	}
 
@@ -76,14 +75,34 @@ public class dataParser {
 	 */
 	private List<Message> createSubSetExample() {
 
-		// TODO create subset from conversations
+		// create subset from conversations
 		List<Message> subSet = new ArrayList<Message>();
 
 		// For each Conversation - add each message line to subset
+		// TODO change this into concatenating lines according to different subsets
 		for(Conversation c: this.conversations) {
 
 			for(ConversationMessage cm: c.messages) {
+				
+				String messageText = cm.getText();
 				Message newMessage = new Message(cm.getAuthor(),cm.getText());
+				
+				// add feature values to message
+				newMessage.features[letterLines] = FeatureExtractor.letterLines(messageText);
+				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
+				newMessage.features[numberOfLines] = FeatureExtractor.numberOfLines(messageText);
+				newMessage.features[spaces] = FeatureExtractor.spaces(messageText);
+				newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
+				newMessage.features[posEmoticons] = FeatureExtractor.posEmoticons(messageText);
+				newMessage.features[neuEmoticons] = FeatureExtractor.neuEmoticons(messageText);
+				newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
+				newMessage.features[alert] = FeatureExtractor.alert(messageText);
+				newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
+				newMessage.features[misspelledWords] = FeatureExtractor.misspelledWords(messageText);
+				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
+				newMessage.features[positiveSent] = FeatureExtractor.PositiveSent(messageText);
+
+				// add message to subset
 				subSet.add(newMessage);
 			}
 
@@ -92,6 +111,10 @@ public class dataParser {
 		return subSet;
 	}
 
+	/*
+	 * Generates CSV file from a subset and save it to file
+	 * 
+	 */
 	private static void generateCsvFile(List<Message> subset, String sFileName)
 	{
 		try
@@ -132,7 +155,7 @@ public class dataParser {
 		{
 			e.printStackTrace();
 		}
-		
+
 		System.out.println("Exported csv file: " + sFileName);
 
 	}
