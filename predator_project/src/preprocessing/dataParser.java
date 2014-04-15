@@ -1,5 +1,6 @@
 package preprocessing;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -9,29 +10,46 @@ import java.util.List;
  * Exports file in csv-format for use in RapidMiner
  *
  */
+
 public class dataParser {
 
+	
+	private List<Conversation> conversations; // list of conversations imported from XML
+	
+	public dataParser(String file) {
+		
+		this.conversations = new StaXParser().readConfig(file);
+		
+	}
 
 	public static void main(String[] args) {
 
-		// Import xml data and convert it to list of Conversation objects using STAX API
-		StaXParser read = new StaXParser();
-		List<Conversation> readConversations = read.readConfig("data/pan12-training.xml");
+		// create dataParser from xml-file 
+		dataParser myDataParser = new dataParser("data/pan12-training.xml");
 
-		System.out.println(readConversations.size() + " Conversations imported from XML");
+		System.out.println(myDataParser.conversations.size() + " Conversations imported from XML");
+
 		
 		// Now we have a List<Conversations> :-)
 		// Each Conversation carries a List<Messages> (author, time, text)
 
-		//TODO split each conversation into separate message per author
-		
-		//TODO concatenate authors messages into one string with max. 15 min. timespan
-		
+		//TODO create (different) subsets from conversations
+
 		//TODO extract and add features 
-		
+
 		//TODO Convert to csv format and export
 
 	}
 
+	/*
+	 * Generates subset from list of conversations
+	 */
+	private static List<String> createSubSet(List<Conversation> conversations) {
+
+		// TODO create subset from conversations
+		return null;
+	}
+
+	
 
 }

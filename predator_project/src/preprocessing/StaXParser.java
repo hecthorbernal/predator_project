@@ -16,8 +16,6 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-
-
 public class StaXParser {
 	static final String CONVERSATION = "conversation";
 	static final String ID = "id";
@@ -46,8 +44,6 @@ public class StaXParser {
 			while (eventReader.hasNext()) {
 				XMLEvent event = eventReader.nextEvent();
 				
-				// System.out.print(event);
-
 				if (event.isStartElement()) {
 					StartElement startElement = event.asStartElement();
 
