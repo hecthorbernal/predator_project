@@ -1,4 +1,4 @@
-package preprocessing;
+package xmlImport;
 
 
 public class ConversationMessage {

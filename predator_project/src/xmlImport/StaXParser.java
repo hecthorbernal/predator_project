@@ -1,4 +1,4 @@
-package preprocessing;
+package xmlImport;
 
 
 import java.io.FileInputStream;
