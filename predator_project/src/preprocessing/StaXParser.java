@@ -39,7 +39,7 @@ public class StaXParser {
 
 			// Read the XML document
 			Conversation item = null;
-			Message message = null;
+			ConversationMessage message = null;
 
 			while (eventReader.hasNext()) {
 				XMLEvent event = eventReader.nextEvent();
@@ -68,7 +68,7 @@ public class StaXParser {
 						if (event.asStartElement().getName().getLocalPart()
 								.equals(MESSAGE)) {	
 
-							message = new Message();
+							message = new ConversationMessage();
 
 							// Read the attribute from this tag and add the line id to the object
 							Iterator<Attribute> attributes = startElement
@@ -128,6 +128,9 @@ public class StaXParser {
 		} catch (XMLStreamException e) {
 			e.printStackTrace();
 		}
+		
+		System.out.println(items.size() + " Conversations imported from " + configFile);
+		
 		return items;
 	}
 

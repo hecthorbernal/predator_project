@@ -13,8 +13,9 @@ import java.util.List;
 
 public class dataParser {
 
+	private List<Conversation> conversations; // list for conversations imported from XML
 	
-	private List<Conversation> conversations; // list of conversations imported from XML
+	
 	
 	public dataParser(String file) {
 		
@@ -26,8 +27,6 @@ public class dataParser {
 
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
-
-		System.out.println(myDataParser.conversations.size() + " Conversations imported from XML");
 
 		
 		// Now we have a List<Conversations> :-)

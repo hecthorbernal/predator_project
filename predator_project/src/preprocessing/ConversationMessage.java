@@ -1,7 +1,7 @@
 package preprocessing;
 
 
-public class Message {
+public class ConversationMessage {
 	private String line; 
 	private String author;
 	private String time;

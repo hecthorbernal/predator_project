@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Conversation {
 	private String id; 
-	public List<Message> messages = new ArrayList<Message>();
+	public List<ConversationMessage> messages = new ArrayList<ConversationMessage>();
 	
 	
 	public String getId() {
@@ -21,4 +21,5 @@ public class Conversation {
 	public String toString() {
 		return "Conversation [Id =" + id + "] " + messages.size();
 	}
+	
 }
