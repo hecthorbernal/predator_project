@@ -3,6 +3,7 @@ package preprocessing;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import xmlImport.Conversation;
@@ -53,17 +54,62 @@ public class dataParser {
 		// Now we have a List<Conversations> :-)
 		// Each Conversation carries a List<Messages> (author, time, text)
 
-		// TODO create (different) subsets from conversations
+		//TODO create (different) subsets from conversations
 		//TODO extract and add features 
 
-		// TEST - create subset containing all message lines
-		List<Message> mySubSet = myDataParser.createSubSetExample();
+		//TEST create subset with messages concatenated per author per conversation
+		List<Message> mySubSet = myDataParser.createSubsetByDistinctAuthorsAndConverversations();
 		System.out.println(mySubSet.size());
 
+		//TEST - create subset containing all message lines
+		//List<Message> mySubSet = myDataParser.createSubSetExample();
+		//System.out.println(mySubSet.size());
 
-		// TEST CSV export
+
+		//TEST CSV export
 		generateCsvFile(mySubSet, "data/test.csv");
 
+
+	}
+
+	private List<Message> createSubsetByDistinctAuthorsAndConverversations(){
+
+		// create subset for conversations
+		List<Message> subSet = new ArrayList<Message>();
+
+		// for each conversation
+		for(Conversation c: this.conversations) {
+
+			// Hashmap holds all authors and their concateneated message
+			HashMap<String,String> distinctAuthors = new HashMap<>();
+
+			for(ConversationMessage cm: c.messages) {
+
+				String authorKey = cm.getAuthor();
+				// add author to hashmap if not in it
+				if(distinctAuthors.containsKey(authorKey)) {
+
+					//concatenate text
+					String authorText = distinctAuthors.get(authorKey) + " " + cm.getText();
+					distinctAuthors.put(authorKey, authorText);
+
+				} else //add new author to hashmap
+
+					distinctAuthors.put(cm.getAuthor(), cm.getText());
+
+			}
+
+			// add each distinct authors messages to subset
+			for(String sender: distinctAuthors.keySet()) {
+				
+				subSet.add(new Message(sender, distinctAuthors.get(sender)));
+				
+			}
+			
+		}
+		
+		//return list of messages
+		return subSet;
 
 	}
 
@@ -83,10 +129,10 @@ public class dataParser {
 		for(Conversation c: this.conversations) {
 
 			for(ConversationMessage cm: c.messages) {
-				
+
 				String messageText = cm.getText();
 				Message newMessage = new Message(cm.getAuthor(),cm.getText());
-				
+
 				// add feature values to message
 				newMessage.features[letterLines] = FeatureExtractor.letterLines(messageText);
 				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
@@ -141,7 +187,11 @@ public class dataParser {
 				}
 
 				// add message to line
-				writer.append(message.message);
+				String csvMessage = message.message;
+				csvMessage = csvMessage.replace("", "");
+				csvMessage = csvMessage.replace("\n", " ");
+				
+				writer.append(csvMessage);
 				writer.append('\n');
 
 			}
