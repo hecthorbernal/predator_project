@@ -50,6 +50,8 @@ public class dataParser {
 
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
+		//I use this line to test in my computer through CLI
+		//dataParser myDataParser = new dataParser("/home/hector/git/predator_project/predator_project/data/pan12-training.xml");
 
 		// Now we have a List<Conversations> :-)
 		// Each Conversation carries a List<Messages> (author, time, text)
@@ -68,6 +70,8 @@ public class dataParser {
 
 		//TEST CSV export
 		generateCsvFile(mySubSet, "data/test.csv");
+		//I use this line to test in my computer through CLI
+		//generateCsvFile(mySubSet, "/home/hector/Dropbox/ITU/DataMining/exercises/Group_project/test_hdeb.csv");
 
 
 	}
@@ -205,14 +209,20 @@ public class dataParser {
 
 					
 		}
-		
 		for(Conversation c: newList) {
-			String messageText  = "";
+			String messageText  = "\"";
 			String author = c.getAuthor();
-
+			int number_of_messages = c.messages.size();
+			int counter = 0;
 			for(ConversationMessage cm: c.messages) {
-				messageText += cm.getText() + "\n";
+				counter++;
+				if(counter == number_of_messages){
+					messageText += cm.getText();
+				}else{
+					messageText += cm.getText() + "\r";
+				}
 			}
+			messageText += "\"";
 			Message newMessage = new Message(author, messageText);
 
 				// add feature values to message
