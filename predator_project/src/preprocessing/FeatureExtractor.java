@@ -3,6 +3,8 @@
  */
 package preprocessing;
 
+import spellChecking.JazzySpellChecker;
+
 /**
  * Provides static methods for extracting feaures from message string
  *
@@ -137,8 +139,11 @@ public class FeatureExtractor {
 	 */
 	public static int misspelledWords(String s) {
 		
-		//TODO implement method
-		return -1;
+		// Instantiate spellChecker
+		JazzySpellChecker jazzySpellChecker = new JazzySpellChecker();
+		
+		// return number of misspelled words in text
+		return jazzySpellChecker.getMisspelledWords(s).size();
 		
 	}
 	

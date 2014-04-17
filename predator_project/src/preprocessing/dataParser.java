@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import spellChecking.JazzySpellChecker;
+
 import xmlImport.Conversation;
 import xmlImport.ConversationMessage;
 import xmlImport.StaXParser;
@@ -22,6 +24,7 @@ public class dataParser {
 
 	// list for conversations imported from XML
 	private List<Conversation> conversations;
+	private JazzySpellChecker jazzySpellChecker;
 
 	// constants used for addressing variables in array of features
 	final static int letterLines = 0;
@@ -43,10 +46,12 @@ public class dataParser {
 	public dataParser(String file) {
 
 		this.conversations = new StaXParser().readConfig(file);
-
+		this.jazzySpellChecker = new JazzySpellChecker();
 	}
 
 	public static void main(String[] args) {
+		
+		// Instantiate spellChecker for counting misspelled words
 
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
@@ -60,8 +65,10 @@ public class dataParser {
 		//TODO extract and add features 
 
 		//TEST create subset with messages concatenated per author per conversation
-		//List<Message> mySubSet = myDataParser.createSubsetByDistinctAuthorsAndConverversations();
-		//System.out.println(mySubSet.size());
+//		List<Message> mySubSet = myDataParser.createSubSetExample();
+//		
+//		System.out.println(mySubSet.size());
+//		generateCsvFile(mySubSet, "data/test.csv");
 
 		//TEST - create subset containing all message lines
 		List<Message> mySubSetL15 = myDataParser.generateL15();
@@ -112,6 +119,8 @@ public class dataParser {
 				
 			}
 			
+			
+			
 		}
 		
 		//return list of messages
@@ -150,10 +159,10 @@ public class dataParser {
 				newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
 				newMessage.features[alert] = FeatureExtractor.alert(messageText);
 				newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
-				newMessage.features[misspelledWords] = FeatureExtractor.misspelledWords(messageText);
+				newMessage.features[misspelledWords] = jazzySpellChecker.countMisspelledWords(messageText); //FeatureExtractor.misspelledWords(messageText);
 				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
 				newMessage.features[positiveSent] = FeatureExtractor.PositiveSent(messageText);
-
+				
 				// add message to subset
 				subSet.add(newMessage);
 			}
@@ -267,6 +276,7 @@ public class dataParser {
 		// create subset from conversations
 		return generateSubSet(finalList);
 	}
+	
 	/*
 	 * Generate features
 	 */
@@ -303,6 +313,7 @@ public class dataParser {
 				newMessage.features[misspelledWords] = FeatureExtractor.misspelledWords(messageText);
 				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
 				newMessage.features[positiveSent] = FeatureExtractor.PositiveSent(messageText);
+				
 
 				// add message to subset
 				subSet.add(newMessage);
