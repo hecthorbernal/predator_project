@@ -50,7 +50,7 @@ public class dataParser {
 
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
-		//I use this line to test in my computer through CLI
+		//I use this line to test in my computer through CLI hdeb
 		//dataParser myDataParser = new dataParser("/home/hector/git/predator_project/predator_project/data/pan12-training.xml");
 
 		// Now we have a List<Conversations> :-)
@@ -64,14 +64,16 @@ public class dataParser {
 		//System.out.println(mySubSet.size());
 
 		//TEST - create subset containing all message lines
-		List<Message> mySubSet = myDataParser.createSubSetL15();
-		System.out.println(mySubSet.size());
-
+		List<Message> mySubSetL15 = myDataParser.generateL15();
+		List<Message> mySubSetW15 = myDataParser.generateW15();
+		System.out.println(mySubSetL15.size());
+		generateCsvFile(mySubSetL15, "data/L15.csv");
 
 		//TEST CSV export
-		generateCsvFile(mySubSet, "data/test.csv");
-		//I use this line to test in my computer through CLI
-		//generateCsvFile(mySubSet, "/home/hector/Dropbox/ITU/DataMining/exercises/Group_project/test_hdeb.csv");
+		System.out.println(mySubSetW15.size());
+		generateCsvFile(mySubSetW15, "data/W15.csv");
+		//I use this line to test in my computer through CLI hdeb
+		//generateCsvFile(mySubSet, "/home/hector/Dropbox/ITU/DataMining/exercises/Group_project/test_W15.csv");
 
 
 	}
@@ -165,11 +167,7 @@ public class dataParser {
 	/*
 	 *Create set L15
 	 */
-	private List<Message> createSubSetL15() {
-
-		// create subset from conversations
-		List<Message> subSet = new ArrayList<Message>();
-
+	private List<Message> generateL15() {
 		//The list new_list contains now coversation where only one author is present.
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
 
@@ -179,7 +177,8 @@ public class dataParser {
 		//conversation (L15).
 		List<Conversation> finalList = new ArrayList<Conversation>();
 		for(Conversation c: newList) {
-			int firstMessageTime = 0;
+			//instantiate to something big.
+			int firstMessageTime = 90000;
 			int lastMessageTime = 0;
 			for(ConversationMessage cm: c.messages) {
 				//The timestamps will be parsed to minutes for an easier calculation of the duartion.
@@ -196,6 +195,7 @@ public class dataParser {
 			if(duration <= 15){
 				finalList.add(c);
 			}else{
+				System.out.println(c.getId() + " duration: " + duration + "minutes \nfirst: " + firstMessageTime + " last: " + lastMessageTime + "\n");
 				//If the conversation lasted more than 15 min discard all messages that occurred 
 				//outside the time lapse requied i.e. L15
 				Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
@@ -209,6 +209,70 @@ public class dataParser {
 
 					
 		}
+		// create subset from conversations
+		return generateSubSet(finalList);
+	}	
+	private List<Message> generateW15() {
+		//The list new_list contains now coversation where only one author is present.
+		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
+
+		//Iterate through the messages to get:
+		//1. The length of each conversation
+		//Discard all messages that haven't been send during the last 15 minutes of the 
+		//conversation (L15).
+		List<Conversation> finalList = new ArrayList<Conversation>();
+		for(Conversation c: newList) {
+			//instantiate to something big.
+			int firstMessageTime = 90000;
+			int lastMessageTime = 0;
+			for(ConversationMessage cm: c.messages) {
+				//The timestamps will be parsed to minutes for an easier calculation of the duartion.
+				String c_time = cm.getTime();
+				int time = timeToInt(c_time);
+				if(time < firstMessageTime){
+					firstMessageTime = time;
+				}
+				if(time > lastMessageTime){
+					lastMessageTime = time;
+				}
+			}
+			int duration = getDuration(firstMessageTime, lastMessageTime);
+			if(duration <= 15){
+				finalList.add(c);
+			}else{
+				//If the conversation lasted more than 15 min split it in segments of 15 mins.
+				Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
+				int limit = 15;
+				int number_of_segments = duration/limit;
+				System.out.println("Duration: " + duration + "minutes \nSpiting conversation in " + number_of_segments + "segments...\n");
+				for(int i=0; i < number_of_segments; i++){
+					for(ConversationMessage cm: c.messages) {
+						if(timeToInt(cm.getTime()) < (firstMessageTime + (limit - 15))){
+							continue;
+						}
+						if(isWithinLimit(timeToInt(cm.getTime()), firstMessageTime, limit)){
+							tmpConversation.addC_Message(cm);
+						}else{
+							finalList.add(tmpConversation);
+							limit += 15;
+						}
+					}
+					finalList.add(tmpConversation);
+					limit += limit;
+				}
+			}
+
+					
+		}
+		// create subset from conversations
+		return generateSubSet(finalList);
+	}
+	/*
+	 * Generate features
+	 */
+	private static List<Message> generateSubSet(List<Conversation> newList){
+		// create subset from conversations
+		List<Message> subSet = new ArrayList<Message>();
 		for(Conversation c: newList) {
 			String messageText  = "\"";
 			String author = c.getAuthor();
@@ -243,9 +307,9 @@ public class dataParser {
 				// add message to subset
 				subSet.add(newMessage);
 		}
-
 		return subSet;
 	}
+	
 	/*
 	 * Generates CSV file from a subset and save it to file
 	 * 
@@ -329,6 +393,20 @@ public class dataParser {
 			return timeOfLast +  (1440-toCheck);
 		}else{
 			return timeOfLast-toCheck;
+		}
+	}
+/*
+	 * This is the same method as getDuration with another name for better code readability.
+	*/
+	private static boolean isWithinLimit(int toCheck, int timeOfFirst, int Limit){
+		if(timeOfFirst + Limit > 1440){
+			//The conversation must have gone from one day to the next, i.e. they reached 00:00 while chating
+			//a day has 1440 minutes
+			int offset = 1440 - timeOfFirst;
+			Limit = Limit - offset;
+			return toCheck > (timeOfFirst +  Limit);
+		}else{
+			return toCheck > (timeOfFirst +  Limit);
 		}
 	}
 	/*
