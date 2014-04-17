@@ -58,12 +58,12 @@ public class dataParser {
 		//TODO extract and add features 
 
 		//TEST create subset with messages concatenated per author per conversation
-		List<Message> mySubSet = myDataParser.createSubsetByDistinctAuthorsAndConverversations();
-		System.out.println(mySubSet.size());
+		//List<Message> mySubSet = myDataParser.createSubsetByDistinctAuthorsAndConverversations();
+		//System.out.println(mySubSet.size());
 
 		//TEST - create subset containing all message lines
-		//List<Message> mySubSet = myDataParser.createSubSetExample();
-		//System.out.println(mySubSet.size());
+		List<Message> mySubSet = myDataParser.createSubSetL15();
+		System.out.println(mySubSet.size());
 
 
 		//TEST CSV export
@@ -157,6 +157,85 @@ public class dataParser {
 		return subSet;
 	}
 
+
+	/*
+	 *Create set L15
+	 */
+	private List<Message> createSubSetL15() {
+
+		// create subset from conversations
+		List<Message> subSet = new ArrayList<Message>();
+
+		//The list new_list contains now coversation where only one author is present.
+		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
+
+		//Iterate through the messages to get:
+		//1. The lenght of each conversation
+		//Discard all messages thart havent been send during the last 15 minutes of the 
+		//conversation (L15).
+		List<Conversation> finalList = new ArrayList<Conversation>();
+		for(Conversation c: newList) {
+			int firstMessageTime = 0;
+			int lastMessageTime = 0;
+			for(ConversationMessage cm: c.messages) {
+				//The timestamps will be parsed to minutes for an easier calculation of the duartion.
+				String c_time = cm.getTime();
+				int time = timeToInt(c_time);
+				if(time < firstMessageTime){
+					firstMessageTime = time;
+				}
+				if(time > lastMessageTime){
+					lastMessageTime = time;
+				}
+			}
+			int duration = getDuration(firstMessageTime, lastMessageTime);
+			if(duration <= 15){
+				finalList.add(c);
+			}else{
+				//If the conversation lasted more than 15 min discard all messages that occurred 
+				//outside the time lapse requied i.e. L15
+				Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
+				for(ConversationMessage cm: c.messages) {
+					if(getOffset(timeToInt(cm.getTime()), lastMessageTime) <= 15){
+						tmpConversation.addC_Message(cm);
+					}
+				}
+				finalList.add(tmpConversation);
+			}
+
+					
+		}
+		
+		for(Conversation c: newList) {
+			String messageText  = "";
+			String author = c.getAuthor();
+
+			for(ConversationMessage cm: c.messages) {
+				messageText += cm.getText() + "\n";
+			}
+			Message newMessage = new Message(author, messageText);
+
+				// add feature values to message
+				newMessage.features[letterLines] = FeatureExtractor.letterLines(messageText);
+				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
+				newMessage.features[numberOfLines] = FeatureExtractor.numberOfLines(messageText);
+				newMessage.features[spaces] = FeatureExtractor.spaces(messageText);
+				newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
+				newMessage.features[posEmoticons] = FeatureExtractor.posEmoticons(messageText);
+				newMessage.features[neuEmoticons] = FeatureExtractor.neuEmoticons(messageText);
+				newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
+				newMessage.features[alert] = FeatureExtractor.alert(messageText);
+				newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
+				newMessage.features[misspelledWords] = FeatureExtractor.misspelledWords(messageText);
+				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
+				newMessage.features[positiveSent] = FeatureExtractor.PositiveSent(messageText);
+
+				// add message to subset
+				subSet.add(newMessage);
+		}
+
+		return subSet;
+	}
 	/*
 	 * Generates CSV file from a subset and save it to file
 	 * 
@@ -210,6 +289,73 @@ public class dataParser {
 
 	}
 
+	/*
+	 *Convert the time of the conversations to minutes
+	 */
+	private static int timeToInt(String time){
+		String[] values = time.split(":");
+		return ( Integer.parseInt(values[0]) * 60) + Integer.parseInt(values[1]);
+	}
 
+	/*
+	 * Get the duration of a conversation
+	*/
+	private static int getDuration(int start, int end){
+		if((end-start) < 0){
+			//The conversation must have gone from one day to the next, i.e. they reached 00:00 while chatting
+			//a day has 1440 minutes
+			return end +  (1440-start);
+		}else{
+			return end-start;
+		}
+	}
+	/*
+	 * This is the same method as getDuration with another name for better code readability.
+	*/
+	private static int getOffset(int toCheck, int timeOfLast){
+		if((timeOfLast-toCheck) < 0){
+			//The conversation must have gone from one day to the next, i.e. they reached 00:00 while chating
+			//a day has 1440 minutes
+			return timeOfLast +  (1440-toCheck);
+		}else{
+			return timeOfLast-toCheck;
+		}
+	}
+	/*
+	 * 
+	 */
+	private static List<Conversation> splitConversatitionsByAuthor(List<Conversation> conversations){
+		// Split conversation so they only contain one author each
+		List <Conversation> new_list = new ArrayList<Conversation>();
+		for(Conversation c: conversations) {
+			//Create a list of lists of conversations one per author
+			ArrayList<Conversation> byAuthor = new ArrayList<Conversation>();
+			for(ConversationMessage cm: c.messages) {
+				//Add the author to the list if it is not already there
+				String c_author = cm.getAuthor();
+				boolean exists_author = false;
+				Conversation tmp_c;
+				for(Conversation tmp : byAuthor){
+					if(tmp.getAuthor().equals(c_author)){
+						exists_author = true;
+						tmp.addC_Message(cm);
+						break;
+					}
+
+				}
+				if(!exists_author){
+					tmp_c = new Conversation();
+					tmp_c.setAuthor(c_author);
+					tmp_c.setId(c.getId());
+					tmp_c.addC_Message(cm);
+					byAuthor.add(tmp_c);
+				}
+			}
+			for(Conversation tmp_c : byAuthor){
+				new_list.add(tmp_c);	
+			}
+		}
+		return new_list;
+	}
 
 }
