@@ -11,6 +11,7 @@ public class Message {
 	
 	public String senderID;
 	public String message;
+	public String isPredator;
 	public int[] features = new int[14];
 	
 	final static int letterLines = 0;
@@ -29,7 +30,7 @@ public class Message {
 	final static int positiveSent = 13;
 	
 	public Message() {
-	
+		
 		this.senderID = "";
 		this.message = "";
 		initializeFeatures(); 
@@ -43,7 +44,10 @@ public class Message {
 		this.message = message;
 		initializeFeatures();
 	}
-	
+	public void setPredator(String p){
+		this.isPredator = p;
+		
+	}
 	// Initializez all features to -1
 	private void initializeFeatures(){
 		for (int i = 0; i < this.features.length; i++) {

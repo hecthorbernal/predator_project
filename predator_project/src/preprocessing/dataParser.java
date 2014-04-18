@@ -289,6 +289,8 @@ public class dataParser {
 		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
 		//Instantiate detector of offenses and profanation .
 		BlackListWordsDetector profanator = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
+		//Instantiate the predator identifier
+		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
 		for(Conversation c: newList) {
 			String messageText  = "";
 			int num_of_lines = 0;
@@ -299,6 +301,7 @@ public class dataParser {
 			}
 
 			Message newMessage = new Message(author, messageText);
+			newMessage.setPredator(predatorDetector.isAPredator(author));
 
 				// add feature values to message
 				newMessage.features[letterLines] = FeatureExtractor.letterLines(messageText);
@@ -337,7 +340,7 @@ public class dataParser {
 			FileWriter writer = new FileWriter(sFileName);
 
 			// Create headings
-			writer.append("senderID,letterLines,wordLines,numberOfLines,spaces,funkyWords,");
+			writer.append("predator,senderID,letterLines,wordLines,numberOfLines,spaces,funkyWords,");
 			writer.append("posEmoticons,neuEmoticons,negEmoticons,consecutiveLetters,alert,blacklist,");
 			writer.append("misspelledWords,negativeSent,positiveSent,message");
 			writer.append('\n');
@@ -346,6 +349,8 @@ public class dataParser {
 
 			for(Message message: subset) {
 
+				writer.append(message.isPredator);
+				writer.append(',');
 				writer.append(message.senderID);
 				writer.append(',');
 
