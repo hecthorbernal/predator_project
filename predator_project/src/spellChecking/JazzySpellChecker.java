@@ -10,6 +10,7 @@ import java.util.List;
 
 
 
+
 import com.swabunga.spell.engine.SpellDictionaryHashMap;
 import com.swabunga.spell.engine.Word;
 import com.swabunga.spell.event.SpellCheckEvent;
@@ -30,7 +31,11 @@ public class JazzySpellChecker implements SpellCheckListener {
 	public List<String> getMisspelledWords(String text) {
 		StringWordTokenizer texTok = new StringWordTokenizer(text,
 				new TeXWordFinder());
-		spellChecker.checkSpelling(texTok);
+		try {
+			spellChecker.checkSpelling(texTok);
+		} catch (Exception e) {
+			System.out.println("Error. The following string couldn't get parsed: " + text + "\n");
+		}
 		return misspelledWords;
 	}
 	
@@ -90,6 +95,7 @@ public class JazzySpellChecker implements SpellCheckListener {
 		String[] tempWords = line.split(" ");
 		for (String tempWord : tempWords){
 			if (!spellChecker.isCorrect(tempWord)){
+				@SuppressWarnings("unchecked")
 				List<Word> suggestions = spellChecker.getSuggestions(tempWord, 0);
 				if (suggestions.size() > 0){
 					builder.append(spellChecker.getSuggestions(tempWord, 0).get(0).toString());

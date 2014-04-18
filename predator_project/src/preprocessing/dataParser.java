@@ -68,13 +68,13 @@ public class dataParser {
 //		List<Message> mySubSet = myDataParser.createSubSetExample();
 //		
 //		System.out.println(mySubSet.size());
-//		generateCsvFile(mySubSet, "data/test.csv");
+//		generateCsvFile(mySubSet, "data/test_hdeb.csv");
 
 		//TEST - create subset containing all message lines
-		List<Message> mySubSetL15 = myDataParser.generateL15();
+//		List<Message> mySubSetL15 = myDataParser.generateL15();
 		List<Message> mySubSetW15 = myDataParser.generateW15();
-		System.out.println(mySubSetL15.size());
-		generateCsvFile(mySubSetL15, "data/L15.csv");
+//		System.out.println(mySubSetL15.size());
+//		generateCsvFile(mySubSetL15, "data/L15.csv");
 
 		//TEST CSV export
 		System.out.println(mySubSetW15.size());
@@ -204,9 +204,9 @@ public class dataParser {
 			if(duration <= 15){
 				finalList.add(c);
 			}else{
-				System.out.println(c.getId() + " duration: " + duration + "minutes \nfirst: " + firstMessageTime + " last: " + lastMessageTime + "\n");
+				//System.out.println(c.getId() + " duration: " + duration + "minutes \nfirst: " + firstMessageTime + " last: " + lastMessageTime + "\n");
 				//If the conversation lasted more than 15 min discard all messages that occurred 
-				//outside the time lapse requied i.e. L15
+				//outside the time lapse required i.e. L15
 				Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
 				for(ConversationMessage cm: c.messages) {
 					if(getOffset(timeToInt(cm.getTime()), lastMessageTime) <= 15){
@@ -222,7 +222,7 @@ public class dataParser {
 		return generateSubSet(finalList);
 	}	
 	private List<Message> generateW15() {
-		//The list new_list contains now coversation where only one author is present.
+		//The list new_list contains now conversation where only one author is present.
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
 
 		//Iterate through the messages to get:
@@ -250,28 +250,29 @@ public class dataParser {
 				finalList.add(c);
 			}else{
 				//If the conversation lasted more than 15 min split it in segments of 15 mins.
-				Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
+				//Pieces of conversation under 15 min get thrown out. This might requiere changes after we
+				//talk to Yun next time.
 				int limit = 15;
 				int number_of_segments = duration/limit;
-				System.out.println("Duration: " + duration + "minutes \nSpiting conversation in " + number_of_segments + "segments...\n");
+				//System.out.println("Duration: " + duration + "minutes \nSpiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments...\n");
 				for(int i=0; i < number_of_segments; i++){
+					Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
+					boolean added = false;
 					for(ConversationMessage cm: c.messages) {
 						if(timeToInt(cm.getTime()) < (firstMessageTime + (limit - 15))){
 							continue;
 						}
 						if(isWithinLimit(timeToInt(cm.getTime()), firstMessageTime, limit)){
 							tmpConversation.addC_Message(cm);
+							added = true;
 						}else{
-							finalList.add(tmpConversation);
 							limit += 15;
 						}
 					}
-					finalList.add(tmpConversation);
+					if(added){finalList.add(tmpConversation);}
 					limit += limit;
 				}
 			}
-
-					
 		}
 		// create subset from conversations
 		return generateSubSet(finalList);
@@ -284,25 +285,21 @@ public class dataParser {
 		// create subset from conversations
 		List<Message> subSet = new ArrayList<Message>();
 		for(Conversation c: newList) {
-			String messageText  = "\"";
+			String messageText  = "";
+			int num_of_lines = 0;
 			String author = c.getAuthor();
-			int number_of_messages = c.messages.size();
-			int counter = 0;
 			for(ConversationMessage cm: c.messages) {
-				counter++;
-				if(counter == number_of_messages){
-					messageText += cm.getText();
-				}else{
-					messageText += cm.getText() + "\r";
-				}
+					messageText += cm.getText() + " ";
+					num_of_lines++;
 			}
-			messageText += "\"";
+
 			Message newMessage = new Message(author, messageText);
 
 				// add feature values to message
 				newMessage.features[letterLines] = FeatureExtractor.letterLines(messageText);
 				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
-				newMessage.features[numberOfLines] = FeatureExtractor.numberOfLines(messageText);
+				//newMessage.features[numberOfLines] = FeatureExtractor.numberOfLines(messageText);
+				newMessage.features[numberOfLines] = num_of_lines;
 				newMessage.features[spaces] = FeatureExtractor.spaces(messageText);
 				newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
 				newMessage.features[posEmoticons] = FeatureExtractor.posEmoticons(messageText);
@@ -311,6 +308,7 @@ public class dataParser {
 				newMessage.features[alert] = FeatureExtractor.alert(messageText);
 				newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
 				newMessage.features[misspelledWords] = FeatureExtractor.misspelledWords(messageText);
+//				newMessage.features[misspelledWords] = 0;
 				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
 				newMessage.features[positiveSent] = FeatureExtractor.PositiveSent(messageText);
 				
