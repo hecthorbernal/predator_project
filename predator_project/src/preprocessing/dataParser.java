@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import sentimentAnalysis.SentimentAnalyser;
 import spellChecking.JazzySpellChecker;
-
 import xmlImport.Conversation;
 import xmlImport.ConversationMessage;
 import xmlImport.StaXParser;
@@ -284,6 +284,7 @@ public class dataParser {
 	private static List<Message> generateSubSet(List<Conversation> newList){
 		// create subset from conversations
 		List<Message> subSet = new ArrayList<Message>();
+		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
 		for(Conversation c: newList) {
 			String messageText  = "";
 			int num_of_lines = 0;
@@ -308,9 +309,10 @@ public class dataParser {
 				newMessage.features[alert] = FeatureExtractor.alert(messageText);
 				newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
 				newMessage.features[misspelledWords] = FeatureExtractor.misspelledWords(messageText);
-//				newMessage.features[misspelledWords] = 0;
-				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
-				newMessage.features[positiveSent] = FeatureExtractor.PositiveSent(messageText);
+				newMessage.features[negativeSent] = sentiments.getNegativeSentiment(messageText);
+				newMessage.features[positiveSent] = sentiments.getPositiveSentiment(messageText);
+//				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
+//				newMessage.features[positiveSent] = FeatureExtractor.PositiveSent(messageText);
 				
 
 				// add message to subset

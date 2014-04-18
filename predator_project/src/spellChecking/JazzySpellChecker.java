@@ -34,7 +34,7 @@ public class JazzySpellChecker implements SpellCheckListener {
 		try {
 			spellChecker.checkSpelling(texTok);
 		} catch (Exception e) {
-			System.out.println("Error. The following string couldn't get parsed: " + text + "\n");
+			System.out.println("Error. The following string couldn't get parsed by Jazzy: " + text + "\n");
 		}
 		return misspelledWords;
 	}
