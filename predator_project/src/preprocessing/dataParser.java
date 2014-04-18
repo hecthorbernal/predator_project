@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import blacklist.BlackListWordsDetector;
 import sentimentAnalysis.SentimentAnalyser;
 import spellChecking.JazzySpellChecker;
 import xmlImport.Conversation;
@@ -284,7 +285,10 @@ public class dataParser {
 	private static List<Message> generateSubSet(List<Conversation> newList){
 		// create subset from conversations
 		List<Message> subSet = new ArrayList<Message>();
+		//Instantiate sentiment analyser
 		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
+		//Instantiate detector of offenses and profanation .
+		BlackListWordsDetector profanator = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
 		for(Conversation c: newList) {
 			String messageText  = "";
 			int num_of_lines = 0;
@@ -307,7 +311,8 @@ public class dataParser {
 				newMessage.features[neuEmoticons] = FeatureExtractor.neuEmoticons(messageText);
 				newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
 				newMessage.features[alert] = FeatureExtractor.alert(messageText);
-				newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
+				newMessage.features[blacklist] = profanator.numberOfOffensiveProfanes(messageText);
+				//newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
 				newMessage.features[misspelledWords] = FeatureExtractor.misspelledWords(messageText);
 				newMessage.features[negativeSent] = sentiments.getNegativeSentiment(messageText);
 				newMessage.features[positiveSent] = sentiments.getPositiveSentiment(messageText);
