@@ -254,6 +254,10 @@ public class dataParser {
 				//talk to Yun next time.
 				int limit = 15;
 				int number_of_segments = duration/limit;
+				//take the last segment even though it is shorter than 15 min.
+				if(duration%limit > 0){
+					number_of_segments++;
+				}
 				//System.out.println("Duration: " + duration + "minutes \nSpiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments...\n");
 				for(int i=0; i < number_of_segments; i++){
 					Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());

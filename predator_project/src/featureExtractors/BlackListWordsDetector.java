@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BlackListWordsDetector {
 	String file;
@@ -44,11 +46,18 @@ public class BlackListWordsDetector {
 		int profanes = 0;
 		String[] words = text.split("\\s");
 		for(int i = 0; i < words.length; i++){
-			if(wordList.containsKey(words[i])){
+			String word = words[i].toLowerCase();
+
+			//If a word ends with symbols (!,?), remove them so
+			//the word can be matched.
+			if(word.matches("\\W*[a-zA-Z]+[?!,.:;]+.*")){
+				word = word.replaceAll("\\W*([a-zA-Z]+)\\W*", "$1");
+			}
+			if(wordList.containsKey(word)){
 				profanes++;
 			}
 		}
 		return profanes;
 	}
-
+	
 }
