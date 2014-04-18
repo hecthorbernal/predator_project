@@ -26,6 +26,7 @@ public class SentimentAnalyser {
 				String line = null;
 				while ((line = br.readLine()) != null) {
 					line = line.replace("\\n", "").replace("\\r", "");
+					line = line.toLowerCase();
 					String[] arr = line.split("\\s");
 					int value;
 					String key = "";
