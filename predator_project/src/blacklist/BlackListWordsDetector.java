@@ -38,7 +38,7 @@ public class BlackListWordsDetector {
 	/**
 	 * Counts the number of profane words in the given conversation.
 	 * @param text = the conversation to analyze.
-	 * @return
+	 * @return the number of profane words.
 	 */
 	public int numberOfOffensiveProfanes(String text){
 		int profanes = 0;

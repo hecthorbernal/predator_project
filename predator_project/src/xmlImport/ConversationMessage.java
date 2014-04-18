@@ -6,6 +6,7 @@ public class ConversationMessage {
 	private String author;
 	private String time;
 	private String text;
+	private int number_of_lines;
 	
 	
 	public String getLine() {
@@ -32,8 +33,18 @@ public class ConversationMessage {
 	public void setText(String text) {
 		this.text = text;
 	}
-
-
+	/**
+	 * @return the number_of_lines
+	 */
+	public int getNumber_of_lines() {
+		return number_of_lines;
+	}
+	/**
+	 * @param number_of_lines the number_of_lines to set
+	 */
+	public void setNumber_of_lines(int number_of_lines) {
+		this.number_of_lines = number_of_lines;
+	}
 	@Override
 	public String toString() {
 		return "Item [text=" + text + ", line=" + line

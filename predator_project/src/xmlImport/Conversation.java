@@ -7,6 +7,7 @@ import java.util.List;
 public class Conversation {
 	private String id; 
 	private String author; 
+	private int number_of_lines;
 	public List<ConversationMessage> messages = new ArrayList<ConversationMessage>();
 	
 	
@@ -45,6 +46,20 @@ public class Conversation {
 		messages.add(new_m);
 	}
 	
+	/**
+	 * @return the number_of_lines
+	 */
+	public int getNumber_of_lines() {
+		return number_of_lines;
+	}
+
+	/**
+	 * @param number_of_lines the number_of_lines to set
+	 */
+	public void setNumber_of_lines(int number_of_lines) {
+		this.number_of_lines = number_of_lines;
+	}
+
 	@Override
 	public String toString() {
 		return "Conversation [Id =" + id + "] " + messages.size();
