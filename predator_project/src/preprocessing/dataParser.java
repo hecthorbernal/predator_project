@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import blacklist.BlackListWordsDetector;
-import sentimentAnalysis.SentimentAnalyser;
+import featureExtractors.BlackListWordsDetector;
+import featureExtractors.SentimentAnalyser;
 import spellChecking.JazzySpellChecker;
 import xmlImport.Conversation;
 import xmlImport.ConversationMessage;
@@ -56,8 +56,6 @@ public class dataParser {
 
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
-		//I use this line to test in my computer through CLI hdeb
-		//dataParser myDataParser = new dataParser("/home/hector/git/predator_project/predator_project/data/pan12-training.xml");
 
 		// Now we have a List<Conversations> :-)
 		// Each Conversation carries a List<Messages> (author, time, text)
@@ -69,19 +67,16 @@ public class dataParser {
 //		List<Message> mySubSet = myDataParser.createSubSetExample();
 //		
 //		System.out.println(mySubSet.size());
-//		generateCsvFile(mySubSet, "data/test_hdeb.csv");
 
 		//TEST - create subset containing all message lines
-//		List<Message> mySubSetL15 = myDataParser.generateL15();
+		List<Message> mySubSetL15 = myDataParser.generateL15();
 		List<Message> mySubSetW15 = myDataParser.generateW15();
-//		System.out.println(mySubSetL15.size());
-//		generateCsvFile(mySubSetL15, "data/L15.csv");
+		System.out.println(mySubSetL15.size());
+		generateCsvFile(mySubSetL15, "data/L15.csv");
 
 		//TEST CSV export
 		System.out.println(mySubSetW15.size());
 		generateCsvFile(mySubSetW15, "data/W15.csv");
-		//I use this line to test in my computer through CLI hdeb
-		//generateCsvFile(mySubSet, "/home/hector/Dropbox/ITU/DataMining/exercises/Group_project/test_W15.csv");
 
 
 	}
@@ -174,8 +169,8 @@ public class dataParser {
 	}
 
 
-	/*
-	 *Create set L15
+	/**
+	 * Create set L15
 	 */
 	private List<Message> generateL15() {
 		//The list new_list contains now coversation where only one author is present.
@@ -222,6 +217,10 @@ public class dataParser {
 		// create subset from conversations
 		return generateSubSet(finalList);
 	}	
+	/**
+	 * Create set W15
+	 * @return
+	 */
 	private List<Message> generateW15() {
 		//The list new_list contains now conversation where only one author is present.
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
@@ -279,7 +278,7 @@ public class dataParser {
 		return generateSubSet(finalList);
 	}
 	
-	/*
+	/**
 	 * Generate features
 	 */
 	private static List<Message> generateSubSet(List<Conversation> newList){

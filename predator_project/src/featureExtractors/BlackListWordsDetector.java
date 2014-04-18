@@ -1,4 +1,4 @@
-package blacklist;
+package featureExtractors;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
