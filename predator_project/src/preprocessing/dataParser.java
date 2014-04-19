@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import featureExtractors.BlackListWordsDetector;
+import featureExtractors.JazzySpellChecker;
 import featureExtractors.SentimentAnalyser;
-import spellChecking.JazzySpellChecker;
 import xmlImport.Conversation;
 import xmlImport.ConversationMessage;
 import xmlImport.StaXParser;
