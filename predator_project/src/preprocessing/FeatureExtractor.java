@@ -6,7 +6,8 @@ package preprocessing;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import spellChecking.JazzySpellChecker;
+import featureExtractors.JazzySpellChecker;
+
 
 /**
  * Provides static methods for extracting feaures from message string
@@ -147,47 +148,43 @@ public class FeatureExtractor {
 	 * @param s string to extract feature from
 	 * @return feature value as integer
 	 */
-	public static int blackList(String s) {
-		
-		//TODO CANNOT BE IMPLMENTED HERE
-		return -1;
-		
-	}
+//	public static int blackList(String s) {
+//		
+//		//TODO CANNOT BE IMPLMENTED HERE
+//		return -1;
+//		
+//	}
 	
 	/**
 	 * @param s string to extract feature from
 	 * @return feature value as integer
 	 */
-	public static int misspelledWords(String s) {
-		
-		// Instantiate spellChecker
-		JazzySpellChecker jazzySpellChecker = new JazzySpellChecker();
-		
-		// return number of misspelled words in text
-		return jazzySpellChecker.getMisspelledWords(s).size();
-		
-	}
+//	public static int misspelledWords(String s) {
+//		
+//		//NOT IMPLEMENTED HERE - USE JAZZYSPELLCHECKER
+//		return -1;
+//	}
 	
 	/**
 	 * @param s string to extract feature from
 	 * @return feature value as integer
 	 */
-	public static int negativeSent(String s) {
-		
-		//TODO CANNOT BE IMPLMENTED HERE
-		return -1;
-		
-	}
+//	public static int negativeSent(String s) {
+//		
+//		//TODO CANNOT BE IMPLMENTED HERE
+//		return -1;
+//		
+//	}
 	
 	/**
 	 * @param s string to extract feature from
 	 * @return feature value as integer
 	 */
-	public static int PositiveSent(String s) {
-		
-		//TODO CANNOT BE IMPLMENTED HERE
-		return -1;
-		
-	}
+//	public static int PositiveSent(String s) {
+//		
+//		//TODO CANNOT BE IMPLMENTED HERE
+//		return -1;
+//		
+//	}
 
 }
