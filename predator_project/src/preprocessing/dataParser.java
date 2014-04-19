@@ -47,7 +47,6 @@ public class dataParser {
 	public dataParser(String file) {
 
 		this.conversations = new StaXParser().readConfig(file);
-		this.jazzySpellChecker = new JazzySpellChecker();
 	}
 
 	public static void main(String[] args) {
@@ -57,20 +56,13 @@ public class dataParser {
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
 
-		// Now we have a List<Conversations> :-)
+		// Now we have a List<Conversations>
 		// Each Conversation carries a List<Messages> (author, time, text)
-
-		//TODO create (different) subsets from conversations
-		//TODO extract and add features 
-
-		//TEST create subset with messages concatenated per author per conversation
-//		List<Message> mySubSet = myDataParser.createSubSetExample();
-//		
-//		System.out.println(mySubSet.size());
 
 		//TEST - create subset containing all message lines
 		List<Message> mySubSetL15 = myDataParser.generateL15();
 		List<Message> mySubSetW15 = myDataParser.generateW15();
+		
 		System.out.println(mySubSetL15.size());
 		generateCsvFile(mySubSetL15, "data/L15.csv");
 
@@ -79,93 +71,6 @@ public class dataParser {
 		generateCsvFile(mySubSetW15, "data/W15.csv");
 
 
-	}
-
-	private List<Message> createSubsetByDistinctAuthorsAndConverversations(){
-
-		// create subset for conversations
-		List<Message> subSet = new ArrayList<Message>();
-
-		// for each conversation
-		for(Conversation c: this.conversations) {
-
-			// Hashmap holds all authors and their concateneated message
-			HashMap<String,String> distinctAuthors = new HashMap<>();
-
-			for(ConversationMessage cm: c.messages) {
-
-				String authorKey = cm.getAuthor();
-				// add author to hashmap if not in it
-				if(distinctAuthors.containsKey(authorKey)) {
-
-					//concatenate text
-					String authorText = distinctAuthors.get(authorKey) + " " + cm.getText();
-					distinctAuthors.put(authorKey, authorText);
-
-				} else //add new author to hashmap
-
-					distinctAuthors.put(cm.getAuthor(), cm.getText());
-
-			}
-
-			// add each distinct authors messages to subset
-			for(String sender: distinctAuthors.keySet()) {
-				
-				subSet.add(new Message(sender, distinctAuthors.get(sender)));
-				
-			}
-			
-			
-			
-		}
-		
-		//return list of messages
-		return subSet;
-
-	}
-
-	/*
-	 * Generates subset from list of conversations
-	 * THIS IS JUST A TEST EXAMPLE!!
-	 * it just picks all messages and add them to a subset
-	 * :-)
-	 */
-	private List<Message> createSubSetExample() {
-
-		// create subset from conversations
-		List<Message> subSet = new ArrayList<Message>();
-
-		// For each Conversation - add each message line to subset
-		// TODO change this into concatenating lines according to different subsets
-		for(Conversation c: this.conversations) {
-
-			for(ConversationMessage cm: c.messages) {
-
-				String messageText = cm.getText();
-				Message newMessage = new Message(cm.getAuthor(),cm.getText());
-
-				// add feature values to message
-				newMessage.features[letterLines] = FeatureExtractor.letterLines(messageText);
-				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
-				newMessage.features[numberOfLines] = FeatureExtractor.numberOfLines(messageText);
-				newMessage.features[spaces] = FeatureExtractor.spaces(messageText);
-				newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
-				newMessage.features[posEmoticons] = FeatureExtractor.posEmoticons(messageText);
-				newMessage.features[neuEmoticons] = FeatureExtractor.neuEmoticons(messageText);
-				newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
-				newMessage.features[alert] = FeatureExtractor.alert(messageText);
-				newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
-				newMessage.features[misspelledWords] = jazzySpellChecker.countMisspelledWords(messageText); //FeatureExtractor.misspelledWords(messageText);
-				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
-				newMessage.features[positiveSent] = FeatureExtractor.PositiveSent(messageText);
-				
-				// add message to subset
-				subSet.add(newMessage);
-			}
-
-		}
-
-		return subSet;
 	}
 
 
@@ -177,8 +82,8 @@ public class dataParser {
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
 
 		//Iterate through the messages to get:
-		//1. The lenght of each conversation
-		//Discard all messages thart havent been send during the last 15 minutes of the 
+		//1. The length of each conversation
+		//Discard all messages that havent been send during the last 15 minutes of the 
 		//conversation (L15).
 		List<Conversation> finalList = new ArrayList<Conversation>();
 		for(Conversation c: newList) {
@@ -188,7 +93,7 @@ public class dataParser {
 			int firsNotNormalized = 0;
 			boolean isFirst = false;	
 			for(ConversationMessage cm: c.messages) {
-				//The timestamps will be parsed to minutes for an easier calculation of the duartion.
+				//The timestamps will be parsed to minutes for an easier calculation of the duration.
 				//The normalized time of the message added to the object cm for much easier processing.
 				String c_time = cm.getTime();
 				int time = timeToInt(c_time);
@@ -317,6 +222,9 @@ public class dataParser {
 		BlackListWordsDetector profanator = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
 		//Instantiate the predator identifier
 		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
+		//Instantiate spellchecker
+		JazzySpellChecker spellChecker = new JazzySpellChecker();
+		
 		for(Conversation c: newList) {
 			String messageText  = "\"";
 			int num_of_lines = 0;
@@ -342,7 +250,7 @@ public class dataParser {
 				newMessage.features[alert] = FeatureExtractor.alert(messageText);
 				newMessage.features[blacklist] = profanator.numberOfOffensiveProfanes(messageText);
 				//newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
-				newMessage.features[misspelledWords] = FeatureExtractor.misspelledWords(messageText);
+				newMessage.features[misspelledWords] = spellChecker.countMisspelledWords(messageText);
 				newMessage.features[negativeSent] = sentiments.getNegativeSentiment(messageText);
 				newMessage.features[positiveSent] = sentiments.getPositiveSentiment(messageText);
 //				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
