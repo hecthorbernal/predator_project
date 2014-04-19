@@ -6,6 +6,19 @@ public class ConversationMessage {
 	private String author;
 	private String time;
 	private String text;
+	private int normalized_time;
+	/**
+	 * @return the normalized_time
+	 */
+	public int getNormalized_time() {
+		return normalized_time;
+	}
+	/**
+	 * @param normalized_time the normalized_time to set
+	 */
+	public void setNormalized_time(int normalized_time) {
+		this.normalized_time = normalized_time;
+	}
 	private int number_of_lines;
 	
 	

@@ -183,17 +183,26 @@ public class dataParser {
 		List<Conversation> finalList = new ArrayList<Conversation>();
 		for(Conversation c: newList) {
 			//instantiate to something big.
-			int firstMessageTime = 90000;
+			int firstMessageTime = 0;
 			int lastMessageTime = 0;
+			int firsNotNormalized = 0;
+			boolean isFirst = false;	
 			for(ConversationMessage cm: c.messages) {
 				//The timestamps will be parsed to minutes for an easier calculation of the duartion.
+				//The normalized time of the message added to the object cm for much easier processing.
 				String c_time = cm.getTime();
 				int time = timeToInt(c_time);
-				if(time < firstMessageTime){
-					firstMessageTime = time;
-				}
-				if(time > lastMessageTime){
-					lastMessageTime = time;
+				if(!isFirst){
+					firsNotNormalized = time;
+					int normalized = timeNormalizer(firsNotNormalized, time);
+					firstMessageTime = normalized;
+					cm.setNormalized_time(normalized);
+					isFirst = true;
+				}else{
+					int normalized = timeNormalizer(firsNotNormalized, time);
+					lastMessageTime = normalized;
+					cm.setNormalized_time(normalized);
+					isFirst = true;
 				}
 			}
 			int duration = getDuration(firstMessageTime, lastMessageTime);
@@ -205,7 +214,7 @@ public class dataParser {
 				//outside the time lapse required i.e. L15
 				Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
 				for(ConversationMessage cm: c.messages) {
-					if(getOffset(timeToInt(cm.getTime()), lastMessageTime) <= 15){
+					if(withinLast15Mins(cm.getNormalized_time(), lastMessageTime)){
 						tmpConversation.addC_Message(cm);
 					}
 				}
@@ -232,17 +241,26 @@ public class dataParser {
 		List<Conversation> finalList = new ArrayList<Conversation>();
 		for(Conversation c: newList) {
 			//instantiate to something big.
-			int firstMessageTime = 90000;
+			int firsNotNormalized = 0;
+			int firstMessageTime = 0;
 			int lastMessageTime = 0;
+			boolean isFirst = false;
 			for(ConversationMessage cm: c.messages) {
 				//The timestamps will be parsed to minutes for an easier calculation of the duartion.
+				//The normalized time of the message added to the object cm for much easier processing.
 				String c_time = cm.getTime();
 				int time = timeToInt(c_time);
-				if(time < firstMessageTime){
-					firstMessageTime = time;
-				}
-				if(time > lastMessageTime){
-					lastMessageTime = time;
+				if(!isFirst){
+					firsNotNormalized = time;
+					int normalized = timeNormalizer(firsNotNormalized, time);
+					firstMessageTime = normalized;
+					cm.setNormalized_time(normalized);
+					isFirst = true;
+				}else{
+					int normalized = timeNormalizer(firsNotNormalized, time);
+					lastMessageTime = normalized;
+					cm.setNormalized_time(normalized);
+					isFirst = true;
 				}
 			}
 			int duration = getDuration(firstMessageTime, lastMessageTime);
@@ -251,6 +269,7 @@ public class dataParser {
 			}else{
 				//If the conversation lasted more than 15 min split it in segments of 15 mins.
 				//Pieces of conversation under 15 min get thrown out. This might requiere changes after we
+					isFirst = true;
 				//talk to Yun next time.
 				int limit = 15;
 				int number_of_segments = duration/limit;
@@ -258,28 +277,32 @@ public class dataParser {
 				if(duration%limit > 0){
 					number_of_segments++;
 				}
-				//System.out.println("Duration: " + duration + "minutes \nSpiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments...\n");
+//				System.out.println("Duration: " + duration + "minutes \nSpiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments...");
 				for(int i=0; i < number_of_segments; i++){
+					int start = i * limit;
+					int end = start + limit;
 					Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
 					boolean added = false;
 					for(ConversationMessage cm: c.messages) {
-						if(timeToInt(cm.getTime()) < (firstMessageTime + (limit - 15))){
-							continue;
-						}
-						if(isWithinLimit(timeToInt(cm.getTime()), firstMessageTime, limit)){
-							tmpConversation.addC_Message(cm);
-							added = true;
-						}else{
-							limit += 15;
-						}
+							if(isWithinLimit(cm.getNormalized_time(), start, end)){
+								tmpConversation.addC_Message(cm);
+								added = true;
+							}
 					}
 					if(added){finalList.add(tmpConversation);}
-					limit += limit;
+					limit += 15;
 				}
 			}
 		}
 		// create subset from conversations
 		return generateSubSet(finalList);
+	}
+	private int timeNormalizer(int first, int current){
+		if(current >= first){
+			return current - first;
+		}
+		int offset = 1440 -first;
+		return offset + current;
 	}
 	
 	/**
@@ -295,14 +318,14 @@ public class dataParser {
 		//Instantiate the predator identifier
 		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
 		for(Conversation c: newList) {
-			String messageText  = "";
+			String messageText  = "\"";
 			int num_of_lines = 0;
 			String author = c.getAuthor();
 			for(ConversationMessage cm: c.messages) {
 					messageText += cm.getText() + " ";
 					num_of_lines++;
 			}
-
+			messageText += "\"";
 			Message newMessage = new Message(author, messageText);
 			newMessage.setPredator(predatorDetector.isAPredator(author));
 
@@ -399,39 +422,22 @@ public class dataParser {
 	 * Get the duration of a conversation
 	*/
 	private static int getDuration(int start, int end){
-		if((end-start) < 0){
-			//The conversation must have gone from one day to the next, i.e. they reached 00:00 while chatting
-			//a day has 1440 minutes
-			return end +  (1440-start);
-		}else{
 			return end-start;
-		}
 	}
 	/*
 	 * This is the same method as getDuration with another name for better code readability.
 	*/
-	private static int getOffset(int toCheck, int timeOfLast){
-		if((timeOfLast-toCheck) < 0){
-			//The conversation must have gone from one day to the next, i.e. they reached 00:00 while chating
-			//a day has 1440 minutes
-			return timeOfLast +  (1440-toCheck);
-		}else{
-			return timeOfLast-toCheck;
-		}
+	private static boolean withinLast15Mins(int toCheck, int timeOfLast){
+			return timeOfLast-toCheck <= 15;
 	}
 /*
 	 * This is the same method as getDuration with another name for better code readability.
 	*/
-	private static boolean isWithinLimit(int toCheck, int timeOfFirst, int Limit){
-		if(timeOfFirst + Limit > 1440){
-			//The conversation must have gone from one day to the next, i.e. they reached 00:00 while chating
-			//a day has 1440 minutes
-			int offset = 1440 - timeOfFirst;
-			Limit = Limit - offset;
-			return toCheck > (timeOfFirst +  Limit);
-		}else{
-			return toCheck > (timeOfFirst +  Limit);
-		}
+	private static boolean isWithinLimit(int toCheck, int start, int end){
+			if(toCheck >= start && toCheck < end){
+				return true;
+			}
+			return false;
 	}
 	/*
 	 * 

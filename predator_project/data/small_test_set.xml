@@ -1,0 +1,493 @@
+<conversation id="6963862cbe213967dc6d6d64d64e1148">
+    <message line="1">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:29</time>
+      <text>bddfdb28870c5800d938fa0993c46d65: Can you remove the Previous version link to css3-border? It's a little misleading since that was merged into the draft a long time ago and the border definitions immediately previous aren't there</text>
+    </message>
+    <message line="2">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:29</time>
+      <text>removed it for the editor's draft, but doesnt' have write access to w3.org</text>
+    </message>
+    <message line="3">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>23:49</time>
+      <text>Fantasai, I checked with the webmaster and corrected it.</text>
+    </message>
+    <message line="4">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:49</time>
+      <text>Thanks!</text>
+    </message>
+    <message line="5">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:50</time>
+      <text>bddfdb28870c5800d938fa0993c46d65: I'm writing up a blog post for the css3-background publication</text>
+    </message>
+    <message line="6">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>23:50</time>
+      <text>It's against policy to change a published TR, but it was less than 24 hours...</text>
+    </message>
+    <message line="7">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:50</time>
+      <text>:)</text>
+    </message>
+    <message line="8">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>23:50</time>
+      <text>Good! (re: blog post)</text>
+    </message>
+    <message line="9">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:51</time>
+      <text>I wanted to announce the draft, but also point out some of the issues we want feedback on</text>
+    </message>
+    <message line="10">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:51</time>
+      <text>I'll be cross-posting between our blog and css3.info</text>
+    </message>
+    <message line="11">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:51</time>
+      <text>My draft is here http://www.css3.info/?p=709 if you want to take a look :)</text>
+    </message>
+    <message line="12">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:51</time>
+      <text>likes drafting in WordPress better</text>
+    </message>
+    <message line="13">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>23:51</time>
+      <text>Shall I wait with announcing it on www-style so that I can point to the blog?</text>
+    </message>
+    <message line="14">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:51</time>
+      <text>yeah, sure!</text>
+    </message>
+    <message line="15">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:52</time>
+      <text>I'm almost done :)</text>
+    </message>
+    <message line="16">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>23:52</time>
+      <text>is just doing some editing to fix grammar errors and the like ;)</text>
+    </message>
+    <message line="17">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:00</time>
+      <text>!@#$%^</text>
+    </message>
+    <message line="18">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:00</time>
+      <text>Why can't I link to external sites on the CSSWG blog?</text>
+    </message>
+    <message line="19">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:02</time>
+      <text>can't post this</text>
+    </message>
+    <message line="20">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:02</time>
+      <text>needs to link to Brad's examples page, and to css3.info</text>
+    </message>
+    <message line="21">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:07</time>
+      <text>Can't link? That's strange. There are other articles with links.</text>
+    </message>
+    <message line="22">
+      <author>1f8387eb43f131d7c309a90a4e36b5cb</author>
+      <time>00:07</time>
+      <text>Can you just put plain-text links?  It's crappy, but shrug.</text>
+    </message>
+    <message line="23">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:07</time>
+      <text>That's what I'm doing</text>
+    </message>
+    <message line="24">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:07</time>
+      <text>slowly</text>
+    </message>
+    <message line="25">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:07</time>
+      <text>it's complaining about something else</text>
+    </message>
+    <message line="26">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:07</time>
+      <text>but it never gives line numbers</text>
+    </message>
+    <message line="27">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:07</time>
+      <text>I HATE our blogging system</text>
+    </message>
+    <message line="28">
+      <author>1f8387eb43f131d7c309a90a4e36b5cb</author>
+      <time>00:08</time>
+      <text>What's the engine?</text>
+    </message>
+    <message line="29">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:08</time>
+      <text>b2evo</text>
+    </message>
+    <message line="30">
+      <author>1f8387eb43f131d7c309a90a4e36b5cb</author>
+      <time>00:08</time>
+      <text>(Won't be able to help, just curious.)</text>
+    </message>
+    <message line="31">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:08</time>
+      <text>B.t.w., your URL gives me a page with just navigation links, no content.</text>
+    </message>
+    <message line="32">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:08</time>
+      <text>http://www.css3.info/css3-backgrounds-last-call/</text>
+    </message>
+    <message line="33">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:09</time>
+      <text>That works, but it looks weird in lynx.</text>
+    </message>
+    <message line="34">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:10</time>
+      <text>looks at the mark-up...</text>
+    </message>
+    <message line="35">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:10</time>
+      <text>it's not my fault</text>
+    </message>
+    <message line="36">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:10</time>
+      <text>I write good markup!</text>
+    </message>
+    <message line="37">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:10</time>
+      <text>promises the &amp;lt;p&amp;gt; tags are all there</text>
+    </message>
+    <message line="38">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:10</time>
+      <text>;)</text>
+    </message>
+    <message line="39">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:12</time>
+      <text>Oh, and it also won't let me use fragment identifiers in links to W3C specs</text>
+    </message>
+    <message line="40">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:12</time>
+      <text>just removes those links</text>
+    </message>
+    <message line="41">
+      <author>1f8387eb43f131d7c309a90a4e36b5cb</author>
+      <time>00:13</time>
+      <text>wtf is up with your blogging engine?</text>
+    </message>
+    <message line="42">
+      <author>1f8387eb43f131d7c309a90a4e36b5cb</author>
+      <time>00:13</time>
+      <text>That's crazy.</text>
+    </message>
+    <message line="43">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:15</time>
+      <text>http://www.w3.org/blog/CSS/2009/10/16/css3_background_lc</text>
+    </message>
+    <message line="44">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:15</time>
+      <text>bddfdb28870c5800d938fa0993c46d65, if you can fix that...</text>
+    </message>
+    <message line="45">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:15</time>
+      <text>:(</text>
+    </message>
+    <message line="46">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:15</time>
+      <text>I give up</text>
+    </message>
+    <message line="47">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:15</time>
+      <text>I hate W3C IT</text>
+    </message>
+    <message line="48">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:15</time>
+      <text>which isn't fair</text>
+    </message>
+    <message line="49">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:16</time>
+      <text>because they're shortstaffed</text>
+    </message>
+    <message line="50">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:16</time>
+      <text>so they can't fix everything</text>
+    </message>
+    <message line="51">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:16</time>
+      <text>but</text>
+    </message>
+    <message line="52">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:16</time>
+      <text>really?</text>
+    </message>
+    <message line="53">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:16</time>
+      <text>banning fragment identifiers and external links?</text>
+    </message>
+    <message line="54">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:16</time>
+      <text>:( :( :(</text>
+    </message>
+    <message line="55">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:16</time>
+      <text>I just made a test and fragments work fine.</text>
+    </message>
+    <message line="56">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:16</time>
+      <text>why doesn't it work for me?</text>
+    </message>
+    <message line="57">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:16</time>
+      <text>maybe you have magic priviledges</text>
+    </message>
+    <message line="58">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:17</time>
+      <text>in that case you can fix the post!</text>
+    </message>
+    <message line="59">
+      <author>1f8387eb43f131d7c309a90a4e36b5cb</author>
+      <time>00:17</time>
+      <text>Banning fragments doesn't even *start* to make sense.</text>
+    </message>
+    <message line="60">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:17</time>
+      <text>I had links to the relevant sections for the various properties mentioned in the post</text>
+    </message>
+    <message line="61">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:17</time>
+      <text>1f8387eb43f131d7c309a90a4e36b5cb: I don't think it was intentional.</text>
+    </message>
+    <message line="62">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:18</time>
+      <text>1f8387eb43f131d7c309a90a4e36b5cb: I think they wanted to ban external links, and their regex forgot to allow fragments</text>
+    </message>
+    <message line="63">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:18</time>
+      <text>or something</text>
+    </message>
+    <message line="64">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:18</time>
+      <text>but it looks like bddfdb28870c5800d938fa0993c46d65 might be able to fix this</text>
+    </message>
+    <message line="65">
+      <author>1f8387eb43f131d7c309a90a4e36b5cb</author>
+      <time>00:18</time>
+      <text>Still weird.  Whatever.</text>
+    </message>
+    <message line="66">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:18</time>
+      <text>is looking at the post</text>
+    </message>
+    <message line="67">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:18</time>
+      <text>It doesn't have a title.</text>
+    </message>
+    <message line="68">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:18</time>
+      <text>What should it be called?</text>
+    </message>
+    <message line="69">
+      <author>1f8387eb43f131d7c309a90a4e36b5cb</author>
+      <time>00:18</time>
+      <text>doesn't understand why any link policy whatsoever is required on a w3c blog.</text>
+    </message>
+    <message line="70">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:19</time>
+      <text>&amp;quot;CSS3 Backgrounds and Borders Last Call for Comments&amp;quot;</text>
+    </message>
+    <message line="71">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:19</time>
+      <text>should suffice I think</text>
+    </message>
+    <message line="72">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:22</time>
+      <text>doesn't understand either</text>
+    </message>
+    <message line="73">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:28</time>
+      <text>bddfdb28870c5800d938fa0993c46d65, I'm still not seeing the title.</text>
+    </message>
+    <message line="74">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:28</time>
+      <text>Thanks for fixing the post, though</text>
+    </message>
+    <message line="75">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:28</time>
+      <text>is not going to touch it anymore, in case it breaks again</text>
+    </message>
+    <message line="76">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:29</time>
+      <text>Still not getting all the URLs. Which one is it complaining about...?</text>
+    </message>
+    <message line="77">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:32</time>
+      <text>bradclicks.com</text>
+    </message>
+    <message line="78">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:32</time>
+      <text>&amp;quot;Rounding Extremes&amp;quot; should be linked to the url after it</text>
+    </message>
+    <message line="79">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:32</time>
+      <text>border-break and background-break should be linked to</text>
+    </message>
+    <message line="80">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:32</time>
+      <text>http://www.w3.org/TR/2008/WD-css3-background-20080910/#the-border-break and http://www.w3.org/TR/2008/WD-css3-background-20080910/#the-background-break</text>
+    </message>
+    <message line="81">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:32</time>
+      <text>respectively</text>
+    </message>
+    <message line="82">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:34</time>
+      <text>Yeah, it doesn't want to link to bradclicks.</text>
+    </message>
+    <message line="83">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:36</time>
+      <text>hm, maybe it was ok with css3.info then</text>
+    </message>
+    <message line="84">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:36</time>
+      <text>and just didn't want to link to bradclicks or #the-border-break etc.</text>
+    </message>
+    <message line="85">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>00:36</time>
+      <text>just stripped out all the external URLs because she's run into similar problems before</text>
+    </message>
+    <message line="86">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>00:48</time>
+      <text>It can't handle fragment IDs with dashes!?</text>
+    </message>
+    <message line="87">
+      <author>bddfdb28870c5800d938fa0993c46d65</author>
+      <time>01:03</time>
+      <text>Worse: it accepts no dashes anywhere in a URL. :-(</text>
+    </message>
+    <message line="88">
+      <author>b844a0a98f81c321afe1d38ae37f3c28</author>
+      <time>01:06</time>
+      <text>channel #css</text>
+    </message>
+    <message line="89">
+      <author>25812bf456959aa5f28dc570f341a3ba</author>
+      <time>01:06</time>
+      <text>is 'CSS Working Group discussion'</text>
+    </message>
+    <message line="90">
+      <author>5d5b78699e57104f2fa03bbdf7b9197b</author>
+      <time>01:06</time>
+      <text>by 3f21e54c5c5ffd50fe3680acc025bb1d on Wed Sep 02 17:56:17</text>
+    </message>
+    <message line="91">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>01:08</time>
+      <text>oh, so /that's/ the problem</text>
+    </message>
+    <message line="92">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>01:08</time>
+      <text>#_#</text>
+    </message>
+    <message line="93">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>01:08</time>
+      <text>bddfdb28870c5800d938fa0993c46d65, can we import our blog into some other system?</text>
+    </message>
+    <message line="94">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>01:08</time>
+      <text>Doesn't QA run MT?</text>
+    </message>
+    <message line="95">
+      <author>3f21e54c5c5ffd50fe3680acc025bb1d</author>
+      <time>01:08</time>
+      <text>is pretty frustrated with our system overall</text>
+    </message>
+    <message line="96">
+      <author>b844a0a98f81c321afe1d38ae37f3c28</author>
+      <time>01:13</time>
+      <text>channel #css</text>
+    </message>
+    <message line="97">
+      <author>25812bf456959aa5f28dc570f341a3ba</author>
+      <time>01:13</time>
+      <text>is 'CSS Working Group discussion'</text>
+    </message>
+    <message line="98">
+      <author>5d5b78699e57104f2fa03bbdf7b9197b</author>
+      <time>01:13</time>
+      <text>by 3f21e54c5c5ffd50fe3680acc025bb1d on Wed Sep 02 17:56:17</text>
+    </message>
+  </conversation>
+

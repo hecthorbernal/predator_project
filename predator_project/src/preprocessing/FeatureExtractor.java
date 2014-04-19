@@ -43,7 +43,7 @@ public class FeatureExtractor {
 	 */
 	public static int numberOfLines(String s) {
 		
-		//TODO implement method
+		//TODO CANNOT BE IMPLMENTED HERE
 		return -1;
 		
 	}
@@ -149,7 +149,7 @@ public class FeatureExtractor {
 	 */
 	public static int blackList(String s) {
 		
-		//TODO implement method
+		//TODO CANNOT BE IMPLMENTED HERE
 		return -1;
 		
 	}
@@ -174,7 +174,7 @@ public class FeatureExtractor {
 	 */
 	public static int negativeSent(String s) {
 		
-		//TODO implement method
+		//TODO CANNOT BE IMPLMENTED HERE
 		return -1;
 		
 	}
@@ -185,7 +185,7 @@ public class FeatureExtractor {
 	 */
 	public static int PositiveSent(String s) {
 		
-		//TODO implement method
+		//TODO CANNOT BE IMPLMENTED HERE
 		return -1;
 		
 	}
