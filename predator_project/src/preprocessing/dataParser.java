@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import featureExtractors.BlackListSpacesDetector;
 import featureExtractors.BlackListWordsDetector;
 import featureExtractors.SentimentAnalyser;
 import spellChecking.JazzySpellChecker;
@@ -317,6 +318,8 @@ public class dataParser {
 		BlackListWordsDetector profanator = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
 		//Instantiate the predator identifier
 		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
+		//Instantiate Spaces detector
+		BlackListSpacesDetector spacesDetector = new BlackListSpacesDetector("data/OffensiveProfaneWordList_with_spaces.txt");
 		for(Conversation c: newList) {
 			String messageText  = "\"";
 			int num_of_lines = 0;
@@ -334,7 +337,7 @@ public class dataParser {
 				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
 				//newMessage.features[numberOfLines] = FeatureExtractor.numberOfLines(messageText);
 				newMessage.features[numberOfLines] = num_of_lines;
-				newMessage.features[spaces] = FeatureExtractor.spaces(messageText);
+				newMessage.features[spaces] = spacesDetector.numberOfOffensiveProfanes(messageText);
 				newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
 				newMessage.features[posEmoticons] = FeatureExtractor.posEmoticons(messageText);
 				newMessage.features[neuEmoticons] = FeatureExtractor.neuEmoticons(messageText);
