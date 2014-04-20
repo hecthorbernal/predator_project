@@ -276,7 +276,7 @@ public class dataParser {
 				
 				// add message to subset
 				subSet.add(newMessage);
-				System.out.println("message added");
+				//System.out.println(newMessage);
 		}
 		return subSet;
 	}

@@ -94,7 +94,7 @@ public class EmoticonAnalyzer {
 
 		for (String word: list)
 			if (text.contains(word)) {
-				System.out.println(word);
+				//System.out.println(word);
 				count++;
 			}
 		

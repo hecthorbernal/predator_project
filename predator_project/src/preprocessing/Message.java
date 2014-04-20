@@ -54,4 +54,18 @@ public class Message {
 			this.features[i] = -1;
 		}
 	}
+	
+	//@override
+	public String toString() {
+		
+		String result = this.isPredator + "," + this.senderID + ",";
+		
+		for (int feature: this.features) {
+			result += feature + ",";
+			
+		}
+		
+		return result + this.message;
+		
+	}
 }
