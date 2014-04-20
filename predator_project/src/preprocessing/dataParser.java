@@ -9,7 +9,7 @@ import java.util.List;
 import xmlImport.Conversation;
 import xmlImport.ConversationMessage;
 import xmlImport.StaXParser;
-import featureExtractors.BlackListSpacesDetector;
+import featureExtractors.LinguisticFeaturesDetector;
 import featureExtractors.BlackListWordsDetector;
 import featureExtractors.JazzySpellChecker;
 import featureExtractors.SentimentAnalyser;
@@ -232,7 +232,7 @@ public class dataParser {
 		//Instantiate the predator identifier
 		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
 		//Instantiate Spaces detector
-		BlackListSpacesDetector spacesDetector = new BlackListSpacesDetector("data/OffensiveProfaneWordList_with_spaces.txt");
+		LinguisticFeaturesDetector linguisticDetector = new LinguisticFeaturesDetector("data/OffensiveProfaneWordList.txt");
 		//Instantiate JazzySpellChecker
 		JazzySpellChecker spellChecker = new JazzySpellChecker();
 		for(Conversation c: newList) {
@@ -248,15 +248,18 @@ public class dataParser {
 			newMessage.setPredator(predatorDetector.isAPredator(author));
 
 				// add feature values to message
-				newMessage.features[letterLines] = FeatureExtractor.letterLines(messageText);
+				newMessage.features[letterLines] = linguisticDetector.numberOfOneLetterLines(messageText);
+				//TODO implement counting of fordidden phrases with one word per Line
 				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
 				//newMessage.features[numberOfLines] = FeatureExtractor.numberOfLines(messageText);
 				newMessage.features[numberOfLines] = num_of_lines;
-				newMessage.features[spaces] = spacesDetector.numberOfOffensiveProfanes(messageText);
+				newMessage.features[spaces] = linguisticDetector.numberOfSpaces(messageText);
 				newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
+				// TODO implement emoticons features
 				newMessage.features[posEmoticons] = FeatureExtractor.posEmoticons(messageText);
 				newMessage.features[neuEmoticons] = FeatureExtractor.neuEmoticons(messageText);
 				newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
+				
 				newMessage.features[alert] = FeatureExtractor.alert(messageText);
 				newMessage.features[blacklist] = profanator.numberOfOffensiveProfanes(messageText);
 				//newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
