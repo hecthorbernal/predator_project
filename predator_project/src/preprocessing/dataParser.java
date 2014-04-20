@@ -71,13 +71,13 @@ public class dataParser {
 
 		//TEST - create subset containing all message lines
 		List<Message> mySubSetL15 = myDataParser.generateL15();
-		List<Message> mySubSetW15 = myDataParser.generateW15();
+		//List<Message> mySubSetW15 = myDataParser.generateW15();
 		System.out.println(mySubSetL15.size());
 		generateCsvFile(mySubSetL15, "data/L15.csv");
 
 		//TEST CSV export
-		System.out.println(mySubSetW15.size());
-		generateCsvFile(mySubSetW15, "data/W15.csv");
+//		System.out.println(mySubSetW15.size());
+//		generateCsvFile(mySubSetW15, "data/W15.csv");
 
 
 	}
@@ -138,6 +138,7 @@ public class dataParser {
 					
 		}
 		// create subset from conversations
+		System.out.println("L15 created");
 		return generateSubSet(finalList);
 	}	
 	/**
@@ -248,7 +249,7 @@ public class dataParser {
 			newMessage.setPredator(predatorDetector.isAPredator(author));
 
 				// add feature values to message
-				newMessage.features[letterLines] = linguisticDetector.numberOfOneLetterLines(messageText);
+				// newMessage.features[letterLines] = linguisticDetector.numberOfOneLetterLines(messageText);
 				//TODO implement counting of fordidden phrases with one word per Line
 				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
 				//newMessage.features[numberOfLines] = FeatureExtractor.numberOfLines(messageText);
@@ -272,6 +273,7 @@ public class dataParser {
 
 				// add message to subset
 				subSet.add(newMessage);
+				System.out.println("message added");
 		}
 		return subSet;
 	}

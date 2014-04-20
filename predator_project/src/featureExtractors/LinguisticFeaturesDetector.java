@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 public class LinguisticFeaturesDetector {
 	String file;
 	ArrayList<String> wordList;
+	ArrayList<Pattern> patternListSpaces;
+	ArrayList<Pattern> patternListOneLetterLines;
 
 	/**
 	 * Load a list of blacklist words and create a hasmap with it, where the
@@ -19,6 +21,8 @@ public class LinguisticFeaturesDetector {
 	public LinguisticFeaturesDetector(String file) {
 		this.file = file;
 		wordList = new ArrayList<String>();
+		patternListSpaces = new ArrayList<Pattern>();
+		patternListOneLetterLines = new ArrayList<Pattern>();
 		FileInputStream fis;
 		try {
 			fis = new FileInputStream(file); 
@@ -34,6 +38,12 @@ public class LinguisticFeaturesDetector {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		// Build lists for counting spaces and One Letter Lines
+		for(String word:wordList) {
+			patternListSpaces.add(regexWordsWithSpaces(word));
+			patternListOneLetterLines.add(regexOneLetterLines(word));
+		}
 
 	}
 	/**
@@ -43,14 +53,11 @@ public class LinguisticFeaturesDetector {
 	 */
 	public int numberOfSpaces(String text){
 		int profanes = 0;
-		Pattern pattern;
 		Matcher matcher;
-		for (String word : wordList) {
+		for (Pattern p: patternListSpaces) {
 			//If a word ends with symbols (!,?), remove them so
 			//the word can be matched.
-			
-			pattern = regexWordsWithSpaces(word);
-			matcher = pattern.matcher(text);
+			matcher = p.matcher(text);
 			if(matcher.find()){
 				profanes++;
 			}
@@ -60,14 +67,11 @@ public class LinguisticFeaturesDetector {
 
 	public int numberOfOneLetterLines(String text){
 		int profanes = 0;
-		Pattern pattern;
 		Matcher matcher;
-		for (String word : wordList) {
+		for (Pattern p: patternListOneLetterLines) {
 			//If a word ends with symbols (!,?), remove them so
 			//the word can be matched.
-			
-			pattern = regexOneLetterLines(word);
-			matcher = pattern.matcher(text);
+			matcher = p.matcher(text);
 			if(matcher.find()){
 				profanes++;
 			}
@@ -119,11 +123,6 @@ public class LinguisticFeaturesDetector {
 		LinguisticFeaturesDetector myDetector = new LinguisticFeaturesDetector("data/OffensiveProfaneWordList.txt");
 
 		String s = "gffgds \r e \rx";
-		
-		Pattern p = regexOneLetterLines("sex");
-
-		Matcher m = p.matcher(s);
-		System.out.println(m.find());
 		
 		System.out.println(myDetector.numberOfSpaces(s));
 		System.out.println(myDetector.numberOfOneLetterLines(s));
