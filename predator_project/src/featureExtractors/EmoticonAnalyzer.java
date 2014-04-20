@@ -110,7 +110,8 @@ public class EmoticonAnalyzer {
 	 */
 	public static void main(String args[]){
 
-
+		
+		
 	}
 
 }
