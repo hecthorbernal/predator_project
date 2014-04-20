@@ -8,27 +8,35 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
+/**
+ * Counts positive, negative and neutral emoticons in text
+ * based on 3 seperate textfiles contianing emoticons
+ *
+ */
 public class EmoticonAnalyzer {
 
+	// Files for import
 	File posListFile;
 	File negListFile;
 	File neuListFile;
 
+	// Lsts of emoticons
 	ArrayList<String> posEmoticonList;
 	ArrayList<String> negEmoticonList;
 	ArrayList<String> neuEmoticonList;
 
 
 	/**
-	 * Load a list of blacklist words and create a hasmap with it, where the
+	 * Load lists of emoticons and create ArrayLists
 	 * profane word is the key for fast execution.
 	 * @param file = the input file.
 	 */
-	public EmoticonAnalyzer(String file) {
+	public EmoticonAnalyzer() {
 
-		this.posListFile = new File("data/emoticons_positive");
-		this.posListFile = new File("data/emoticons_negative");
-		this.posListFile = new File("data/emoticons_neutral");
+		this.posListFile = new File("data/emoticons_positive.txt");
+		this.negListFile = new File("data/emoticons_negative.txt");
+		this.neuListFile = new File("data/emoticons_neutral.txt");
 
 		//Load list
 		posEmoticonList = loadFile(posListFile);
@@ -38,20 +46,38 @@ public class EmoticonAnalyzer {
 	}
 
 
+	/**
+	 * Counts positive emoticons
+	 * @param text - text to search for emoticons
+	 * @return number of emoticons
+	 */
 	public int positiveEmoticons(String text) {
 
+		// Call shared method
 		return countEmoticons(text, this.posEmoticonList);
 
 	}
 
+	/**
+	 * Counts negative emoticons
+	 * @param text - text to search for emoticons
+	 * @return number of emoticons
+	 */
 	public int negativeEmoticons(String text) {
 
+		// Call shared method
 		return countEmoticons(text, this.negEmoticonList);
 
 	}
 
+	/**
+	 * Counts neutral emoticons
+	 * @param text - text to search for emoticons
+	 * @return number of emoticons
+	 */
 	public int neutralEmoticons(String text) {
 
+		// call shared method
 		return countEmoticons(text, this.neuEmoticonList);
 
 	}
@@ -67,9 +93,11 @@ public class EmoticonAnalyzer {
 		int count = 0;
 
 		for (String word: list)
-			if (text.contains(word))
+			if (text.contains(word)) {
+				System.out.println(word);
 				count++;
-
+			}
+		
 		return count;
 
 
@@ -77,7 +105,7 @@ public class EmoticonAnalyzer {
 
 
 	/**
-	 * reads emoticons from textfile
+	 * import emoticon list from textfile
 	 * @param file - file to read
 	 * @return Arraylist of emoticons
 	 */
@@ -94,7 +122,12 @@ public class EmoticonAnalyzer {
 			String line = null;
 			while ((line = br.readLine()) != null) {
 				line = line.replace("\\n", "").replace("\\r", "");
-				list.add(line);
+
+				for(String s: line.split("\\s+")) {
+
+					list.add(s.trim());
+
+				}
 			}
 			br.close();
 		} catch (Exception e) {
@@ -110,8 +143,18 @@ public class EmoticonAnalyzer {
 	 */
 	public static void main(String args[]){
 
-		
-		
+		EmoticonAnalyzer emot = new EmoticonAnalyzer();
+
+		System.out.println(emot.posEmoticonList);
+		System.out.println(emot.negEmoticonList);
+		System.out.println(emot.neuEmoticonList);
+
+		String myTest = "I B^D like :( to code :-) :) ";
+
+		System.out.println(emot.positiveEmoticons(myTest));
+		System.out.println(emot.negativeEmoticons(myTest));
+		System.out.println(emot.neutralEmoticons(myTest));
+
 	}
 
 }

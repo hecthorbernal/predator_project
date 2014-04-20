@@ -9,6 +9,7 @@ import java.util.List;
 import xmlImport.Conversation;
 import xmlImport.ConversationMessage;
 import xmlImport.StaXParser;
+import featureExtractors.EmoticonAnalyzer;
 import featureExtractors.LinguisticFeaturesDetector;
 import featureExtractors.BlackListWordsDetector;
 import featureExtractors.JazzySpellChecker;
@@ -226,6 +227,7 @@ public class dataParser {
 	private static List<Message> generateSubSet(List<Conversation> newList){
 		// create subset from conversations
 		List<Message> subSet = new ArrayList<Message>();
+		
 		//Instantiate sentiment analyser
 		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
 		//Instantiate detector of offenses and profanation .
@@ -236,6 +238,9 @@ public class dataParser {
 		LinguisticFeaturesDetector linguisticDetector = new LinguisticFeaturesDetector("data/OffensiveProfaneWordList.txt");
 		//Instantiate JazzySpellChecker
 		JazzySpellChecker spellChecker = new JazzySpellChecker();
+		//Instantiate EmoticonAnalyzer
+		EmoticonAnalyzer emoticonAnalyzer = new EmoticonAnalyzer();
+		
 		for(Conversation c: newList) {
 			String messageText  = "\"";
 			int num_of_lines = 0;
@@ -250,27 +255,25 @@ public class dataParser {
 
 				// add feature values to message
 				// newMessage.features[letterLines] = linguisticDetector.numberOfOneLetterLines(messageText);
-				//TODO implement counting of fordidden phrases with one word per Line
+				//TODO implement counting of forbidden phrases with one word per Line
 				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
-				//newMessage.features[numberOfLines] = FeatureExtractor.numberOfLines(messageText);
 				newMessage.features[numberOfLines] = num_of_lines;
 				newMessage.features[spaces] = linguisticDetector.numberOfSpaces(messageText);
 				newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
-				// TODO implement emoticons features
-				newMessage.features[posEmoticons] = FeatureExtractor.posEmoticons(messageText);
-				newMessage.features[neuEmoticons] = FeatureExtractor.neuEmoticons(messageText);
+				
+				newMessage.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(messageText);
+				newMessage.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(messageText);
+				newMessage.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(messageText);
+				
 				newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
 				
 				newMessage.features[alert] = FeatureExtractor.alert(messageText);
 				newMessage.features[blacklist] = profanator.numberOfOffensiveProfanes(messageText);
-				//newMessage.features[blacklist] = FeatureExtractor.blackList(messageText);
 				newMessage.features[misspelledWords] = spellChecker.countMisspelledWords(messageText);
 				newMessage.features[negativeSent] = sentiments.getNegativeSentiment(messageText);
 				newMessage.features[positiveSent] = sentiments.getPositiveSentiment(messageText);
-//				newMessage.features[negativeSent] = FeatureExtractor.negativeSent(messageText);
-//				newMessage.features[positiveSent] = FeatureExtractor.PositiveSent(messageText);
-				
 
+				
 				// add message to subset
 				subSet.add(newMessage);
 				System.out.println("message added");
