@@ -62,7 +62,7 @@ public class FeatureExtractor {
 	
 	/**
 	 * I asume that this is the same as "Non Letter Words"
-	 * don't match contractions
+	  * don't match contractions
 	 * @param s string to extract feature from
 	 * @return feature value as integer
 	 */
@@ -73,7 +73,7 @@ public class FeatureExtractor {
 			String word = words[i].toLowerCase();
 			word = word.replaceAll("^\\w\\w+\\?$", "");
 			word = word.replaceAll("^\\w\\w+\\!$", "");
-			if(word.matches("\\w+'(m|re|s|ve|t)")){
+			if(word.matches("\\w+'(m|re|s|ve)$")){
 				continue;
 			}
 			Pattern eee  = Pattern.compile(".*[\\W\\w]*\\W+[\\W\\w]*.*");
@@ -120,6 +120,8 @@ public class FeatureExtractor {
 	}
 	
 	/**
+	 * Cosecutive identical letters CL
+	 * More than 2 identical consecutive letters
 	 * @param s string to extract feature from
 	 * @return feature value as integer
 	 */
@@ -190,5 +192,4 @@ public class FeatureExtractor {
 //		return -1;
 //		
 //	}
-
 }
