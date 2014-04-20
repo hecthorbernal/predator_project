@@ -62,8 +62,7 @@ public class FeatureExtractor {
 	
 	/**
 	 * I asume that this is the same as "Non Letter Words"
-	 * Right now it matches also ? and ! so It creates false-positives
-	 * for questions and exclamations.
+	 * don't match contractions
 	 * @param s string to extract feature from
 	 * @return feature value as integer
 	 */
@@ -72,7 +71,12 @@ public class FeatureExtractor {
 		int counter = 0;
 		for(int i = 0; i < words.length; i++){
 			String word = words[i].toLowerCase();
-			Pattern eee  = Pattern.compile(".*[\\W\\w]+\\W+[\\W\\w]+.*");
+			word = word.replaceAll("^\\w\\w+\\?$", "");
+			word = word.replaceAll("^\\w\\w+\\!$", "");
+			if(word.matches("\\w+'(m|re|s|ve|t)")){
+				continue;
+			}
+			Pattern eee  = Pattern.compile(".*[\\W\\w]*\\W+[\\W\\w]*.*");
 			Matcher m = eee.matcher(word);
 			if(m.matches()){
 				counter++;
