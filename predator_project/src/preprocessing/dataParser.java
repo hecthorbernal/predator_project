@@ -55,7 +55,7 @@ public class dataParser {
 		this.jazzySpellChecker = new JazzySpellChecker();
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
@@ -73,7 +73,7 @@ public class dataParser {
 
 		//TEST - create subset containing all message lines
 		List<Message> mySubSetL15 = myDataParser.generateL15(false);
-		List<Message> mySubSetW15 = myDataParser.generateW15(true);
+		List<Message> mySubSetW15 = myDataParser.generateW15(false);
 		System.out.println(mySubSetL15.size());
 		generateRawCsvFile(mySubSetL15, "data/L15_raw.csv");
 
@@ -100,11 +100,11 @@ public class dataParser {
 	/**
 	 * Create set L15
 	 * @param print_output TODO
-	 * @throws IOException 
 	 */
-	private List<Message> generateL15(boolean print_output) throws IOException {
+	private List<Message> generateL15(boolean print_output) {
 		//The list new_list contains now coversation where only one author is present.
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
+
 		//Iterate through the messages to get:
 		//1. The lenght of each conversation
 		//Discard all messages thart havent been send during the last 15 minutes of the 
@@ -146,8 +146,10 @@ public class dataParser {
 				for(ConversationMessage cm: c.messages) {
 					if(withinLast15Mins(cm.getNormalized_time(), lastMessageTime)){
 						tmpConversation.addC_Message(cm);
-						//System.out.println("Splitting conversation: " + c.getId() + "\nduration: " + duration + "minutes \nfirst: " +
-//									firstMessageTime + " last: " + lastMessageTime + "\nAdded to L15_raw.csv line: " + ++line_number + "\n");
+						if(print_output){
+							System.out.println("Splitting conversation: " + c.getId() + "\nduration: " + duration + "minutes \nfirst: " +
+									firstMessageTime + " last: " + lastMessageTime + "\nAdded to L15_raw.csv line: " + ++line_number);
+						}
 					}
 				}
 				finalList.add(tmpConversation);
@@ -155,28 +157,16 @@ public class dataParser {
 
 
 		}
-		
 		// create subset from conversations
 		System.out.println("L15 created");
 		return generateSubSet(finalList);
 	}	
 	/**
 	 * Create set W15
-	 * @param print_output defines whether more info about how the conversations 
-	 * were split to the file data/W15_output.txt
-	 * Use this option for manual selection of segments.
+	 * @param print_output TODO
 	 * @return
-	 * @throws IOException 
 	 */
-	private List<Message> generateW15(boolean print_output) throws IOException {
-		FileWriter writer = null;
-		if(print_output){
-			try {
-				writer = new FileWriter("data/W15_output.txt");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	private List<Message> generateW15(boolean print_output) {
 		//The list new_list contains now conversation where only one author is present.
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
 
@@ -226,7 +216,7 @@ public class dataParser {
 					number_of_segments++;
 				}
 				if(print_output){
-					writer.append("Spiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments\n");
+					System.out.println("Spiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments");
 				}
 				for(int i=0; i < number_of_segments; i++){
 					int start = i * limit;
@@ -242,7 +232,7 @@ public class dataParser {
 					if(added){
 						finalList.add(tmpConversation);
 						if(print_output){
-							writer.append("\tSegment added to W15_raw.csv line: " + ++line_number + "\n");
+							System.out.println("\tSegment added to W15_raw.csv line: " + ++line_number);
 						}
 					}
 					limit += 15;
@@ -250,14 +240,8 @@ public class dataParser {
 			}
 		}
 		// create subset from conversations
-
-		if(print_output){
-			writer.close();
-			System.out.println("Output printet to data/W15_output.txt");
-		}
 		return generateSubSet(finalList);
 	}
-	
 	private int timeNormalizer(int first, int current){
 		if(current >= first){
 			return current - first;
