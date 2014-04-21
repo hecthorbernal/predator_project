@@ -261,14 +261,14 @@ public class dataParser {
 		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
 
 		for(Conversation c: newList) {
-			String messageText  = "\"";
+			String messageText  = ""; // "\""; added as last step in feature-extraction
 			int num_of_lines = 0;
 			String author = c.getAuthor();
 			for(ConversationMessage cm: c.messages) {
 				messageText += cm.getText() + "<nl>"; // newline marker
 				num_of_lines++;
 			}
-			messageText += "\"";
+			//messageText += "\"";
 			Message newMessage = new Message(author, messageText);
 			newMessage.setPredator(predatorDetector.isAPredator(author));
 
@@ -331,7 +331,7 @@ public class dataParser {
 			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
 			
 			// Correct spelling errors before export
-			cm.message = spellChecker.getCorrectedText(cm.message);
+			cm.message = spellChecker.getCorrectedText("\"" + cm.message + "\"");
 			
 			System.out.println(cm.toString());
 
