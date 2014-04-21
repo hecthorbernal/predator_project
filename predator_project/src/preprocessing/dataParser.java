@@ -318,7 +318,7 @@ public class dataParser {
 			
 			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
 			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
-			cm.features[alert] = FeatureExtractor.alert(cm.message);
+			cm.features[alert] = profanator.numberOfAlerts(cm.message);
 			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
 			
 			// Emoticon features

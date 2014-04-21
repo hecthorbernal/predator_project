@@ -60,4 +60,32 @@ public class BlackListWordsDetector {
 		return profanes;
 	}
 	
+	public int numberOfAlerts(String text){
+		int profanes = 0;
+		String[] words = text.split("\\s");
+		for(int i = 0; i < words.length; i++){
+			String word = words[i].toLowerCase();
+
+			//If a word ends with symbols (!,?), remove them so
+			//the word can be matched.
+//			if(word.matches("\\W*[a-zA-Z]+[?!,.:;]+.*")){
+//				word = word.replaceAll("\\W*([a-zA-Z]+)\\W*", "$1");
+//			}
+			if(wordList.containsKey(word)){
+				profanes++;
+			}
+		}
+		return profanes;
+	}
+	
+	public static void main(String[] args) {
+		
+		BlackListWordsDetector b = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
+		
+		String test = "babe beast";
+		
+		System.out.println(b.numberOfAlerts(test));
+		
+	}
+	
 }
