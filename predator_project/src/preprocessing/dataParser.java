@@ -53,7 +53,7 @@ public class dataParser {
 	}
 
 	public static void main(String[] args) {
-		
+
 		// Instantiate spellChecker for counting misspelled words
 
 		// create dataParser from xml-file 
@@ -66,9 +66,9 @@ public class dataParser {
 		//TODO extract and add features 
 
 		//TEST create subset with messages concatenated per author per conversation
-//		List<Message> mySubSet = myDataParser.createSubSetExample();
-//		
-//		System.out.println(mySubSet.size());
+		//		List<Message> mySubSet = myDataParser.createSubSetExample();
+		//		
+		//		System.out.println(mySubSet.size());
 
 		//TEST - create subset containing all message lines
 		List<Message> mySubSetL15 = myDataParser.generateL15();
@@ -77,8 +77,8 @@ public class dataParser {
 		generateCsvFile(mySubSetL15, "data/L15.csv");
 
 		//TEST CSV export
-//		System.out.println(mySubSetW15.size());
-//		generateCsvFile(mySubSetW15, "data/W15.csv");
+		//		System.out.println(mySubSetW15.size());
+		//		generateCsvFile(mySubSetW15, "data/W15.csv");
 
 
 	}
@@ -136,7 +136,7 @@ public class dataParser {
 				finalList.add(tmpConversation);
 			}
 
-					
+
 		}
 		// create subset from conversations
 		System.out.println("L15 created");
@@ -185,7 +185,7 @@ public class dataParser {
 			}else{
 				//If the conversation lasted more than 15 min split it in segments of 15 mins.
 				//Pieces of conversation under 15 min get thrown out. This might requiere changes after we
-					isFirst = true;
+				isFirst = true;
 				//talk to Yun next time.
 				int limit = 15;
 				int number_of_segments = duration/limit;
@@ -193,17 +193,17 @@ public class dataParser {
 				if(duration%limit > 0){
 					number_of_segments++;
 				}
-//				System.out.println("Duration: " + duration + "minutes \nSpiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments...");
+				//				System.out.println("Duration: " + duration + "minutes \nSpiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments...");
 				for(int i=0; i < number_of_segments; i++){
 					int start = i * limit;
 					int end = start + limit;
 					Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
 					boolean added = false;
 					for(ConversationMessage cm: c.messages) {
-							if(isWithinLimit(cm.getNormalized_time(), start, end)){
-								tmpConversation.addC_Message(cm);
-								added = true;
-							}
+						if(isWithinLimit(cm.getNormalized_time(), start, end)){
+							tmpConversation.addC_Message(cm);
+							added = true;
+						}
 					}
 					if(added){finalList.add(tmpConversation);}
 					limit += 15;
@@ -220,14 +220,14 @@ public class dataParser {
 		int offset = 1440 -first;
 		return offset + current;
 	}
-	
+
 	/**
 	 * Generate features
 	 */
 	private static List<Message> generateSubSet(List<Conversation> newList){
 		// create subset from conversations
 		List<Message> subSet = new ArrayList<Message>();
-		
+
 		//Instantiate sentiment analyser
 		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
 		//Instantiate detector of offenses and profanation .
@@ -240,47 +240,48 @@ public class dataParser {
 		JazzySpellChecker spellChecker = new JazzySpellChecker();
 		//Instantiate EmoticonAnalyzer
 		EmoticonAnalyzer emoticonAnalyzer = new EmoticonAnalyzer();
-		
+
 		for(Conversation c: newList) {
 			String messageText  = "\"";
 			int num_of_lines = 0;
 			String author = c.getAuthor();
 			for(ConversationMessage cm: c.messages) {
-					messageText += cm.getText() + " ";
-					num_of_lines++;
+				messageText += cm.getText() + " ";
+				num_of_lines++;
 			}
 			messageText += "\"";
 			Message newMessage = new Message(author, messageText);
 			newMessage.setPredator(predatorDetector.isAPredator(author));
 
-				// add feature values to message
-				// newMessage.features[letterLines] = linguisticDetector.numberOfOneLetterLines(messageText);
-				//TODO implement counting of forbidden phrases with one word per Line
-				newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
-				newMessage.features[numberOfLines] = num_of_lines;
-				newMessage.features[spaces] = linguisticDetector.numberOfSpaces(messageText);
-				newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
-				
-				newMessage.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(messageText);
-				newMessage.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(messageText);
-				newMessage.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(messageText);
-				
-				newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
-				
-				newMessage.features[alert] = FeatureExtractor.alert(messageText);
-				newMessage.features[blacklist] = profanator.numberOfOffensiveProfanes(messageText);
-				newMessage.features[misspelledWords] = spellChecker.countMisspelledWords(messageText);
-				newMessage.features[negativeSent] = sentiments.getNegativeSentiment(messageText);
-				newMessage.features[positiveSent] = sentiments.getPositiveSentiment(messageText);
+			// add feature values to message
+			// newMessage.features[letterLines] = linguisticDetector.numberOfOneLetterLines(messageText);
 
-				
-				// add message to subset
-				subSet.add(newMessage);
-				//System.out.println(newMessage);
+			//TODO implement counting forbidden phrases with one word per Line
+			newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
+			newMessage.features[numberOfLines] = num_of_lines;
+			newMessage.features[spaces] = linguisticDetector.numberOfSpaces(messageText);
+			newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
+
+			newMessage.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(messageText);
+			newMessage.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(messageText);
+			newMessage.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(messageText);
+
+			newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
+
+			newMessage.features[alert] = FeatureExtractor.alert(messageText);
+			newMessage.features[blacklist] = profanator.numberOfOffensiveProfanes(messageText);
+			newMessage.features[misspelledWords] = spellChecker.countMisspelledWords(messageText);
+			newMessage.features[negativeSent] = sentiments.getNegativeSentiment(messageText);
+			newMessage.features[positiveSent] = sentiments.getPositiveSentiment(messageText);
+
+
+			// add message to subset
+			subSet.add(newMessage);
+			//				System.out.println(newMessage);
 		}
 		return subSet;
 	}
-	
+
 	/*
 	 * Generates CSV file from a subset and save it to file
 	 * 
@@ -316,7 +317,7 @@ public class dataParser {
 				String csvMessage = message.message;
 				csvMessage = csvMessage.replace("", "");
 				csvMessage = csvMessage.replace("\n", " ");
-				
+
 				writer.append(csvMessage);
 				writer.append('\n');
 
@@ -346,24 +347,24 @@ public class dataParser {
 
 	/*
 	 * Get the duration of a conversation
-	*/
+	 */
 	private static int getDuration(int start, int end){
-			return end-start;
+		return end-start;
 	}
 	/*
 	 * This is the same method as getDuration with another name for better code readability.
-	*/
+	 */
 	private static boolean withinLast15Mins(int toCheck, int timeOfLast){
-			return timeOfLast-toCheck <= 15;
+		return timeOfLast-toCheck <= 15;
 	}
-/*
+	/*
 	 * This is the same method as getDuration with another name for better code readability.
-	*/
+	 */
 	private static boolean isWithinLimit(int toCheck, int start, int end){
-			if(toCheck >= start && toCheck < end){
-				return true;
-			}
-			return false;
+		if(toCheck >= start && toCheck < end){
+			return true;
+		}
+		return false;
 	}
 	/*
 	 * 
