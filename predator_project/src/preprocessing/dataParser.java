@@ -307,23 +307,33 @@ public class dataParser {
 			// add feature values to message
 			
 			//TODO implement counting forbidden phrases with one word per Line
-			cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
+			// cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
 			
 			cm.features[numberOfLines] = FeatureExtractor.numberOfLines(cm.message);
 			cm.features[spaces] = linguisticDetector.numberOfSpaces(cm.message);
+			cm.features[letterLines] = linguisticDetector.numberOfOneLetterLines(cm.message);
+			
+			// remove <nl> tags before further feature extraction and lowercase string
+			cm.message = cm.message.replace("<nl>", " ").toLowerCase();
+			
 			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
-
+			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
+			cm.features[alert] = FeatureExtractor.alert(cm.message);
+			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
+			
+			// Emoticon features
 			cm.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(cm.message);
 			cm.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(cm.message);
 			cm.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(cm.message);
 
-			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
-
-			cm.features[alert] = FeatureExtractor.alert(cm.message);
-			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
 			cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
 			cm.features[negativeSent] = sentiments.getNegativeSentiment(cm.message);
 			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
+			
+			// Correct spelling errors before export
+			cm.message = spellChecker.getCorrectedText(cm.message);
+			
+			System.out.println(cm.toString());
 
 		}
 	}

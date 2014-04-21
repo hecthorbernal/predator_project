@@ -92,7 +92,7 @@ public class JazzySpellChecker implements SpellCheckListener {
 
 	public String getCorrectedText(String line){
 		StringBuilder builder = new StringBuilder();
-		String[] tempWords = line.split(" ");
+		String[] tempWords = line.split("\\s*");
 		for (String tempWord : tempWords){
 			if (!spellChecker.isCorrect(tempWord)){
 				@SuppressWarnings("unchecked")
