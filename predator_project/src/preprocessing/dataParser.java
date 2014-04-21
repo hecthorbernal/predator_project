@@ -277,14 +277,14 @@ public class dataParser {
 		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
 
 		for(Conversation c: newList) {
-			String messageText  = "\"";
+			String messageText  = ""; // "\""; added as last step in feature-extraction
 			int num_of_lines = 0;
 			String author = c.getAuthor();
 			for(ConversationMessage cm: c.messages) {
 				messageText += cm.getText() + "<nl>"; // newline marker
 				num_of_lines++;
 			}
-			messageText += "\"";
+			//messageText += "\"";
 			Message newMessage = new Message(author, messageText);
 			newMessage.setPredator(predatorDetector.isAPredator(author));
 
@@ -323,23 +323,33 @@ public class dataParser {
 			// add feature values to message
 			
 			//TODO implement counting forbidden phrases with one word per Line
-			cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
+			// cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
 			
 			cm.features[numberOfLines] = FeatureExtractor.numberOfLines(cm.message);
 			cm.features[spaces] = linguisticDetector.numberOfSpaces(cm.message);
+			cm.features[letterLines] = linguisticDetector.numberOfOneLetterLines(cm.message);
+			
+			// remove <nl> tags before further feature extraction and lowercase string
+			cm.message = cm.message.replace("<nl>", " ").toLowerCase();
+			
 			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
-
+			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
+			cm.features[alert] = FeatureExtractor.alert(cm.message);
+			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
+			
+			// Emoticon features
 			cm.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(cm.message);
 			cm.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(cm.message);
 			cm.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(cm.message);
 
-			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
-
-			cm.features[alert] = FeatureExtractor.alert(cm.message);
-			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
 			cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
 			cm.features[negativeSent] = sentiments.getNegativeSentiment(cm.message);
 			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
+			
+			// Correct spelling errors before export
+			cm.message = spellChecker.getCorrectedText("\"" + cm.message + "\"");
+			
+			System.out.println(cm.toString());
 
 		}
 	}
