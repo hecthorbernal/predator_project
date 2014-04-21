@@ -72,8 +72,8 @@ public class dataParser {
 		//		System.out.println(mySubSet.size());
 
 		//TEST - create subset containing all message lines
-		List<Message> mySubSetL15 = myDataParser.generateL15();
-		List<Message> mySubSetW15 = myDataParser.generateW15();
+		List<Message> mySubSetL15 = myDataParser.generateL15(false);
+		List<Message> mySubSetW15 = myDataParser.generateW15(false);
 		System.out.println(mySubSetL15.size());
 		generateRawCsvFile(mySubSetL15, "data/L15_raw.csv");
 
@@ -99,8 +99,9 @@ public class dataParser {
 
 	/**
 	 * Create set L15
+	 * @param print_output TODO
 	 */
-	private List<Message> generateL15() {
+	private List<Message> generateL15(boolean print_output) {
 		//The list new_list contains now coversation where only one author is present.
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
 
@@ -134,16 +135,21 @@ public class dataParser {
 				}
 			}
 			int duration = getDuration(firstMessageTime, lastMessageTime);
+			int line_number = 0;
 			if(duration <= 15){
 				finalList.add(c);
+				line_number++;
 			}else{
-				//System.out.println(c.getId() + " duration: " + duration + "minutes \nfirst: " + firstMessageTime + " last: " + lastMessageTime + "\n");
 				//If the conversation lasted more than 15 min discard all messages that occurred 
 				//outside the time lapse required i.e. L15
 				Conversation tmpConversation = new Conversation(c.getId(), c.getAuthor());
 				for(ConversationMessage cm: c.messages) {
 					if(withinLast15Mins(cm.getNormalized_time(), lastMessageTime)){
 						tmpConversation.addC_Message(cm);
+						if(print_output){
+							System.out.println("Splitting conversation: " + c.getId() + "\nduration: " + duration + "minutes \nfirst: " +
+									firstMessageTime + " last: " + lastMessageTime + "\nAdded to L15_raw.csv line: " + ++line_number);
+						}
 					}
 				}
 				finalList.add(tmpConversation);
@@ -157,9 +163,10 @@ public class dataParser {
 	}	
 	/**
 	 * Create set W15
+	 * @param print_output TODO
 	 * @return
 	 */
-	private List<Message> generateW15() {
+	private List<Message> generateW15(boolean print_output) {
 		//The list new_list contains now conversation where only one author is present.
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
 
@@ -193,8 +200,10 @@ public class dataParser {
 				}
 			}
 			int duration = getDuration(firstMessageTime, lastMessageTime);
+			int line_number = 0;
 			if(duration <= 15){
 				finalList.add(c);
+				line_number++;
 			}else{
 				//If the conversation lasted more than 15 min split it in segments of 15 mins.
 				//Pieces of conversation under 15 min get thrown out. This might requiere changes after we
@@ -206,7 +215,9 @@ public class dataParser {
 				if(duration%limit > 0){
 					number_of_segments++;
 				}
-				//				System.out.println("Duration: " + duration + "minutes \nSpiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments...");
+				if(print_output){
+					System.out.println("Spiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments");
+				}
 				for(int i=0; i < number_of_segments; i++){
 					int start = i * limit;
 					int end = start + limit;
@@ -218,7 +229,12 @@ public class dataParser {
 							added = true;
 						}
 					}
-					if(added){finalList.add(tmpConversation);}
+					if(added){
+						finalList.add(tmpConversation);
+						if(print_output){
+							System.out.println("\tSegment added to W15_raw.csv line: " + ++line_number);
+						}
+					}
 					limit += 15;
 				}
 			}
