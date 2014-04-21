@@ -1,7 +1,10 @@
 package preprocessing;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,8 +57,6 @@ public class dataParser {
 
 	public static void main(String[] args) {
 
-		// Instantiate spellChecker for counting misspelled words
-
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
 
@@ -72,13 +73,25 @@ public class dataParser {
 
 		//TEST - create subset containing all message lines
 		List<Message> mySubSetL15 = myDataParser.generateL15();
-		//List<Message> mySubSetW15 = myDataParser.generateW15();
+		List<Message> mySubSetW15 = myDataParser.generateW15();
 		System.out.println(mySubSetL15.size());
-		generateCsvFile(mySubSetL15, "data/L15.csv");
+		generateRawCsvFile(mySubSetL15, "data/L15_raw.csv");
 
 		//TEST CSV export
-		//		System.out.println(mySubSetW15.size());
-		//		generateCsvFile(mySubSetW15, "data/W15.csv");
+		System.out.println(mySubSetW15.size());
+		generateRawCsvFile(mySubSetW15, "data/W15_raw.csv");
+
+		// TEST import from raw CSV
+		List<Message> L15 = readRawSubset("data/L15_raw.csv");
+		
+		// Add features to L15
+		addFeaturesToSubset(L15);
+		
+		generateCsvFile(L15, "data/L15.csv");
+		
+		System.out.println(L15.size());
+
+
 
 
 	}
@@ -222,64 +235,120 @@ public class dataParser {
 	}
 
 	/**
-	 * Generate features
+	 * GCreate subset from list of conversations
 	 */
 	private static List<Message> generateSubSet(List<Conversation> newList){
-		// create subset from conversations
+
 		List<Message> subSet = new ArrayList<Message>();
 
-		//Instantiate sentiment analyser
-		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
-		//Instantiate detector of offenses and profanation .
-		BlackListWordsDetector profanator = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
 		//Instantiate the predator identifier
 		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
-		//Instantiate Spaces detector
-		LinguisticFeaturesDetector linguisticDetector = new LinguisticFeaturesDetector("data/OffensiveProfaneWordList.txt");
-		//Instantiate JazzySpellChecker
-		JazzySpellChecker spellChecker = new JazzySpellChecker();
-		//Instantiate EmoticonAnalyzer
-		EmoticonAnalyzer emoticonAnalyzer = new EmoticonAnalyzer();
 
 		for(Conversation c: newList) {
 			String messageText  = "\"";
 			int num_of_lines = 0;
 			String author = c.getAuthor();
 			for(ConversationMessage cm: c.messages) {
-				messageText += cm.getText() + " ";
+				messageText += cm.getText() + "<nl>"; // newline marker
 				num_of_lines++;
 			}
 			messageText += "\"";
 			Message newMessage = new Message(author, messageText);
 			newMessage.setPredator(predatorDetector.isAPredator(author));
 
-			// add feature values to message
-			// newMessage.features[letterLines] = linguisticDetector.numberOfOneLetterLines(messageText);
-
-			//TODO implement counting forbidden phrases with one word per Line
-			newMessage.features[wordLines] = FeatureExtractor.wordLines(messageText);
-			newMessage.features[numberOfLines] = num_of_lines;
-			newMessage.features[spaces] = linguisticDetector.numberOfSpaces(messageText);
-			newMessage.features[funkyWords] = FeatureExtractor.funkyWords(messageText);
-
-			newMessage.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(messageText);
-			newMessage.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(messageText);
-			newMessage.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(messageText);
-
-			newMessage.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(messageText);
-
-			newMessage.features[alert] = FeatureExtractor.alert(messageText);
-			newMessage.features[blacklist] = profanator.numberOfOffensiveProfanes(messageText);
-			newMessage.features[misspelledWords] = spellChecker.countMisspelledWords(messageText);
-			newMessage.features[negativeSent] = sentiments.getNegativeSentiment(messageText);
-			newMessage.features[positiveSent] = sentiments.getPositiveSentiment(messageText);
-
-
 			// add message to subset
 			subSet.add(newMessage);
-			//				System.out.println(newMessage);
+
+			//System.out.println(newMessage);
 		}
 		return subSet;
+	}
+
+	/**
+	 * Adds features to a given subset
+	 */
+	private static void addFeaturesToSubset(List<Message> subset){
+
+
+		//Instantiate sentiment analyser
+		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
+
+		//Instantiate detector of offenses and profanation .
+		BlackListWordsDetector profanator = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
+
+		//Instantiate Spaces detector
+		LinguisticFeaturesDetector linguisticDetector = new LinguisticFeaturesDetector("data/OffensiveProfaneWordList.txt");
+
+		//Instantiate JazzySpellChecker
+		JazzySpellChecker spellChecker = new JazzySpellChecker();
+
+		//Instantiate EmoticonAnalyzer
+		EmoticonAnalyzer emoticonAnalyzer = new EmoticonAnalyzer();
+
+
+		for(Message cm: subset) {
+
+			// add feature values to message
+			
+			//TODO implement counting forbidden phrases with one word per Line
+			cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
+			
+			cm.features[numberOfLines] = FeatureExtractor.numberOfLines(cm.message);
+			cm.features[spaces] = linguisticDetector.numberOfSpaces(cm.message);
+			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
+
+			cm.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(cm.message);
+			cm.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(cm.message);
+			cm.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(cm.message);
+
+			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
+
+			cm.features[alert] = FeatureExtractor.alert(cm.message);
+			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
+			cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
+			cm.features[negativeSent] = sentiments.getNegativeSentiment(cm.message);
+			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
+
+		}
+	}
+
+	private static void generateRawCsvFile(List<Message> subset, String sFileName)
+	{
+		try
+		{
+			FileWriter writer = new FileWriter(sFileName);
+
+			// add lines
+			for(Message message: subset) {
+
+				writer.append(message.isPredator);
+				writer.append(',');
+				writer.append(message.senderID);
+				writer.append(',');
+
+
+				// add message to line
+				String csvMessage = message.message;
+				csvMessage = csvMessage.replace(",", " ");
+				csvMessage = csvMessage.replace("\n", "");
+
+				writer.append(csvMessage);
+				writer.append('\n');
+
+			}
+
+			writer.flush();
+			writer.close();
+		}
+
+		catch(IOException e)
+
+		{
+			e.printStackTrace();
+		}
+
+		System.out.println("Exported csv file: " + sFileName);
+
 	}
 
 	/*
@@ -335,6 +404,41 @@ public class dataParser {
 
 		System.out.println("Exported csv file: " + sFileName);
 
+	}
+
+	private static ArrayList<Message> readRawSubset(String file) {
+
+
+		ArrayList<Message> set = new ArrayList<>();
+		Message newMessage;
+		FileInputStream fis;
+
+		try {
+			fis = new FileInputStream(file); 
+			//Construct BufferedReader from InputStreamReader
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+			String line = null;
+			while ((line = br.readLine()) != null) {
+
+				newMessage = new Message();
+				String[] tuple = line.split(",");
+				newMessage.isPredator = tuple[0];
+				newMessage.senderID = tuple[1];
+				newMessage.message = tuple[2];
+
+				set.add(newMessage);
+
+			}
+
+			br.close();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		System.out.println(file + " imported");
+		return set;
 	}
 
 	/*

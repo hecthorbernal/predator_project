@@ -44,8 +44,7 @@ public class FeatureExtractor {
 	 */
 	public static int numberOfLines(String s) {
 		
-		//TODO CANNOT BE IMPLMENTED HERE
-		return -1;
+		return (s.split("<nl>").length);
 		
 	}
 	
