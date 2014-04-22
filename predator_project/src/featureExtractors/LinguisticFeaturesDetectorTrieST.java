@@ -39,6 +39,20 @@ public class LinguisticFeaturesDetectorTrieST {
 		}
 
 	}
+	
+	public static int numberOfWordsWithSpaces(String text) {
+
+		int count = 0;
+
+		for(String s: text.split("<nl")) {
+			
+			if (wordTrie.containsBlackListWord(s.replaceAll("\\s*", "")))
+				count++;
+		}
+
+		return count;
+	}
+
 
 	public static int numberOfAlertWords(String text) {
 
@@ -48,7 +62,6 @@ public class LinguisticFeaturesDetectorTrieST {
 
 			if (wordTrie.contains(s))
 				count++;
-
 		}
 
 		return count;
@@ -68,11 +81,9 @@ public class LinguisticFeaturesDetectorTrieST {
 					countBlackListWords++;
 				}
 			}
-
-		}
-
+		} 
+		
 		return countBlackListWords;
-
 	}
 
 	/*
@@ -86,9 +97,12 @@ public class LinguisticFeaturesDetectorTrieST {
 		System.out.println(myDetector.wordTrie.size());
 
 		String s = "ssexy sex fuck shi tabuse fucking whoreass***homo";
+		String s2 = "s e x";
 
 		System.out.println(numberOfAlertWords(s));
 		System.out.println(numberOfBlackListWords(s));
+		
+		System.out.println(numberOfWordsWithSpaces(s2));
 
 
 	}
