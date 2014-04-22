@@ -40,11 +40,11 @@ public class LinguisticFeaturesDetectorTrieST {
 
 	}
 	
-	public static int numberOfWordsWithSpaces(String text) {
+	public int numberOfWordsWithSpaces(String text) {
 
 		int count = 0;
 
-		for(String s: text.split("<nl")) {
+		for(String s: text.split("<nl>")) {
 			
 			if (wordTrie.containsBlackListWord(s.replaceAll("\\s*", "")))
 				count++;
@@ -52,13 +52,29 @@ public class LinguisticFeaturesDetectorTrieST {
 
 		return count;
 	}
+	
+	public int numberOfOneLetterLines(String text) {
+
+		int count = 0;
+		String sub;
+		
+		for(String s: text.split("<nl>")) {
+		
+			sub = s.replaceAll("\\n", "").replaceAll("\\r", "").replaceAll("\\s", "");
+			System.out.println(sub);
+			
+				count+= numberOfBlackListWords(sub);	
+		}
+
+		return count - numberOfBlackListWords(text); //subtract blacklist words that did not contain line-breaks
+	}
 
 
-	public static int numberOfAlertWords(String text) {
+	public int numberOfAlertWords(String text) {
 
 		int count = 0;
 
-		for(String s: text.split(" ")) {
+		for(String s: text.split("\\s+")) {
 
 			if (wordTrie.contains(s))
 				count++;
@@ -96,14 +112,16 @@ public class LinguisticFeaturesDetectorTrieST {
 
 		System.out.println(myDetector.wordTrie.size());
 
-		String s = "ssexy sex fuck shi tabuse fucking whoreass***homo";
+		String s = "ssexy sex fuck shi tabuse f\ru\ncking whoreass***homo";
 		String s2 = "s e x";
+		String s3 = "s\r\n e x";
 
-		System.out.println(numberOfAlertWords(s));
-		System.out.println(numberOfBlackListWords(s));
+		System.out.println(myDetector.numberOfAlertWords(s));
+		System.out.println(myDetector.numberOfBlackListWords(s));
 		
-		System.out.println(numberOfWordsWithSpaces(s2));
+		System.out.println(myDetector.numberOfWordsWithSpaces(s2));
 
+		System.out.println(myDetector.numberOfOneLetterLines(s));
 
 	}
 
