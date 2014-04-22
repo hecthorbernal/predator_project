@@ -333,15 +333,15 @@ public class dataParser {
 			cm.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(cm.message);
 			cm.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(cm.message);
 
-			//cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
+			cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
 			cm.features[negativeSent] = sentiments.getNegativeSentiment(cm.message);
 			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
 
 			// Correct spelling errors before export
-			// cm.message = "\"" + spellChecker.getCorrectedText(cm.message) + "\"";
+			//cm.message = "\"" + spellChecker.getCorrectedText(cm.message) + "\"";
 			cm.message = "\"" + cm.message + "\"";
 
-			System.out.println(cm.toString());
+			//System.out.println(cm.toString());
 
 		}
 	}

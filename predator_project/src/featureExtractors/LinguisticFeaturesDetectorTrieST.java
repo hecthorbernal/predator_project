@@ -122,6 +122,11 @@ public class LinguisticFeaturesDetectorTrieST {
 		System.out.println(myDetector.numberOfWordsWithSpaces(s2));
 
 		System.out.println(myDetector.numberOfOneLetterLines(s));
+		
+		String s4 = "a$$";
+		
+		System.out.println(s4.replace("$", ""));
+		
 
 	}
 
