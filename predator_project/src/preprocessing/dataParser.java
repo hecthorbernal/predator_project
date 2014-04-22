@@ -16,6 +16,7 @@ import featureExtractors.EmoticonAnalyzer;
 import featureExtractors.LinguisticFeaturesDetector;
 import featureExtractors.BlackListWordsDetector;
 import featureExtractors.JazzySpellChecker;
+import featureExtractors.LinguisticFeaturesDetectorTrieST;
 import featureExtractors.SentimentAnalyser;
 
 
@@ -83,12 +84,12 @@ public class dataParser {
 
 		// TEST import from raw CSV
 		List<Message> L15 = readRawSubset("data/L15_raw.csv");
-		
+
 		// Add features to L15
 		addFeaturesToSubset(L15);
-		
+
 		generateCsvFile(L15, "data/L15.csv");
-		
+
 		System.out.println(L15.size());
 
 
@@ -295,6 +296,9 @@ public class dataParser {
 		//Instantiate Spaces detector
 		LinguisticFeaturesDetector linguisticDetector = new LinguisticFeaturesDetector("data/OffensiveProfaneWordList.txt");
 
+		//Instantiate Blacklist detector
+		LinguisticFeaturesDetectorTrieST linguisticDetectorTrieST = new LinguisticFeaturesDetectorTrieST("data/OffensiveProfaneWordList.txt");
+
 		//Instantiate JazzySpellChecker
 		JazzySpellChecker spellChecker = new JazzySpellChecker();
 
@@ -305,22 +309,22 @@ public class dataParser {
 		for(Message cm: subset) {
 
 			// add feature values to message
-			
+
 			//TODO implement counting forbidden phrases with one word per Line
 			// cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
-			
+
 			cm.features[numberOfLines] = FeatureExtractor.numberOfLines(cm.message);
-			cm.features[spaces] = linguisticDetector.numberOfSpaces(cm.message);
-			cm.features[letterLines] = linguisticDetector.numberOfOneLetterLines(cm.message);
-			
+			//cm.features[spaces] = linguisticDetector.numberOfSpaces(cm.message);
+			//cm.features[letterLines] = linguisticDetector.numberOfOneLetterLines(cm.message);
+
 			// remove <nl> tags before further feature extraction and lowercase string
 			cm.message = cm.message.replace("<nl>", " ").toLowerCase();
-			
+
 			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
 			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
-			cm.features[alert] = profanator.numberOfAlerts(cm.message);
-			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
-			
+			cm.features[alert] = linguisticDetectorTrieST.numberOfAlertWords(cm.message);
+			cm.features[blacklist] = linguisticDetectorTrieST.numberOfBlackListWords(cm.message);
+
 			// Emoticon features
 			cm.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(cm.message);
 			cm.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(cm.message);
@@ -329,10 +333,10 @@ public class dataParser {
 			cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
 			cm.features[negativeSent] = sentiments.getNegativeSentiment(cm.message);
 			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
-			
+
 			// Correct spelling errors before export
 			cm.message = spellChecker.getCorrectedText("\"" + cm.message + "\"");
-			
+
 			System.out.println(cm.toString());
 
 		}
