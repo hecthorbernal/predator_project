@@ -58,7 +58,7 @@ public class dataParser {
 		this.jazzySpellChecker = new JazzySpellChecker();
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
@@ -84,20 +84,23 @@ public class dataParser {
 		System.out.println(L15_P.size());
 
 		//Process the non-predator data
-		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
-		System.out.println(mySubSetL15_NP.size());
-		generateRawCsvFile(mySubSetL15_NP, "data/L15_nonP_raw.csv");
-		List<Message> L15_NP = readRawSubset("data/L15_nonP_raw.csv");
-		// Add features to L15_NP
-		addFeaturesToSubset(L15_NP);
-		generateCsvFile(L15_NP, "data/L15_NP.csv");
-		System.out.println(L15_NP.size());
+//		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
+//		System.out.println(mySubSetL15_NP.size());
+//		generateRawCsvFile(mySubSetL15_NP, "data/L15_nonP_raw.csv");
+//		List<Message> L15_NP = readRawSubset("data/L15_nonP_raw.csv");
+//		// Add features to L15_NP
+//		addFeaturesToSubset(L15_NP);
+//		generateCsvFile(L15_NP, "data/L15_NP.csv");
+//		System.out.println(L15_NP.size());
 
-		//List<Message> mySubSetW15 = myDataParser.generateW15(false);
+		List<Message> mySubSetW15_P = myDataParser.generateW15(p_conversations, "data/W15_P_splitted_convers_list");
 		//TEST CSV export
-		//System.out.println(mySubSetW15.size());
-		//generateRawCsvFile(mySubSetW15, "data/W15_raw.csv");
-
+		System.out.println(mySubSetW15_P.size());
+		generateRawCsvFile(mySubSetW15_P, "data/W15_P_raw.csv");
+		List<Message> W15_P = readRawSubset("data/W15_P_raw.csv");
+		addFeaturesToSubset(W15_P);
+		generateCsvFile(W15_P, "data/W15_P.csv");
+		System.out.println(W15_P.size());
 	}
 private void splitConversationListByPredatorOrNot() {
 		//The list new_list contains now coversation where only one author is present.
@@ -170,9 +173,9 @@ private void splitConversationListByPredatorOrNot() {
 			int lastMessageTime = 0;
 			for(ConversationMessage cm: c.messages) {
 				//Time stamps have been normalize change logic to max min updates
-				if(firstMessageTime > cm.getNormalized_time()){
+				if(cm.getNormalized_time() < firstMessageTime){
 					firstMessageTime = cm.getNormalized_time();
-				}else if(lastMessageTime  < cm.getNormalized_time()){
+				}else if(cm.getNormalized_time() > lastMessageTime){
 					lastMessageTime = cm.getNormalized_time();
 				}
 			}
@@ -201,13 +204,16 @@ private void splitConversationListByPredatorOrNot() {
 	 * Create set W15
 	 * @param print_output TODO
 	 * @return
+	 * @throws IOException 
 	 */
-	private List<Message> generateW15(List<Conversation> conversations) {
+	private List<Message> generateW15(List<Conversation> conversations, String file) throws IOException {
 		//Iterate through the messages to get:
 		//1. The lenght of each conversation
 		//Discard all messages thart havent been send during the last 15 minutes of the 
 		//conversation (L15).
 		List<Conversation> finalList = new ArrayList<Conversation>();
+
+		FileWriter outputWriter = new FileWriter(file);
 		for(Conversation c: conversations) {
 			//instantiate to something big.
 			int firstMessageTime = 90000000;
@@ -235,7 +241,7 @@ private void splitConversationListByPredatorOrNot() {
 				if(duration%limit > 0){
 					number_of_segments++;
 				}
-				System.out.println("Spiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments");
+				outputWriter.append("conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments\n");
 				for(int i=0; i < number_of_segments; i++){
 					int start = i * limit;
 					int end = start + limit;
@@ -254,6 +260,8 @@ private void splitConversationListByPredatorOrNot() {
 				}
 			}
 		}
+		outputWriter.flush();
+		outputWriter.close();
 		// create subset from conversations
 		return generateSubSet(finalList);
 	}

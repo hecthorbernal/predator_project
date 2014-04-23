@@ -42,6 +42,14 @@ public class Message {
 		
 	}
 	
+	public String getcID() {
+		return cID;
+	}
+
+	public void setcID(String cID) {
+		this.cID = cID;
+	}
+
 	public Message(String senderID, String message) {
 		
 		this.senderID = senderID;
