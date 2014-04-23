@@ -320,7 +320,7 @@ public class dataParser {
 			// remove <nl> tags before further feature extraction and lowercase string
 			cm.message = cm.message.replace("<nl>", " ").replace("$","").toLowerCase();
 
-//			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
+			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
 //			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
 			cm.features[alert] = linguisticDetectorTrieST.numberOfAlertWords(cm.message);
 			cm.features[blacklist] = linguisticDetectorTrieST.numberOfBlackListWords(cm.message);
