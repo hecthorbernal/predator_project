@@ -41,8 +41,6 @@ public class JazzySpellChecker implements SpellCheckListener {
 	
 	public int countMisspelledWords(String text) {
 		
-		text = text.replace("$", "");
-		
 		StringWordTokenizer texTok = new StringWordTokenizer(text,
 				new TeXWordFinder());
 		spellChecker.checkSpelling(texTok);
@@ -94,8 +92,6 @@ public class JazzySpellChecker implements SpellCheckListener {
 	}
 
 	public String getCorrectedText(String line){
-		
-		line = line.replace("$", "");
 		
 		StringBuilder builder = new StringBuilder();
 		String[] tempWords = line.split("\\s+");

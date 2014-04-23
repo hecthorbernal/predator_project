@@ -12,6 +12,8 @@ public class Message {
 	public String senderID;
 	public String message;
 	public String isPredator;
+	public String timeStamp;
+	public String cID;
 	public int[] features = new int[14];
 	
 	final static int letterLines = 0;
@@ -33,6 +35,8 @@ public class Message {
 		
 		this.senderID = "";
 		this.message = "";
+		this.timeStamp = "0";
+		this.cID = "";
 		initializeFeatures(); 
 		
 		

@@ -318,7 +318,7 @@ public class dataParser {
 			cm.features[letterLines] = linguisticDetectorTrieST.numberOfOneLetterLines(cm.message);
 
 			// remove <nl> tags before further feature extraction and lowercase string
-			cm.message = cm.message.replace("<nl>", " ").toLowerCase();
+			cm.message = cm.message.replace("<nl>", " ").replace("$","").toLowerCase();
 
 //			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
 //			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
@@ -359,14 +359,17 @@ public class dataParser {
 				writer.append(',');
 				writer.append(message.senderID);
 				writer.append(',');
-
-
+			 
 				// add message to line
 				String csvMessage = message.message;
 				csvMessage = csvMessage.replace(",", " ");
 				csvMessage = csvMessage.replace("\n", "");
 
 				writer.append(csvMessage);
+				writer.append(message.timeStamp);
+				writer.append(',');
+				writer.append(message.cID);
+				writer.append(',');
 				writer.append('\n');
 
 			}
