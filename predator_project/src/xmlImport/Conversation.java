@@ -7,6 +7,15 @@ import java.util.List;
 public class Conversation {
 	private String id; 
 	private String author; 
+	private boolean predator;
+	public boolean isPredator() {
+		return predator;
+	}
+
+	public void setPredator(boolean predator) {
+		this.predator = predator;
+	}
+
 	private int number_of_lines;
 	public List<ConversationMessage> messages = new ArrayList<ConversationMessage>();
 	

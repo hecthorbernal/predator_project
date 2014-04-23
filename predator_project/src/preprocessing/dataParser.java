@@ -31,6 +31,8 @@ public class dataParser {
 
 	// list for conversations imported from XML
 	private List<Conversation> conversations;
+	private List<Conversation> np_conversations;
+	private List<Conversation> p_conversations;
 	private JazzySpellChecker jazzySpellChecker;
 
 	// constants used for addressing variables in array of features
@@ -60,7 +62,7 @@ public class dataParser {
 
 		// create dataParser from xml-file 
 		dataParser myDataParser = new dataParser("data/pan12-training.xml");
-
+		myDataParser.splitConversationListByPredatorOrNot();
 		// Now we have a List<Conversations> :-)
 		// Each Conversation carries a List<Messages> (author, time, text)
 
@@ -74,13 +76,13 @@ public class dataParser {
 
 		//TEST - create subset containing all message lines
 		List<Message> mySubSetL15 = myDataParser.generateL15(false);
-		List<Message> mySubSetW15 = myDataParser.generateW15(false);
+		//List<Message> mySubSetW15 = myDataParser.generateW15(false);
 		System.out.println(mySubSetL15.size());
 		generateRawCsvFile(mySubSetL15, "data/L15_raw.csv");
 
 		//TEST CSV export
-		System.out.println(mySubSetW15.size());
-		generateRawCsvFile(mySubSetW15, "data/W15_raw.csv");
+		//System.out.println(mySubSetW15.size());
+		//generateRawCsvFile(mySubSetW15, "data/W15_raw.csv");
 
 		// TEST import from raw CSV
 		List<Message> L15 = readRawSubset("data/L15_raw.csv");
@@ -96,13 +98,7 @@ public class dataParser {
 
 
 	}
-
-
-	/**
-	 * Create set L15
-	 * @param print_output TODO
-	 */
-	private List<Message> generateL15(boolean print_output) {
+private void splitConversationListByPredatorOrNot() {
 		//The list new_list contains now coversation where only one author is present.
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
 
@@ -110,7 +106,12 @@ public class dataParser {
 		//1. The lenght of each conversation
 		//Discard all messages thart havent been send during the last 15 minutes of the 
 		//conversation (L15).
-		List<Conversation> finalList = new ArrayList<Conversation>();
+		List<Conversation> predator_list = new ArrayList<Conversation>();
+		List<Conversation> non_predator_list = new ArrayList<Conversation>();
+
+		//Instantiate the predator identifier
+		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
+
 		for(Conversation c: newList) {
 			//instantiate to something big.
 			int firstMessageTime = 0;
@@ -132,7 +133,48 @@ public class dataParser {
 					int normalized = timeNormalizer(firsNotNormalized, time);
 					lastMessageTime = normalized;
 					cm.setNormalized_time(normalized);
+				}
+			}
+				if(predatorDetector.isAPredator(c.getAuthor()).equalsIgnoreCase("p")){
+					c.setPredator(true);
+					predator_list.add(c);
+				}else{
+					c.setPredator(false);
+					non_predator_list.add(c);
+				}
+			}
+
+		// create subset from conversations
+			this.np_conversations = non_predator_list;
+			this.p_conversations = predator_list;
+		System.out.println("Predator and Non Predator conversations have been separated from each other.");
+
+		}
+
+
+	/**
+	 * Create set L15
+	 * @param print_output TODO
+	 */
+	private List<Message> generateL15(boolean print_output) {
+
+		//Iterate through the messages to get:
+		//1. The lenght of each conversation
+		//Discard all messages thart havent been send during the last 15 minutes of the 
+		//conversation (L15).
+		List<Conversation> finalList = new ArrayList<Conversation>();
+		for(Conversation c: this.p_conversations) {
+			//instantiate to something big.
+			int firstMessageTime = 0;
+			int lastMessageTime = 0;
+			boolean isFirst = false;	
+			for(ConversationMessage cm: c.messages) {
+				//Time stamps have been normalize change logic to max min updates
+				if(!isFirst){
+					firstMessageTime = cm.getNormalized_time();
 					isFirst = true;
+				}else{
+					lastMessageTime = cm.getNormalized_time();
 				}
 			}
 			int duration = getDuration(firstMessageTime, lastMessageTime);
