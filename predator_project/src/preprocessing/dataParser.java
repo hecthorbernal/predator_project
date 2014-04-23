@@ -31,8 +31,8 @@ public class dataParser {
 
 	// list for conversations imported from XML
 	private List<Conversation> conversations;
-	private List<Conversation> np_conversations;
-	private List<Conversation> p_conversations;
+	private static List<Conversation> np_conversations;
+	private static List<Conversation> p_conversations;
 	private JazzySpellChecker jazzySpellChecker;
 
 	// constants used for addressing variables in array of features
@@ -75,27 +75,30 @@ public class dataParser {
 		//		System.out.println(mySubSet.size());
 
 		//TEST - create subset containing all message lines
-		List<Message> mySubSetL15 = myDataParser.generateL15(false);
-		//List<Message> mySubSetW15 = myDataParser.generateW15(false);
-		System.out.println(mySubSetL15.size());
-		generateRawCsvFile(mySubSetL15, "data/L15_raw.csv");
+		List<Message> mySubSetL15_P = myDataParser.generateL15(p_conversations);
+		System.out.println(mySubSetL15_P.size());
+		generateRawCsvFile(mySubSetL15_P, "data/L15_predator_raw.csv");
+		// TEST import from raw CSV
+		List<Message> L15_P = readRawSubset("data/L15_predator_raw.csv");
+		// Add features to L15_P
+		addFeaturesToSubset(L15_P);
+		generateCsvFile(L15_P, "data/L15_P.csv");
+		System.out.println(L15_P.size());
 
+		//Process the non-predator data
+//		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
+//		System.out.println(mySubSetL15_NP.size());
+//		generateRawCsvFile(mySubSetL15_NP, "data/L15_nonP_raw.csv");
+//		List<Message> L15_NP = readRawSubset("data/L15_nonP_raw.csv");
+//		// Add features to L15_NP
+//		addFeaturesToSubset(L15_NP);
+//		generateCsvFile(L15_NP, "data/L15_NP.csv");
+//		System.out.println(L15_NP.size());
+
+		//List<Message> mySubSetW15 = myDataParser.generateW15(false);
 		//TEST CSV export
 		//System.out.println(mySubSetW15.size());
 		//generateRawCsvFile(mySubSetW15, "data/W15_raw.csv");
-
-		// TEST import from raw CSV
-		List<Message> L15 = readRawSubset("data/L15_raw.csv");
-
-		// Add features to L15
-		addFeaturesToSubset(L15);
-
-		generateCsvFile(L15, "data/L15.csv");
-
-		System.out.println(L15.size());
-
-
-
 
 	}
 private void splitConversationListByPredatorOrNot() {
@@ -156,14 +159,14 @@ private void splitConversationListByPredatorOrNot() {
 	 * Create set L15
 	 * @param print_output TODO
 	 */
-	private List<Message> generateL15(boolean print_output) {
+	private List<Message> generateL15(List<Conversation> conversations ) {
 
 		//Iterate through the messages to get:
 		//1. The lenght of each conversation
 		//Discard all messages thart havent been send during the last 15 minutes of the 
 		//conversation (L15).
 		List<Conversation> finalList = new ArrayList<Conversation>();
-		for(Conversation c: this.p_conversations) {
+		for(Conversation c: conversations) {
 			//instantiate to something big.
 			int firstMessageTime = 0;
 			int lastMessageTime = 0;
@@ -189,10 +192,7 @@ private void splitConversationListByPredatorOrNot() {
 				for(ConversationMessage cm: c.messages) {
 					if(withinLast15Mins(cm.getNormalized_time(), lastMessageTime)){
 						tmpConversation.addC_Message(cm);
-						if(print_output){
-							System.out.println("Splitting conversation: " + c.getId() + "\nduration: " + duration + "minutes \nfirst: " +
-									firstMessageTime + " last: " + lastMessageTime + "\nAdded to L15_raw.csv line: " + ++line_number);
-						}
+							//System.out.println("Splitting conversation: " + c.getId() + "\nduration: " + duration + "minutes \nfirst: " +									firstMessageTime + " last: " + lastMessageTime + "\nAdded to L15_raw.csv line: " + ++line_number);
 					}
 				}
 				finalList.add(tmpConversation);
@@ -201,7 +201,6 @@ private void splitConversationListByPredatorOrNot() {
 
 		}
 		// create subset from conversations
-		System.out.println("L15 created");
 		return generateSubSet(finalList);
 	}	
 	/**
