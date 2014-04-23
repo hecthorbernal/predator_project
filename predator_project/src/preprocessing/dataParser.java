@@ -74,26 +74,24 @@ public class dataParser {
 		//		
 		//		System.out.println(mySubSet.size());
 
-		//TEST - create subset containing all message lines
+		//Process the predator data
 		List<Message> mySubSetL15_P = myDataParser.generateL15(p_conversations);
 		System.out.println(mySubSetL15_P.size());
 		generateRawCsvFile(mySubSetL15_P, "data/L15_predator_raw.csv");
-		// TEST import from raw CSV
 		List<Message> L15_P = readRawSubset("data/L15_predator_raw.csv");
-		// Add features to L15_P
 		addFeaturesToSubset(L15_P);
 		generateCsvFile(L15_P, "data/L15_P.csv");
 		System.out.println(L15_P.size());
 
 		//Process the non-predator data
-//		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
-//		System.out.println(mySubSetL15_NP.size());
-//		generateRawCsvFile(mySubSetL15_NP, "data/L15_nonP_raw.csv");
-//		List<Message> L15_NP = readRawSubset("data/L15_nonP_raw.csv");
-//		// Add features to L15_NP
-//		addFeaturesToSubset(L15_NP);
-//		generateCsvFile(L15_NP, "data/L15_NP.csv");
-//		System.out.println(L15_NP.size());
+		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
+		System.out.println(mySubSetL15_NP.size());
+		generateRawCsvFile(mySubSetL15_NP, "data/L15_nonP_raw.csv");
+		List<Message> L15_NP = readRawSubset("data/L15_nonP_raw.csv");
+		// Add features to L15_NP
+		addFeaturesToSubset(L15_NP);
+		generateCsvFile(L15_NP, "data/L15_NP.csv");
+		System.out.println(L15_NP.size());
 
 		//List<Message> mySubSetW15 = myDataParser.generateW15(false);
 		//TEST CSV export
@@ -148,8 +146,8 @@ private void splitConversationListByPredatorOrNot() {
 			}
 
 		// create subset from conversations
-			this.np_conversations = non_predator_list;
-			this.p_conversations = predator_list;
+			dataParser.np_conversations = non_predator_list;
+			dataParser.p_conversations = predator_list;
 		System.out.println("Predator and Non Predator conversations have been separated from each other.");
 
 		}
@@ -168,20 +166,18 @@ private void splitConversationListByPredatorOrNot() {
 		List<Conversation> finalList = new ArrayList<Conversation>();
 		for(Conversation c: conversations) {
 			//instantiate to something big.
-			int firstMessageTime = 0;
+			int firstMessageTime = 90000000;
 			int lastMessageTime = 0;
-			boolean isFirst = false;	
 			for(ConversationMessage cm: c.messages) {
 				//Time stamps have been normalize change logic to max min updates
-				if(!isFirst){
+				if(firstMessageTime > cm.getNormalized_time()){
 					firstMessageTime = cm.getNormalized_time();
-					isFirst = true;
-				}else{
+				}else if(lastMessageTime  < cm.getNormalized_time()){
 					lastMessageTime = cm.getNormalized_time();
 				}
 			}
-			int duration = getDuration(firstMessageTime, lastMessageTime);
 			int line_number = 0;
+			int duration = getDuration(firstMessageTime, lastMessageTime);
 			if(duration <= 15){
 				finalList.add(c);
 				line_number++;
@@ -197,8 +193,6 @@ private void splitConversationListByPredatorOrNot() {
 				}
 				finalList.add(tmpConversation);
 			}
-
-
 		}
 		// create subset from conversations
 		return generateSubSet(finalList);
@@ -208,37 +202,22 @@ private void splitConversationListByPredatorOrNot() {
 	 * @param print_output TODO
 	 * @return
 	 */
-	private List<Message> generateW15(boolean print_output) {
-		//The list new_list contains now conversation where only one author is present.
-		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
-
+	private List<Message> generateW15(List<Conversation> conversations) {
 		//Iterate through the messages to get:
-		//1. The length of each conversation
-		//Discard all messages that haven't been send during the last 15 minutes of the 
+		//1. The lenght of each conversation
+		//Discard all messages thart havent been send during the last 15 minutes of the 
 		//conversation (L15).
 		List<Conversation> finalList = new ArrayList<Conversation>();
-		for(Conversation c: newList) {
+		for(Conversation c: conversations) {
 			//instantiate to something big.
-			int firsNotNormalized = 0;
-			int firstMessageTime = 0;
+			int firstMessageTime = 90000000;
 			int lastMessageTime = 0;
-			boolean isFirst = false;
 			for(ConversationMessage cm: c.messages) {
-				//The timestamps will be parsed to minutes for an easier calculation of the duartion.
-				//The normalized time of the message added to the object cm for much easier processing.
-				String c_time = cm.getTime();
-				int time = timeToInt(c_time);
-				if(!isFirst){
-					firsNotNormalized = time;
-					int normalized = timeNormalizer(firsNotNormalized, time);
-					firstMessageTime = normalized;
-					cm.setNormalized_time(normalized);
-					isFirst = true;
-				}else{
-					int normalized = timeNormalizer(firsNotNormalized, time);
-					lastMessageTime = normalized;
-					cm.setNormalized_time(normalized);
-					isFirst = true;
+				//Time stamps have been normalize change logic to max min updates
+				if(firstMessageTime > cm.getNormalized_time()){
+					firstMessageTime = cm.getNormalized_time();
+				}else if(lastMessageTime  < cm.getNormalized_time()){
+					lastMessageTime = cm.getNormalized_time();
 				}
 			}
 			int duration = getDuration(firstMessageTime, lastMessageTime);
@@ -249,7 +228,6 @@ private void splitConversationListByPredatorOrNot() {
 			}else{
 				//If the conversation lasted more than 15 min split it in segments of 15 mins.
 				//Pieces of conversation under 15 min get thrown out. This might requiere changes after we
-				isFirst = true;
 				//talk to Yun next time.
 				int limit = 15;
 				int number_of_segments = duration/limit;
@@ -257,9 +235,7 @@ private void splitConversationListByPredatorOrNot() {
 				if(duration%limit > 0){
 					number_of_segments++;
 				}
-				if(print_output){
-					System.out.println("Spiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments");
-				}
+				System.out.println("Spiting conversation " + c.getId()+ " author: " + c.getAuthor() + " in " + number_of_segments + "segments");
 				for(int i=0; i < number_of_segments; i++){
 					int start = i * limit;
 					int end = start + limit;
@@ -273,9 +249,6 @@ private void splitConversationListByPredatorOrNot() {
 					}
 					if(added){
 						finalList.add(tmpConversation);
-						if(print_output){
-							System.out.println("\tSegment added to W15_raw.csv line: " + ++line_number);
-						}
 					}
 					limit += 15;
 				}
