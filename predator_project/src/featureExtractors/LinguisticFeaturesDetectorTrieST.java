@@ -88,6 +88,8 @@ public class LinguisticFeaturesDetectorTrieST {
 
 		int countBlackListWords = 0;
 
+		text = text.replace("‘", "'").replace("’", "'"); //bug fix - not that sophistcated, but works;-)
+
 		for (String s:text.split("\\s+")) {
 
 			for (int i = 0; i < s.length()-1; i++) {
