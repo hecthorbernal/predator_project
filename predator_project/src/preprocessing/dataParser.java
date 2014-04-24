@@ -430,10 +430,10 @@ public class dataParser {
 		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
 
 		//Instantiate detector of offenses and profanation .
-		BlackListWordsDetector profanator = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
+		//BlackListWordsDetector profanator = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
 
 		//Instantiate Spaces detector
-		LinguisticFeaturesDetector linguisticDetector = new LinguisticFeaturesDetector("data/OffensiveProfaneWordList.txt");
+		//LinguisticFeaturesDetector linguisticDetector = new LinguisticFeaturesDetector("data/OffensiveProfaneWordList.txt");
 
 		//Instantiate Blacklist detector
 		LinguisticFeaturesDetectorTrieST linguisticDetectorTrieST = new LinguisticFeaturesDetectorTrieST("data/OffensiveProfaneWordList.txt");
@@ -453,20 +453,21 @@ public class dataParser {
 			// cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
 
 			cm.features[numberOfLines] = FeatureExtractor.numberOfLines(cm.message);
-//			cm.features[spaces] = linguisticDetectorTrieST.numberOfWordsWithSpaces(cm.message);
-//			cm.features[letterLines] = linguisticDetectorTrieST.numberOfOneLetterLines(cm.message);
+			cm.features[spaces] = linguisticDetectorTrieST.numberOfWordsWithSpaces(cm.message);
+			cm.features[letterLines] = linguisticDetectorTrieST.numberOfOneLetterLines(cm.message);
 
 			// remove <nl> tags before further feature extraction and lowercase string
-			cm.message = cm.message.replace("<nl>", " ").replace("$","").toLowerCase();
+			cm.message = cm.message.replace("<nl>", " ").replace("$","");
 
 			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
-//			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
-//			cm.features[alert] = linguisticDetectorTrieST.numberOfAlertWords(cm.message);
-//			cm.features[blacklist] = linguisticDetectorTrieST.numberOfBlackListWords(cm.message);
+			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
+			cm.features[alert] =linguisticDetectorTrieST.numberOfAlertWords(cm.message);
+			cm.features[blacklist] = linguisticDetectorTrieST.numberOfBlackListWords(cm.message);			
 			
-			cm.features[alert] = profanator.numberOfAlerts(cm.message);
-			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
+//			cm.features[alert] = profanator.numberOfAlerts(cm.message);
+//			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
 
+			
 			// Emoticon features
 			cm.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(cm.message);
 			cm.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(cm.message);
@@ -477,8 +478,8 @@ public class dataParser {
 			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
 
 			// Correct spelling errors before export
-			//cm.message = "\"" + spellChecker.getCorrectedText(cm.message) + "\"";
-			cm.message = "\"" + cm.message + "\"";
+			// System.out.println(cm.message);
+			cm.message = "\"" + spellChecker.getCorrectedText(cm.message) + "\"";
 
 			//System.out.println(cm.toString());
 

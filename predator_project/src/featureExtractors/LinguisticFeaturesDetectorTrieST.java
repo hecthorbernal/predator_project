@@ -61,7 +61,7 @@ public class LinguisticFeaturesDetectorTrieST {
 		for(String s: text.split("<nl>")) {
 		
 			sub = s.replaceAll("\\n", "").replaceAll("\\r", "").replaceAll("\\s", "");
-			System.out.println(sub);
+			// System.out.println(sub);
 			
 				count+= numberOfBlackListWords(sub);	
 		}

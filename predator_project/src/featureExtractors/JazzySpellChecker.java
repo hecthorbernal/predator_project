@@ -38,9 +38,9 @@ public class JazzySpellChecker implements SpellCheckListener {
 		}
 		return misspelledWords;
 	}
-	
+
 	public int countMisspelledWords(String text) {
-		
+
 		StringWordTokenizer texTok = new StringWordTokenizer(text,
 				new TeXWordFinder());
 		spellChecker.checkSpelling(texTok);
@@ -92,23 +92,34 @@ public class JazzySpellChecker implements SpellCheckListener {
 	}
 
 	public String getCorrectedText(String line){
-		
+
+		line = line.replace("‘", "'").replace("’", "'").trim(); //bug fix - not that sophistcated, but works;-)
+
 		StringBuilder builder = new StringBuilder();
-		String[] tempWords = line.split("\\s+");
+		String[] tempWords = line.split("\\s++");
 		for (String tempWord : tempWords){
-			if (!spellChecker.isCorrect(tempWord)){
-				@SuppressWarnings("unchecked")
-				List<Word> suggestions = spellChecker.getSuggestions(tempWord, 0);
-				if (suggestions.size() > 0){
-					builder.append(spellChecker.getSuggestions(tempWord, 0).get(0).toString());
+
+			if(tempWord.matches("\\w++[.,!?']*")) {
+
+				if (!spellChecker.isCorrect(tempWord)){
+					@SuppressWarnings("unchecked")
+					List<Word> suggestions = spellChecker.getSuggestions(tempWord, 0);
+
+					if (suggestions.size() > 0){
+						builder.append(spellChecker.getSuggestions(tempWord, 0).get(0).toString());
+					}
+
+					else
+						builder.append(tempWord);
 				}
-				else
+
+				else {
 					builder.append(tempWord);
+				}
+
+				builder.append(" ");
+
 			}
-			else {
-				builder.append(tempWord);
-			}
-			builder.append(" ");
 		}
 		return builder.toString().trim();
 	}
@@ -132,7 +143,16 @@ public class JazzySpellChecker implements SpellCheckListener {
 		event.ignoreWord(true);
 		misspelledWords.add(event.getInvalidWord());
 	}
-	
+
+	public static void main(String[] args) {
+
+		JazzySpellChecker jazz = new JazzySpellChecker();
+		String s = "hey,,?";
+
+		System.out.println(jazz.getCorrectedText(s));
+
+	}
+
 
 }
 
