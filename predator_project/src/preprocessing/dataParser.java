@@ -123,8 +123,29 @@ public class dataParser {
 		addFeaturesToSubset(HP15_P);
 		generateCsvFile(HP15_P, "data/subsets/HP15_P.csv");
 		System.out.println(HP15_P.size());
+		
+		//Example: Generate balanced HP15 set
+		myDataParser.generateBalacedSubset("data/subsets/HP15_P.csv", "data/subsets/HP15_P.csv", "data/blancedSubsets/HP15_20P.csv", 20);
 	}
-private void splitConversationListByPredatorOrNot() {
+	
+	/**
+	 * Generate a balanced subset using a non predatory file and a predatory
+	 * one from data/subsets/
+	 * @param predatoryFile
+	 * @param non_predatory_file
+	 * @param outputFile
+	 * @param percent_of_predatory_lines
+	 */
+	private void generateBalacedSubset(String predatoryFile, 
+			String non_predatory_file, String outputFile, int percent_of_predatory_lines){
+		//TODO Implement
+		System.out.println("Generator of balaced subsets not yet implemented");
+	}
+	/**
+	 * Split each conversation in to a set of conversations having one
+	 * unique author each.
+	 */
+	private void splitConversationListByPredatorOrNot() {
 		//The list new_list contains now coversation where only one author is present.
 		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
 
@@ -176,7 +197,15 @@ private void splitConversationListByPredatorOrNot() {
 		System.out.println("Predator and Non Predator conversations have been separated from each other.");
 
 		}
-private void generateHP15(List<Conversation> conversations, String file_under15, String file_over15 ) {
+	
+	/**
+	 * Go through the conversations and those over 15 min should go to a different
+	 * list with the time stamp of each message added for manual selection.
+	 * @param conversations
+	 * @param file_under15
+	 * @param file_over15
+	 */
+	private void generateHP15(List<Conversation> conversations, String file_under15, String file_over15 ) {
 
 		//Iterate through the messages to get:
 		//1. The lenght of each conversation
@@ -218,6 +247,14 @@ private void generateHP15(List<Conversation> conversations, String file_under15,
 		generateRawCsvFile(generateSubSet(under15_list), file_under15);
 		generateRawCsvFile(generateSubSet(over15_list), file_over15);
 	}
+	
+	/**
+	 * For the set HP15, merge the manually sorted conversations to the ones
+	 * under 15 mins
+	 * @param under15minFile
+	 * @param over15minFileManuallyProcessed
+	 * @return
+	 */
 	private List<Message> mergeHP15_files(String under15minFile, String over15minFileManuallyProcessed) {
 		//TODO Merge files after conversations over 15 min have been manually shortened
 		List<Message> messages_under = readRawSubset(under15minFile);
