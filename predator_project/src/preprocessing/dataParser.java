@@ -210,7 +210,16 @@ private void generateHP15(List<Conversation> conversations, String file_under15,
 	}
 	private List<Message> mergeHP15_files(String under15minFile, String over15minFileManuallyProcessed) {
 		//TODO Merge files after conversations over 15 min have been manually shortened
-		return null;
+		List<Message> messages_under = readRawSubset(under15minFile);
+		List<Message> messages_over = readRawHPFile(over15minFileManuallyProcessed);
+		List<Message> merged = new ArrayList<Message>();
+		for(Message m : messages_under){
+			merged.add(m);
+		}
+		for(Message m : messages_over){
+			merged.add(m);
+		}
+		return merged;
 	}
 
 	/**
@@ -528,12 +537,9 @@ private void generateHP15(List<Conversation> conversations, String file_under15,
 	}
 
 	private static ArrayList<Message> readRawSubset(String file) {
-
-
 		ArrayList<Message> set = new ArrayList<>();
 		Message newMessage;
 		FileInputStream fis;
-
 		try {
 			fis = new FileInputStream(file); 
 			//Construct BufferedReader from InputStreamReader
@@ -561,7 +567,61 @@ private void generateHP15(List<Conversation> conversations, String file_under15,
 		System.out.println(file + " imported");
 		return set;
 	}
+	/**
+	 * Read the raw HP file of conversations over 15 min and merge those 
+	 * messages corresponding to the same author and conversation into one
+	 * message to match the format of all the other raw files.
+	 * @param file
+	 * @return
+	 */
+	private static ArrayList<Message> readRawHPFile(String file) {
+		ArrayList<Message> set = new ArrayList<>();
+		Message newMessage;
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(file); 
+			//Construct BufferedReader from InputStreamReader
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+			String line = null;
+			while ((line = br.readLine()) != null) {
 
+				newMessage = new Message();
+				String[] tuple = line.split(",");
+				newMessage.isPredator = tuple[0];
+				newMessage.senderID = tuple[1];
+				newMessage.message = tuple[2];
+				newMessage.cID = tuple[4];
+
+				set.add(newMessage);
+
+			}
+
+			br.close();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ArrayList<Message> finalSet = new ArrayList<>();
+		Message tmpMessage = null;
+ 		for(Message message : set){
+ 			if(tmpMessage == null){
+ 				tmpMessage = new Message(message.senderID, message.message);
+ 				tmpMessage.isPredator = message.isPredator;
+ 				tmpMessage.cID = message.cID;
+ 			}else if(tmpMessage.senderID.equalsIgnoreCase(message.senderID) &&
+ 					tmpMessage.cID.equalsIgnoreCase(message.cID)){
+ 				tmpMessage.message += "<nl>" + message.message;
+ 			}else{
+ 				finalSet.add(tmpMessage);
+ 				tmpMessage = new Message(message.senderID, message.message);
+  				tmpMessage.isPredator = message.isPredator;
+ 				tmpMessage.cID = message.cID;
+ 			}
+		}
+		System.out.println(file + " imported");
+		return finalSet;
+	}
 	/*
 	 *Convert the time of the conversations to minutes
 	 */
