@@ -7,6 +7,21 @@ import java.util.List;
 public class Conversation {
 	private String id; 
 	private String author; 
+	private String timestamp;
+	public String getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(int timestamp) {
+		this.timestamp = Integer.toString(timestamp);
+	}
+	public boolean isTimeSet(){
+		if(this.timestamp != null){
+			return true;
+		}
+		return false;
+	}
+
 	private boolean predator;
 	public boolean isPredator() {
 		return predator;
