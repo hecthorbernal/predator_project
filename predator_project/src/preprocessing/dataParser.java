@@ -77,42 +77,52 @@ public class dataParser {
 		//Process the predator data
 		List<Message> mySubSetL15_P = myDataParser.generateL15(p_conversations);
 		System.out.println(mySubSetL15_P.size());
-		generateRawCsvFile(mySubSetL15_P, "data/L15_predator_raw.csv");
-		List<Message> L15_P = readRawSubset("data/L15_predator_raw.csv");
+		generateRawCsvFile(mySubSetL15_P, "data/rawFiles/L15_predator_raw.csv");
+		List<Message> L15_P = readRawSubset("data/rawFiles/L15_predator_raw.csv");
 		addFeaturesToSubset(L15_P);
-		generateCsvFile(L15_P, "data/L15_P.csv");
+		generateCsvFile(L15_P, "data/subsets/L15_P.csv");
 		System.out.println(L15_P.size());
 
 		//Process the non-predator data
-//		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
-//		System.out.println(mySubSetL15_NP.size());
-//		generateRawCsvFile(mySubSetL15_NP, "data/L15_non_predator_raw.csv");
-//		List<Message> L15_NP = readRawSubset("data/L15_non_predator_raw.csv");
-//		// Add features to L15_NP
-//		addFeaturesToSubset(L15_NP);
-//		generateCsvFile(L15_NP, "data/L15_NP.csv");
-//		System.out.println(L15_NP.size());
+		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
+		System.out.println(mySubSetL15_NP.size());
+		generateRawCsvFile(mySubSetL15_NP, "data/rawFiles/L15_non_predator_raw.csv");
+		List<Message> L15_NP = readRawSubset("data/rawFiles/L15_non_predator_raw.csv");
+		// Add features to L15_NP
+		addFeaturesToSubset(L15_NP);
+		generateCsvFile(L15_NP, "data/subsets/L15_NP.csv");
+		System.out.println(L15_NP.size());
 
 		//Generate W15 predator
 		List<Message> mySubSetW15_P = myDataParser.generateW15(p_conversations, "data/W15_P_splitted_convers_list");
 		//TEST CSV export
 		System.out.println(mySubSetW15_P.size());
-		generateRawCsvFile(mySubSetW15_P, "data/W15_predator_raw.csv");
-		List<Message> W15_P = readRawSubset("data/W15_predator_raw.csv");
+		generateRawCsvFile(mySubSetW15_P, "data/rawFiles/W15_predator_raw.csv");
+		List<Message> W15_P = readRawSubset("data/rawFiles/W15_predator_raw.csv");
 		addFeaturesToSubset(W15_P);
-		generateCsvFile(W15_P, "data/W15_P.csv");
+		generateCsvFile(W15_P, "data/subsets/W15_P.csv");
 		System.out.println(W15_P.size());
+
+		//Generate W15 non-predator
+		List<Message> mySubSetW15_NP = myDataParser.generateW15(np_conversations, "data/W15_NP_splitted_convers_list");
+		//TEST CSV export
+		System.out.println(mySubSetW15_NP.size());
+		generateRawCsvFile(mySubSetW15_NP, "data/rawFiles/W15_non_predator_raw.csv");
+		List<Message> W15_NP = readRawSubset("data/rawFiles/W15_non_predator_raw.csv");
+		addFeaturesToSubset(W15_NP);
+		generateCsvFile(W15_NP, "data/subsets/W15_NP.csv");
+		System.out.println(W15_NP.size());
 		
 		//Generate HP15
-		myDataParser.generateHP15(p_conversations, "data/HP15_predator_under_15min_raw.csv", "data/HP15_predator_over_15min_raw.csv");
+		myDataParser.generateHP15(p_conversations, "data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
 		//This should be run only when the HP15 conversations over 15 min have been manually shortened.
-//		List<Message> mySubSetHP15_P = myDataParser.mergeHP15_files("data/HP15_predator_under_15min_raw.csv", "data/HP15_predator_over_15min_raw.csv");
-//		System.out.println(mySubSetHP15_P.size());
-//		generateRawCsvFile(mySubSetHP15_P, "data/HP15_predator_raw.csv");
-//		List<Message> HP15_P = readRawSubset("data/HP15_predator_raw.csv");
-//		addFeaturesToSubset(HP15_P);
-//		generateCsvFile(HP15_P, "data/HP15_P.csv");
-//		System.out.println(HP15_P.size());
+		List<Message> mySubSetHP15_P = myDataParser.mergeHP15_files("data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
+		System.out.println(mySubSetHP15_P.size());
+		generateRawCsvFile(mySubSetHP15_P, "data/rawFiles/HP15_predator_raw.csv");
+		List<Message> HP15_P = readRawSubset("data/rawFiles/HP15_predator_raw.csv");
+		addFeaturesToSubset(HP15_P);
+		generateCsvFile(HP15_P, "data/subsets/HP15_P.csv");
+		System.out.println(HP15_P.size());
 	}
 private void splitConversationListByPredatorOrNot() {
 		//The list new_list contains now coversation where only one author is present.
@@ -406,16 +416,16 @@ private void generateHP15(List<Conversation> conversations, String file_under15,
 			// cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
 
 			cm.features[numberOfLines] = FeatureExtractor.numberOfLines(cm.message);
-			cm.features[spaces] = linguisticDetectorTrieST.numberOfWordsWithSpaces(cm.message);
-			cm.features[letterLines] = linguisticDetectorTrieST.numberOfOneLetterLines(cm.message);
+//			cm.features[spaces] = linguisticDetectorTrieST.numberOfWordsWithSpaces(cm.message);
+//			cm.features[letterLines] = linguisticDetectorTrieST.numberOfOneLetterLines(cm.message);
 
 			// remove <nl> tags before further feature extraction and lowercase string
 			cm.message = cm.message.replace("<nl>", " ").replace("$","").toLowerCase();
 
 			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
 //			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
-			cm.features[alert] = linguisticDetectorTrieST.numberOfAlertWords(cm.message);
-			cm.features[blacklist] = linguisticDetectorTrieST.numberOfBlackListWords(cm.message);
+//			cm.features[alert] = linguisticDetectorTrieST.numberOfAlertWords(cm.message);
+//			cm.features[blacklist] = linguisticDetectorTrieST.numberOfBlackListWords(cm.message);
 			
 			cm.features[alert] = profanator.numberOfAlerts(cm.message);
 			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
