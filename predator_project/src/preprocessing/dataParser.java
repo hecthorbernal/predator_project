@@ -61,7 +61,7 @@ public class dataParser {
 	public static void main(String[] args) throws IOException {
 
 		// create dataParser from xml-file 
-		dataParser myDataParser = new dataParser("data/pan12-training.xml");
+		dataParser myDataParser = new dataParser("data/pan12-training-data.xml");
 		myDataParser.splitConversationListByPredatorOrNot();
 		// Now we have a List<Conversations> :-)
 		// Each Conversation carries a List<Messages> (author, time, text)
@@ -78,40 +78,40 @@ public class dataParser {
 		List<Message> mySubSetL15_P = myDataParser.generateL15(p_conversations);
 		System.out.println(mySubSetL15_P.size());
 		generateRawCsvFile(mySubSetL15_P, "data/rawFiles/L15_predator_raw.csv");
-		List<Message> L15_P = readRawSubset("data/rawFiles/L15_predator_raw.csv");
-		addFeaturesToSubset(L15_P);
-		generateCsvFile(L15_P, "data/subsets/L15_P.csv");
-		System.out.println(L15_P.size());
+//		List<Message> L15_P = readRawSubset("data/rawFiles/L15_predator_raw.csv");
+//		addFeaturesToSubset(L15_P);
+//		generateCsvFile(L15_P, "data/subsets/L15_P.csv");
+//		System.out.println(L15_P.size());
 
 		//Process the non-predator data
 		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
 		System.out.println(mySubSetL15_NP.size());
 		generateRawCsvFile(mySubSetL15_NP, "data/rawFiles/L15_non_predator_raw.csv");
-		List<Message> L15_NP = readRawSubset("data/rawFiles/L15_non_predator_raw.csv");
-		// Add features to L15_NP
-		addFeaturesToSubset(L15_NP);
-		generateCsvFile(L15_NP, "data/subsets/L15_NP.csv");
-		System.out.println(L15_NP.size());
+//		List<Message> L15_NP = readRawSubset("data/rawFiles/L15_non_predator_raw.csv");
+//		// Add features to L15_NP
+//		addFeaturesToSubset(L15_NP);
+//		generateCsvFile(L15_NP, "data/subsets/L15_NP.csv");
+//		System.out.println(L15_NP.size());
 
 		//Generate W15 predator
 		List<Message> mySubSetW15_P = myDataParser.generateW15(p_conversations, "data/W15_P_splitted_convers_list");
 		//TEST CSV export
 		System.out.println(mySubSetW15_P.size());
 		generateRawCsvFile(mySubSetW15_P, "data/rawFiles/W15_predator_raw.csv");
-		List<Message> W15_P = readRawSubset("data/rawFiles/W15_predator_raw.csv");
-		addFeaturesToSubset(W15_P);
-		generateCsvFile(W15_P, "data/subsets/W15_P.csv");
-		System.out.println(W15_P.size());
+//		List<Message> W15_P = readRawSubset("data/rawFiles/W15_predator_raw.csv");
+//		addFeaturesToSubset(W15_P);
+//		generateCsvFile(W15_P, "data/subsets/W15_P.csv");
+//		System.out.println(W15_P.size());
 
 		//Generate W15 non-predator
 		List<Message> mySubSetW15_NP = myDataParser.generateW15(np_conversations, "data/W15_NP_splitted_convers_list");
 		//TEST CSV export
 		System.out.println(mySubSetW15_NP.size());
 		generateRawCsvFile(mySubSetW15_NP, "data/rawFiles/W15_non_predator_raw.csv");
-		List<Message> W15_NP = readRawSubset("data/rawFiles/W15_non_predator_raw.csv");
-		addFeaturesToSubset(W15_NP);
-		generateCsvFile(W15_NP, "data/subsets/W15_NP.csv");
-		System.out.println(W15_NP.size());
+//		List<Message> W15_NP = readRawSubset("data/rawFiles/W15_non_predator_raw.csv");
+//		addFeaturesToSubset(W15_NP);
+//		generateCsvFile(W15_NP, "data/subsets/W15_NP.csv");
+//		System.out.println(W15_NP.size());
 		
 		//Generate HP15
 		myDataParser.generateHP15(p_conversations, "data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
@@ -119,10 +119,10 @@ public class dataParser {
 		List<Message> mySubSetHP15_P = myDataParser.mergeHP15_files("data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
 		System.out.println(mySubSetHP15_P.size());
 		generateRawCsvFile(mySubSetHP15_P, "data/rawFiles/HP15_predator_raw.csv");
-		List<Message> HP15_P = readRawSubset("data/rawFiles/HP15_predator_raw.csv");
-		addFeaturesToSubset(HP15_P);
-		generateCsvFile(HP15_P, "data/subsets/HP15_P.csv");
-		System.out.println(HP15_P.size());
+//		List<Message> HP15_P = readRawSubset("data/rawFiles/HP15_predator_raw.csv");
+//		addFeaturesToSubset(HP15_P);
+//		generateCsvFile(HP15_P, "data/subsets/HP15_P.csv");
+//		System.out.println(HP15_P.size());
 		
 		//Example: Generate balanced HP15 set
 		myDataParser.generateBalacedSubset("data/subsets/HP15_P.csv", "data/subsets/HP15_P.csv", "data/blancedSubsets/HP15_20P.csv", 20);
