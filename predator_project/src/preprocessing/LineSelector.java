@@ -24,8 +24,10 @@ public class LineSelector {
 		this.resultSet = new ArrayList<predatorLine>();
 		this.file = file;
 		int indx = file.indexOf("_raw") + 4;
+		
 		this.processedOutputFile = file.substring(0, indx ) + "_processed.csv";
 		this.unprocessedOutputFile = file.substring(0, indx ) + "_unprocessed.csv";
+		
 		indexFixed = 0;
 
 	}
@@ -45,8 +47,6 @@ public class LineSelector {
 			predatorLine nextPredatorLine = null;
 
 			ArrayList<predatorLine> predatorLines = new ArrayList<predatorLine>();
-
-			int count = 0;
 
 			//read first line
 			if((line = br.readLine()) != null) {
@@ -92,7 +92,7 @@ public class LineSelector {
 
 	}
 
-	private void selectLines() {
+	private void selectLinesHP15() {
 
 		InputStreamReader r = new InputStreamReader(System.in); 
 		BufferedReader selectorReader = new BufferedReader(r);
@@ -129,8 +129,11 @@ public class LineSelector {
 						}
 
 
-						if (selected.matches("s"))
+						if (selected.matches("s")){
+							indexFixed++;
 							break;
+
+						}
 
 						if ( !selected.matches("[0-9]++") || Integer.parseInt(selected) > p.size()) {
 
@@ -160,13 +163,90 @@ public class LineSelector {
 
 
 							}
-							
+
 							System.out.println("You picked " + chosenIndex + " " + p.get(chosenIndex).message);
 
 							// Add predatorline to result Set
 							resultSet.add(newPredatorLine);
 							indexFixed++;
+							succes = true;
 
+						}
+
+					}
+
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+		}
+
+	}
+
+	private void selectLinesWP15() {
+
+		InputStreamReader r = new InputStreamReader(System.in); 
+		BufferedReader selectorReader = new BufferedReader(r);
+		boolean quit = false;
+
+		for(ArrayList<predatorLine> p: inputSet) {
+
+			//Display all lines and wait for selection
+
+			if(!quit) {
+
+				for (int i = 0; i < p.size(); i++) {
+
+					System.out.println(">>> " + i + " <<<\n " + p.get(i).message.replaceAll("<nl>", "\n") );
+
+				}
+
+				// System.out.println("\n" + indexFixed + " predatorLines done - " + (inputSet.size() - indexFixed) + " more to process..." );
+				System.out.println("Choose Line number and return - or 's' for skip or q for quit and save");
+
+				try {
+
+					int chosenIndex;
+					boolean succes = false;
+
+
+					while (!succes) {
+
+						String selected = selectorReader.readLine();
+
+						if (selected.matches("q")) {
+							quit = true;
+							saveAndQuit();
+							break;
+						}
+
+
+						if (selected.matches("s")) {
+							indexFixed++;
+							System.out.println("--------------------------------");
+							System.out.println(indexFixed + " predatorLines done - " + (inputSet.size() - indexFixed) + " more to process...\n" );
+							break;
+
+						}
+
+						if ( !selected.matches("[0-9]++") || Integer.parseInt(selected) > p.size()) {
+
+							System.out.println("Please choose a valid linenumber or 's' for skipping line - 'q' for save and quit");
+
+						} else {
+
+
+							chosenIndex = Integer.parseInt(selected);
+
+							// build new predatorLine from chosen
+							predatorLine newPredatorLine = p.get(chosenIndex);
+
+							System.out.println("--------------------------------");
+							System.out.println(indexFixed + " predatorLines done - " + (inputSet.size() - indexFixed) + " more to process...\n" );
+
+							// Add predatorline to result Set
+							resultSet.add(newPredatorLine);
+							indexFixed++;
 							succes = true;
 
 						}
@@ -198,10 +278,6 @@ public class LineSelector {
 
 		}
 
-		public predatorLine() {
-
-		}
-
 
 		public String getID(){
 
@@ -210,9 +286,9 @@ public class LineSelector {
 		}
 
 		public String getTimestamp() {
-			
+
 			return this.timestamp;
-		
+
 		}
 
 		public void addToMessage(String s) {
@@ -289,12 +365,22 @@ public class LineSelector {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
+
+		/*
+		 * Select lines in HP15
+		 */
 		LineSelector selector = new LineSelector("data/rawFiles/HP15_predator_over_15min_raw.csv");
-
 		selector.readInputFile();	
-		selector.selectLines();
+		selector.selectLinesHP15();
+
+		/*
+		 * Select lines in W15
+		 */
+
+//		LineSelector selector2 = new LineSelector("data/rawFiles/W15_predator_raw.csv");
+//		selector2.readInputFile();	
+//		selector2.selectLinesWP15();
 
 
 	}
