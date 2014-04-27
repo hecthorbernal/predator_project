@@ -1,6 +1,8 @@
 package preprocessing;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -260,7 +262,7 @@ public class LineSelector {
 		}
 
 	}
-
+	
 	private class predatorLine {
 
 		public String senderID;
@@ -299,6 +301,63 @@ public class LineSelector {
 
 
 	}
+	
+	
+	// the method creates the x files with the totalNumberOfPredatorLine/x, here 686/3
+	
+	private void devide_predator_files(String subsetPath, int low, int high) throws IOException{
+		FileInputStream fis;
+		BufferedWriter writer = null;
+            //create a temporary file
+            File subset = new File(subsetPath);
+
+            // This will output the full path where the file will be written to...
+            System.out.println(subset.getCanonicalPath());
+
+            writer = new BufferedWriter(new FileWriter(subset));
+		
+		try {
+			fis = new FileInputStream(this.file);
+
+			// Construct BufferedReader from InputStreamReader
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+			String line = null;
+			predatorLine currentPredator = null;
+			predatorLine nextPredatorLine = null;
+
+			ArrayList<predatorLine> predatorLines = new ArrayList<predatorLine>();
+			int lineCounter = 1;
+			// read first line
+			if ((line = br.readLine()) != null) {
+				currentPredator = new predatorLine(line);
+				predatorLines.add(currentPredator);
+				int count = 1;
+				// read all lines
+				while ((line = br.readLine()) != null && count <high ) {
+					lineCounter++;
+					nextPredatorLine = new predatorLine(line);
+					if (nextPredatorLine.getID().equals(currentPredator.getID())) {
+						if(low<=count){
+							writer.write(line + "\n");
+						}
+					} else {
+						// move on to next set of lines
+						currentPredator = nextPredatorLine;
+						writer.write(line + "\n");
+						count++;
+					}
+				}
+				br.close();
+				System.out.println("total number of lines prossesed: " + lineCounter);
+			}
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
 
 	private void saveAndQuit() {
 
@@ -363,16 +422,18 @@ public class LineSelector {
 
 	/**
 	 * @param args
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
-
+		
 		/*
 		 * Select lines in HP15
 		 */
-		LineSelector selector = new LineSelector("data/rawFiles/HP15_predator_over_15min_raw.csv");
-		selector.readInputFile();	
-		selector.selectLinesHP15();
+		LineSelector selector = new LineSelector("data/rawFiles/HP15_predator_over_15min_raw.csv.txt");
+		selector.devide_predator_files("data/rawFiles/jacob_HP15_predator_over_15min_raw.csv", 458, 689);
+//		selector.readInputFile();	
+//		selector.selectLinesHP15();
 
 		/*
 		 * Select lines in W15
