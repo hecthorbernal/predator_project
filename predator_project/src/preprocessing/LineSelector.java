@@ -1,8 +1,6 @@
 package preprocessing;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,10 +24,10 @@ public class LineSelector {
 		this.resultSet = new ArrayList<predatorLine>();
 		this.file = file;
 		int indx = file.indexOf("_raw") + 4;
-		
+
 		this.processedOutputFile = file.substring(0, indx ) + "_processed.csv";
 		this.unprocessedOutputFile = file.substring(0, indx ) + "_unprocessed.csv";
-		
+
 		indexFixed = 0;
 
 	}
@@ -126,7 +124,7 @@ public class LineSelector {
 
 						if (selected.matches("q")) {
 							quit = true;
-							saveAndQuit();
+							//saveAndQuit();
 							break;
 						}
 
@@ -183,6 +181,8 @@ public class LineSelector {
 			}
 		}
 
+		saveAndQuit();
+
 	}
 
 	private void selectLinesWP15() {
@@ -197,72 +197,85 @@ public class LineSelector {
 
 			if(!quit) {
 
-				for (int i = 0; i < p.size(); i++) {
+				// if there's only one 15 min. chunk - add it to result
+				if(p.size() == 1) {
 
-					System.out.println(">>> " + i + " <<<\n " + p.get(i).message.replaceAll("<nl>", "\n") );
+					predatorLine newPredatorLine = p.get(0);
+					resultSet.add(newPredatorLine);
+					indexFixed++;
+					System.out.println(">> added oneLiner to set...");
 
-				}
+				} else {
 
-				// System.out.println("\n" + indexFixed + " predatorLines done - " + (inputSet.size() - indexFixed) + " more to process..." );
-				System.out.println("Choose Line number and return - or 's' for skip or q for quit and save");
+					for (int i = 0; i < p.size(); i++) {
 
-				try {
-
-					int chosenIndex;
-					boolean succes = false;
-
-
-					while (!succes) {
-
-						String selected = selectorReader.readLine();
-
-						if (selected.matches("q")) {
-							quit = true;
-							saveAndQuit();
-							break;
-						}
-
-
-						if (selected.matches("s")) {
-							indexFixed++;
-							System.out.println("--------------------------------");
-							System.out.println(indexFixed + " predatorLines done - " + (inputSet.size() - indexFixed) + " more to process...\n" );
-							break;
-
-						}
-
-						if ( !selected.matches("[0-9]++") || Integer.parseInt(selected) > p.size()) {
-
-							System.out.println("Please choose a valid linenumber or 's' for skipping line - 'q' for save and quit");
-
-						} else {
-
-
-							chosenIndex = Integer.parseInt(selected);
-
-							// build new predatorLine from chosen
-							predatorLine newPredatorLine = p.get(chosenIndex);
-
-							System.out.println("--------------------------------");
-							System.out.println(indexFixed + " predatorLines done - " + (inputSet.size() - indexFixed) + " more to process...\n" );
-
-							// Add predatorline to result Set
-							resultSet.add(newPredatorLine);
-							indexFixed++;
-							succes = true;
-
-						}
+						System.out.println(">>> " + i + " <<<\n " + p.get(i).message.replaceAll("<nl>", "\n") );
 
 					}
 
-				} catch (Exception e) {
-					// TODO: handle exception
+					// System.out.println("\n" + indexFixed + " predatorLines done - " + (inputSet.size() - indexFixed) + " more to process..." );
+					System.out.println("Choose Line number and return - or 's' for skip or q for quit and save");
+
+					try {
+
+						int chosenIndex;
+						boolean succes = false;
+
+
+						while (!succes) {
+
+							String selected = selectorReader.readLine();
+
+							if (selected.matches("q")) {
+								quit = true;
+								// saveAndQuit();
+								break;
+							}
+
+
+							if (selected.matches("s")) {
+								indexFixed++;
+								System.out.println("--------------------------------");
+								System.out.println(indexFixed + " predatorLines done - " + (inputSet.size() - indexFixed) + " more to process...\n" );
+								break;
+
+							}
+
+							if ( !selected.matches("[0-9]++") || Integer.parseInt(selected) > p.size()) {
+
+								System.out.println("Please choose a valid linenumber or 's' for skipping line - 'q' for save and quit");
+
+							} else {
+
+
+								chosenIndex = Integer.parseInt(selected);
+
+								// build new predatorLine from chosen
+								predatorLine newPredatorLine = p.get(chosenIndex);
+
+								System.out.println("--------------------------------");
+								System.out.println(indexFixed + " predatorLines done - " + (inputSet.size() - indexFixed) + " more to process...\n" );
+
+								// Add predatorline to result Set
+								resultSet.add(newPredatorLine);
+								indexFixed++;
+								succes = true;
+
+							}
+
+						}
+
+					} catch (Exception e) {
+						// TODO: handle exception
+					}
 				}
 			}
 		}
+		
+		saveAndQuit();
 
 	}
-	
+
 	private class predatorLine {
 
 		public String senderID;
@@ -301,63 +314,6 @@ public class LineSelector {
 
 
 	}
-	
-	
-	// the method creates the x files with the totalNumberOfPredatorLine/x, here 686/3
-	
-	private void devide_predator_files(String subsetPath, int low, int high) throws IOException{
-		FileInputStream fis;
-		BufferedWriter writer = null;
-            //create a temporary file
-            File subset = new File(subsetPath);
-
-            // This will output the full path where the file will be written to...
-            System.out.println(subset.getCanonicalPath());
-
-            writer = new BufferedWriter(new FileWriter(subset));
-		
-		try {
-			fis = new FileInputStream(this.file);
-
-			// Construct BufferedReader from InputStreamReader
-			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-			String line = null;
-			predatorLine currentPredator = null;
-			predatorLine nextPredatorLine = null;
-
-			ArrayList<predatorLine> predatorLines = new ArrayList<predatorLine>();
-			int lineCounter = 1;
-			// read first line
-			if ((line = br.readLine()) != null) {
-				currentPredator = new predatorLine(line);
-				predatorLines.add(currentPredator);
-				int count = 1;
-				// read all lines
-				while ((line = br.readLine()) != null && count <high ) {
-					lineCounter++;
-					nextPredatorLine = new predatorLine(line);
-					if (nextPredatorLine.getID().equals(currentPredator.getID())) {
-						if(low<=count){
-							writer.write(line + "\n");
-						}
-					} else {
-						// move on to next set of lines
-						currentPredator = nextPredatorLine;
-						writer.write(line + "\n");
-						count++;
-					}
-				}
-				br.close();
-				System.out.println("total number of lines prossesed: " + lineCounter);
-			}
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-
 
 	private void saveAndQuit() {
 
@@ -422,24 +378,22 @@ public class LineSelector {
 
 	/**
 	 * @param args
-	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 
-		
+
 		/*
 		 * Select lines in HP15
 		 */
-		LineSelector selector = new LineSelector("data/rawFiles/HP15_predator_over_15min_raw.csv.txt");
-		selector.devide_predator_files("data/rawFiles/jacob_HP15_predator_over_15min_raw.csv", 458, 689);
-//		selector.readInputFile();	
-//		selector.selectLinesHP15();
+//				LineSelector selector = new LineSelector("data/rawFiles/HP15_predator_over_15min_chunk3_raw.csv");
+//				selector.readInputFile();	
+//				selector.selectLinesHP15();
 
 		/*
 		 * Select lines in W15
 		 */
 
-//		LineSelector selector2 = new LineSelector("data/rawFiles/W15_predator_raw.csv");
+//		LineSelector selector2 = new LineSelector("data/rawFiles/W15_predator_chunk3_raw.csv");
 //		selector2.readInputFile();	
 //		selector2.selectLinesWP15();
 
