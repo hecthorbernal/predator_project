@@ -84,7 +84,7 @@ public class LinguisticFeaturesDetectorTrieST {
 	}
 
 
-	public static int numberOfBlackListWords(String text) {
+	public int numberOfBlackListWords(String text) {
 
 		int countBlackListWords = 0;
 

@@ -429,21 +429,17 @@ public class dataParser {
 		//Instantiate sentiment analyser
 		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
 
-		//Instantiate detector of offenses and profanation .
-		//BlackListWordsDetector profanator = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
+		//Instantiate detector of alert words .
+		BlackListWordsDetector alertDetector = new BlackListWordsDetector("data/blacklists/en_us.isAlert.txt");
 
-		//Instantiate Spaces detector
-		//LinguisticFeaturesDetector linguisticDetector = new LinguisticFeaturesDetector("data/OffensiveProfaneWordList.txt");
-
-		//Instantiate Blacklist detector
-		LinguisticFeaturesDetectorTrieST linguisticDetectorTrieST = new LinguisticFeaturesDetectorTrieST("data/OffensiveProfaneWordList.txt");
+		//Instantiate Blacklist, on detector
+		LinguisticFeaturesDetectorTrieST blackListDetectorTrieST = new LinguisticFeaturesDetectorTrieST("data/blacklists/en_us.isBlackList.txt");
 
 		//Instantiate JazzySpellChecker
 		JazzySpellChecker spellChecker = new JazzySpellChecker();
 
 		//Instantiate EmoticonAnalyzer
 		EmoticonAnalyzer emoticonAnalyzer = new EmoticonAnalyzer();
-
 
 		for(Message cm: subset) {
 
@@ -453,20 +449,16 @@ public class dataParser {
 			// cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
 
 			cm.features[numberOfLines] = FeatureExtractor.numberOfLines(cm.message);
-			cm.features[spaces] = linguisticDetectorTrieST.numberOfWordsWithSpaces(cm.message);
-			cm.features[letterLines] = linguisticDetectorTrieST.numberOfOneLetterLines(cm.message);
+			cm.features[spaces] = blackListDetectorTrieST.numberOfWordsWithSpaces(cm.message);
+			cm.features[letterLines] = blackListDetectorTrieST.numberOfOneLetterLines(cm.message);
 
 			// remove <nl> tags before further feature extraction and lowercase string
 			cm.message = cm.message.replace("<nl>", " ").replace("$","");
 
 			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
 			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
-			cm.features[alert] =linguisticDetectorTrieST.numberOfAlertWords(cm.message);
-			cm.features[blacklist] = linguisticDetectorTrieST.numberOfBlackListWords(cm.message);			
-			
-//			cm.features[alert] = profanator.numberOfAlerts(cm.message);
-//			cm.features[blacklist] = profanator.numberOfOffensiveProfanes(cm.message);
-
+			cm.features[alert] = alertDetector.numberOfAlerts(cm.message);
+			cm.features[blacklist] = blackListDetectorTrieST.numberOfBlackListWords(cm.message);			
 			
 			// Emoticon features
 			cm.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(cm.message);
@@ -478,10 +470,7 @@ public class dataParser {
 			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
 
 			// Correct spelling errors before export
-			// System.out.println(cm.message);
 			cm.message = "\"" + spellChecker.getCorrectedText(cm.message) + "\"";
-
-			//System.out.println(cm.toString());
 
 		}
 	}

@@ -37,28 +37,29 @@ public class BlackListWordsDetector {
 		}
 
 	}
-	/**
-	 * Counts the number of profane words in the given conversation.
-	 * @param text = the conversation to analyze.
-	 * @return the number of profane words.
-	 */
-	public int numberOfOffensiveProfanes(String text){
-		int profanes = 0;
-		String[] words = text.split("\\s");
-		for(int i = 0; i < words.length; i++){
-			String word = words[i].toLowerCase();
 
-			//If a word ends with symbols (!,?), remove them so
-			//the word can be matched.
-			if(word.matches("\\W*[a-zA-Z]+[?!,.:;]+.*")){
-				word = word.replaceAll("\\W*([a-zA-Z]+)\\W*", "$1");
-			}
-			if(wordList.containsKey(word)){
-				profanes++;
-			}
-		}
-		return profanes;
-	}
+//	/**
+//	 * Counts the number of profane words in the given conversation.
+//	 * @param text = the conversation to analyze.
+//	 * @return the number of profane words.
+//	 */
+//	public int numberOfOffensiveProfanes(String text){
+//		int profanes = 0;
+//		String[] words = text.split("\\s");
+//		for(int i = 0; i < words.length; i++){
+//			String word = words[i].toLowerCase();
+//
+//			//If a word ends with symbols (!,?), remove them so
+//			//the word can be matched.
+//			if(word.matches("\\W*[a-zA-Z]+[?!,.:;]+.*")){
+//				word = word.replaceAll("\\W*([a-zA-Z]+)\\W*", "$1");
+//			}
+//			if(wordList.containsKey(word)){
+//				profanes++;
+//			}
+//		}
+//		return profanes;
+//	}
 	
 	public int numberOfAlerts(String text){
 		int profanes = 0;
@@ -66,11 +67,6 @@ public class BlackListWordsDetector {
 		for(int i = 0; i < words.length; i++){
 			String word = words[i].toLowerCase();
 
-			//If a word ends with symbols (!,?), remove them so
-			//the word can be matched.
-//			if(word.matches("\\W*[a-zA-Z]+[?!,.:;]+.*")){
-//				word = word.replaceAll("\\W*([a-zA-Z]+)\\W*", "$1");
-//			}
 			if(wordList.containsKey(word)){
 				profanes++;
 			}
@@ -80,9 +76,9 @@ public class BlackListWordsDetector {
 	
 	public static void main(String[] args) {
 		
-		BlackListWordsDetector b = new BlackListWordsDetector("data/OffensiveProfaneWordList.txt");
+		BlackListWordsDetector b = new BlackListWordsDetector("data/blacklists/en_us.isBlackList.txt");
 		
-		String test = "babe beast";
+		String test = "babe twat";
 		
 		System.out.println(b.numberOfAlerts(test));
 		
