@@ -110,7 +110,7 @@ public class LinguisticFeaturesDetectorTrieST {
 	public static void main(String args[]){
 
 		// Small test
-		LinguisticFeaturesDetectorTrieST myDetector = new LinguisticFeaturesDetectorTrieST("data/OffensiveProfaneWordList.txt");
+		LinguisticFeaturesDetectorTrieST myDetector = new LinguisticFeaturesDetectorTrieST("data/blacklists/en_us.isBlacklist.txt");
 
 		System.out.println(myDetector.wordTrie.size());
 
@@ -118,16 +118,11 @@ public class LinguisticFeaturesDetectorTrieST {
 		String s2 = "s e x";
 		String s3 = "s\r\n e x";
 
-		System.out.println(myDetector.numberOfAlertWords(s));
 		System.out.println(myDetector.numberOfBlackListWords(s));
 		
 		System.out.println(myDetector.numberOfWordsWithSpaces(s2));
 
-		System.out.println(myDetector.numberOfOneLetterLines(s));
-		
-		String s4 = "a$$";
-		
-		System.out.println(s4.replace("$", ""));
+		System.out.println(myDetector.numberOfOneLetterLines(s3));
 		
 
 	}
