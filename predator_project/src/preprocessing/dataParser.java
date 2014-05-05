@@ -8,20 +8,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-import preprocessing.LineSelector.predatorLine;
 import xmlImport.Conversation;
 import xmlImport.ConversationMessage;
 import xmlImport.StaXParser;
-import featureExtractors.EmoticonAnalyzer;
-import featureExtractors.LinguisticFeaturesDetector;
 import featureExtractors.BlackListWordsDetector;
+import featureExtractors.EmoticonAnalyzer;
 import featureExtractors.JazzySpellChecker;
 import featureExtractors.LinguisticFeaturesDetectorTrieST;
 import featureExtractors.SentimentAnalyser;
@@ -40,7 +36,6 @@ public class dataParser {
 	private List<Conversation> conversations;
 	private static List<Conversation> np_conversations;
 	private static List<Conversation> p_conversations;
-	private JazzySpellChecker jazzySpellChecker;
 
 	// constants used for addressing variables in array of features
 	final static int letterLines = 0;
@@ -63,7 +58,6 @@ public class dataParser {
 	public dataParser(String file) {
 
 		this.conversations = new StaXParser().readConfig(file);
-		this.jazzySpellChecker = new JazzySpellChecker();
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -86,57 +80,57 @@ public class dataParser {
 		List<Message> mySubSetL15_P = myDataParser.generateL15(p_conversations);
 		System.out.println(mySubSetL15_P.size());
 		generateRawCsvFile(mySubSetL15_P, "data/rawFiles/L15_predator_raw.csv");
-//		List<Message> L15_P = readRawSubset("data/rawFiles/L15_predator_raw.csv");
-//		addFeaturesToSubset(L15_P);
-//		generateCsvFile(L15_P, "data/subsets/L15_P.csv");
-//		System.out.println(L15_P.size());
+		//		List<Message> L15_P = readRawSubset("data/rawFiles/L15_predator_raw.csv");
+		//		addFeaturesToSubset(L15_P);
+		//		generateCsvFile(L15_P, "data/subsets/L15_P.csv");
+		//		System.out.println(L15_P.size());
 
 		//Process the non-predator data
 		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
 		System.out.println(mySubSetL15_NP.size());
 		generateRawCsvFile(mySubSetL15_NP, "data/rawFiles/L15_non_predator_raw.csv");
-//		List<Message> L15_NP = readRawSubset("data/rawFiles/L15_non_predator_raw.csv");
-//		// Add features to L15_NP
-//		addFeaturesToSubset(L15_NP);
-//		generateCsvFile(L15_NP, "data/subsets/L15_NP.csv");
-//		System.out.println(L15_NP.size());
+		//		List<Message> L15_NP = readRawSubset("data/rawFiles/L15_non_predator_raw.csv");
+		//		// Add features to L15_NP
+		//		addFeaturesToSubset(L15_NP);
+		//		generateCsvFile(L15_NP, "data/subsets/L15_NP.csv");
+		//		System.out.println(L15_NP.size());
 
 		//Generate W15 predator
 		List<Message> mySubSetW15_P = myDataParser.generateW15(p_conversations, "data/W15_P_splitted_convers_list");
 		//TEST CSV export
 		System.out.println(mySubSetW15_P.size());
 		generateRawCsvFile(mySubSetW15_P, "data/rawFiles/W15_predator_raw.csv");
-//		List<Message> W15_P = readRawSubset("data/rawFiles/W15_predator_raw.csv");
-//		addFeaturesToSubset(W15_P);
-//		generateCsvFile(W15_P, "data/subsets/W15_P.csv");
-//		System.out.println(W15_P.size());
+		//		List<Message> W15_P = readRawSubset("data/rawFiles/W15_predator_raw.csv");
+		//		addFeaturesToSubset(W15_P);
+		//		generateCsvFile(W15_P, "data/subsets/W15_P.csv");
+		//		System.out.println(W15_P.size());
 
 		//Generate W15 non-predator
 		List<Message> mySubSetW15_NP = myDataParser.generateW15(np_conversations, "data/W15_NP_splitted_convers_list");
 		//TEST CSV export
 		System.out.println(mySubSetW15_NP.size());
 		generateRawCsvFile(mySubSetW15_NP, "data/rawFiles/W15_non_predator_raw.csv");
-//		List<Message> W15_NP = readRawSubset("data/rawFiles/W15_non_predator_raw.csv");
-//		addFeaturesToSubset(W15_NP);
-//		generateCsvFile(W15_NP, "data/subsets/W15_NP.csv");
-//		System.out.println(W15_NP.size());
-		
+		//		List<Message> W15_NP = readRawSubset("data/rawFiles/W15_non_predator_raw.csv");
+		//		addFeaturesToSubset(W15_NP);
+		//		generateCsvFile(W15_NP, "data/subsets/W15_NP.csv");
+		//		System.out.println(W15_NP.size());
+
 		//Generate HP15
 		myDataParser.generateHP15(p_conversations, "data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
 		//This should be run only when the HP15 conversations over 15 min have been manually shortened.
 		List<Message> mySubSetHP15_P = myDataParser.mergeHP15_files("data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
 		System.out.println(mySubSetHP15_P.size());
 		generateRawCsvFile(mySubSetHP15_P, "data/rawFiles/HP15_predator_raw.csv");
-//		List<Message> HP15_P = readRawSubset("data/rawFiles/HP15_predator_raw.csv");
-//		addFeaturesToSubset(HP15_P);
-//		generateCsvFile(HP15_P, "data/subsets/HP15_P.csv");
-//		System.out.println(HP15_P.size());
-		
+		//		List<Message> HP15_P = readRawSubset("data/rawFiles/HP15_predator_raw.csv");
+		//		addFeaturesToSubset(HP15_P);
+		//		generateCsvFile(HP15_P, "data/subsets/HP15_P.csv");
+		//		System.out.println(HP15_P.size());
+
 		//Example: Generate balanced HP15 set
-//		myDataParser.randomNP("data/balancedSubsets/HP15_20P.csv", 02);
+		//		myDataParser.randomNP("data/balancedSubsets/HP15_20P.csv", 02);
 		myDataParser.generateBalacedSubset("data/rawFiles/W15_predator_raw.csv", "data/rawFiles/W15_non_predator_raw.csv","data/balancedSubsets/HP15_20P.csv", 20);
 	}
-	
+
 	/**
 	 * Choose a the number of random conversations that 
 	 * corresponds to the percentage of predators wanted in 
@@ -148,11 +142,11 @@ public class dataParser {
 		//TODO Implement
 		int totalNumOfNP = np_conversations.size();
 		int numOfP = p_conversations.size(); 
-//		The number of nonPredators needed to make the right rate between np and p.
+		//		The number of nonPredators needed to make the right rate between np and p.
 		int numOfNP = totalNumOfNP*(1-percent_of_predatory_lines); 
-//		List<Conversation> shuffledList = new ArrayList<Conversation>(np_conversations);
-////		Create a shuffled list to choose np randomly. 
-//		Collections.shuffle(shuffledList, new Random(shuffledList.size()));
+		//		List<Conversation> shuffledList = new ArrayList<Conversation>(np_conversations);
+		////		Create a shuffled list to choose np randomly. 
+		//		Collections.shuffle(shuffledList, new Random(shuffledList.size()));
 		//Shufles list of np conversations:
 		Collections.shuffle(np_conversations, new Random(np_conversations.size()));
 		//Extracts a random subset of np_predator to constitute with some percentages.
@@ -164,8 +158,8 @@ public class dataParser {
 			balancedSubset.add(conversation);
 		}
 
-			
-//		np_conversations = balancedSubset;
+
+		//		np_conversations = balancedSubset;
 		try
 		{
 			FileWriter writer = new FileWriter(outputFile);
@@ -175,7 +169,7 @@ public class dataParser {
 
 				writer.append(conversation.toString() + "\n");
 			}
-			
+
 			writer.close();
 		}
 		catch(IOException e)
@@ -184,7 +178,7 @@ public class dataParser {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Generate a balanced subset using a non predatory file and a predatory
 	 * one from data/subsets/
@@ -197,31 +191,33 @@ public class dataParser {
 	private void generateBalacedSubset(String predatoryFile, String nonPredatorFile,
 			String outputFile, int percent_of_predatory_lines){	
 		System.out.println("Generator of balaced subsets implemented");
-        // Location of file to read
-        File predator_File = new File(predatoryFile);
-        File non_predatory_file =  new File(nonPredatorFile);
-        ArrayList<String> predators = new ArrayList<String>();
-        ArrayList<String> nonPredators = new ArrayList<String>();
-        ArrayList<String> balancedSubset = new ArrayList<String>();
-        int numberOfPredators = 0;
-        try {
-            Scanner scannerP = new Scanner(predator_File);
-            Scanner scannerNP = new Scanner(non_predatory_file);
-            while (scannerP.hasNextLine()) {
-                String line = scannerP.nextLine();
-                predators.add(line);
-                numberOfPredators++;
-            }
-            scannerP.close();
-            while (scannerNP.hasNextLine()) {
-                String line = scannerNP.nextLine();
-                nonPredators.add(line);
-            }
-            scannerNP.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        try
+		// Location of file to read
+		File predator_File = new File(predatoryFile);
+		File non_predatory_file =  new File(nonPredatorFile);
+		ArrayList<String> predators = new ArrayList<String>();
+		ArrayList<String> nonPredators = new ArrayList<String>();
+		ArrayList<String> balancedSubset = new ArrayList<String>();
+		int numberOfPredators = 0;
+		try {
+			Scanner scannerP = new Scanner(predator_File);
+			Scanner scannerNP = new Scanner(non_predatory_file);
+			while (scannerP.hasNextLine()) {
+				String line = scannerP.nextLine();
+				predators.add(line);
+				numberOfPredators++;
+			}
+			scannerP.close();
+			while (scannerNP.hasNextLine()) {
+				String line = scannerNP.nextLine();
+				nonPredators.add(line);
+			}
+			scannerNP.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		try
+		
 		{
 			FileWriter writer = new FileWriter(outputFile);
 
@@ -271,11 +267,11 @@ public class dataParser {
 		{
 			e.printStackTrace();
 		}
-    }
-		
-		
-	
-	
+	}
+
+
+
+
 	/**
 	 * Split each conversation in to a set of conversations having one
 	 * unique author each.
@@ -317,22 +313,22 @@ public class dataParser {
 					cm.setNormalized_time(normalized);
 				}
 			}
-				if(predatorDetector.isAPredator(c.getAuthor()).equalsIgnoreCase("p")){
-					c.setPredator(true);
-					predator_list.add(c);
-				}else{
-					c.setPredator(false);
-					non_predator_list.add(c);
-				}
+			if(predatorDetector.isAPredator(c.getAuthor()).equalsIgnoreCase("p")){
+				c.setPredator(true);
+				predator_list.add(c);
+			}else{
+				c.setPredator(false);
+				non_predator_list.add(c);
 			}
+		}
 
 		// create subset from conversations
-			dataParser.np_conversations = non_predator_list;
-			dataParser.p_conversations = predator_list;
+		dataParser.np_conversations = non_predator_list;
+		dataParser.p_conversations = predator_list;
 		System.out.println("Predator and Non Predator conversations have been separated from each other.");
 
-		}
-	
+	}
+
 	/**
 	 * Go through the conversations and those over 15 min should go to a different
 	 * list with the time stamp of each message added for manual selection.
@@ -377,12 +373,12 @@ public class dataParser {
 			}
 		}
 		// create subset from conversations
-		
+
 
 		generateRawCsvFile(generateSubSet(under15_list), file_under15);
 		generateRawCsvFile(generateSubSet(over15_list), file_over15);
 	}
-	
+
 	/**
 	 * For the set HP15, merge the manually sorted conversations to the ones
 	 * under 15 mins
@@ -439,7 +435,7 @@ public class dataParser {
 				for(ConversationMessage cm: c.messages) {
 					if(withinLast15Mins(cm.getNormalized_time(), lastMessageTime)){
 						tmpConversation.addC_Message(cm);
-							//System.out.println("Splitting conversation: " + c.getId() + "\nduration: " + duration + "minutes \nfirst: " +									firstMessageTime + " last: " + lastMessageTime + "\nAdded to L15_raw.csv line: " + ++line_number);
+						//System.out.println("Splitting conversation: " + c.getId() + "\nduration: " + duration + "minutes \nfirst: " +									firstMessageTime + " last: " + lastMessageTime + "\nAdded to L15_raw.csv line: " + ++line_number);
 					}
 				}
 				finalList.add(tmpConversation);
@@ -555,64 +551,12 @@ public class dataParser {
 		return subSet;
 	}
 
-	/**
-	 * Adds features to a given subset
-	 */
-	private static void addFeaturesToSubset(List<Message> subset){
-
-
-		//Instantiate sentiment analyser
-		SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
-
-		//Instantiate detector of alert words .
-		BlackListWordsDetector alertDetector = new BlackListWordsDetector("data/blacklists/en_us.isAlert.txt");
-
-		//Instantiate Blacklist, on detector
-		LinguisticFeaturesDetectorTrieST blackListDetectorTrieST = new LinguisticFeaturesDetectorTrieST("data/blacklists/en_us.isBlackList.txt");
-
-		//Instantiate JazzySpellChecker
-		JazzySpellChecker spellChecker = new JazzySpellChecker();
-
-		//Instantiate EmoticonAnalyzer
-		EmoticonAnalyzer emoticonAnalyzer = new EmoticonAnalyzer();
-
-		for(Message cm: subset) {
-
-			// add feature values to message
-
-			//TODO implement counting forbidden phrases with one word per Line
-			// cm.features[wordLines] = FeatureExtractor.wordLines(cm.message);
-
-			cm.features[numberOfLines] = FeatureExtractor.numberOfLines(cm.message);
-			cm.features[spaces] = blackListDetectorTrieST.numberOfWordsWithSpaces(cm.message);
-			cm.features[letterLines] = blackListDetectorTrieST.numberOfOneLetterLines(cm.message);
-
-			// remove <nl> tags before further feature extraction and lowercase string
-			cm.message = cm.message.replace("<nl>", " ").replace("$","");
-
-			cm.features[funkyWords] = FeatureExtractor.funkyWords(cm.message);
-			cm.features[consecutiveLetters] = FeatureExtractor.consecutiveLetters(cm.message);
-			cm.features[alert] = alertDetector.numberOfAlerts(cm.message);
-			cm.features[blacklist] = blackListDetectorTrieST.numberOfBlackListWords(cm.message);			
-			
-			// Emoticon features
-			cm.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(cm.message);
-			cm.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(cm.message);
-			cm.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(cm.message);
-
-			cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
-			cm.features[negativeSent] = sentiments.getNegativeSentiment(cm.message);
-			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
-
-			// Correct spelling errors before export
-			cm.message = "\"" + spellChecker.getCorrectedText(cm.message) + "\"";
-
-		}
-	}
 
 	private static void generateRawCsvFile(List<Message> subset, String sFileName)
+	
 	{
 		try
+		
 		{
 			FileWriter writer = new FileWriter(sFileName);
 
@@ -623,7 +567,7 @@ public class dataParser {
 				writer.append(',');
 				writer.append(message.senderID);
 				writer.append(',');
-			 
+
 				// add message to line
 				String csvMessage = message.message;
 				csvMessage = csvMessage.replace(",", " ");
@@ -653,60 +597,7 @@ public class dataParser {
 
 	}
 
-	/*
-	 * Generates CSV file from a subset and save it to file
-	 * 
-	 */
-	private static void generateCsvFile(List<Message> subset, String sFileName)
-	{
-		try
-		{
-			FileWriter writer = new FileWriter(sFileName);
 
-			// Create headings
-			writer.append("predator,senderID,letterLines,wordLines,numberOfLines,spaces,funkyWords,");
-			writer.append("posEmoticons,neuEmoticons,negEmoticons,consecutiveLetters,alert,blacklist,");
-			writer.append("misspelledWords,negativeSent,positiveSent,message");
-			writer.append('\n');
-
-			// add lines
-
-			for(Message message: subset) {
-
-				writer.append(message.isPredator);
-				writer.append(',');
-				writer.append(message.senderID);
-				writer.append(',');
-
-				// add features to line
-				for (int i = 0; i < message.features.length; i++) {
-					writer.append(Integer.toString(message.features[i]));
-					writer.append(',');	
-				}
-
-				// add message to line
-				String csvMessage = message.message;
-				csvMessage = csvMessage.replace("", "");
-				csvMessage = csvMessage.replace("\n", " ");
-
-				writer.append(csvMessage);
-				writer.append('\n');
-
-			}
-
-			writer.flush();
-			writer.close();
-		}
-
-		catch(IOException e)
-
-		{
-			e.printStackTrace();
-		}
-
-		System.out.println("Exported csv file: " + sFileName);
-
-	}
 
 	private static ArrayList<Message> readRawSubset(String file) {
 		ArrayList<Message> set = new ArrayList<>();
@@ -739,6 +630,7 @@ public class dataParser {
 		System.out.println(file + " imported");
 		return set;
 	}
+	
 	/**
 	 * Read the raw HP file of conversations over 15 min and merge those 
 	 * messages corresponding to the same author and conversation into one
@@ -776,20 +668,20 @@ public class dataParser {
 		}
 		ArrayList<Message> finalSet = new ArrayList<>();
 		Message tmpMessage = null;
- 		for(Message message : set){
- 			if(tmpMessage == null){
- 				tmpMessage = new Message(message.senderID, message.message);
- 				tmpMessage.isPredator = message.isPredator;
- 				tmpMessage.cID = message.cID;
- 			}else if(tmpMessage.senderID.equalsIgnoreCase(message.senderID) &&
- 					tmpMessage.cID.equalsIgnoreCase(message.cID)){
- 				tmpMessage.message += "<nl>" + message.message;
- 			}else{
- 				finalSet.add(tmpMessage);
- 				tmpMessage = new Message(message.senderID, message.message);
-  				tmpMessage.isPredator = message.isPredator;
- 				tmpMessage.cID = message.cID;
- 			}
+		for(Message message : set){
+			if(tmpMessage == null){
+				tmpMessage = new Message(message.senderID, message.message);
+				tmpMessage.isPredator = message.isPredator;
+				tmpMessage.cID = message.cID;
+			}else if(tmpMessage.senderID.equalsIgnoreCase(message.senderID) &&
+					tmpMessage.cID.equalsIgnoreCase(message.cID)){
+				tmpMessage.message += "<nl>" + message.message;
+			}else{
+				finalSet.add(tmpMessage);
+				tmpMessage = new Message(message.senderID, message.message);
+				tmpMessage.isPredator = message.isPredator;
+				tmpMessage.cID = message.cID;
+			}
 		}
 		System.out.println(file + " imported");
 		return finalSet;

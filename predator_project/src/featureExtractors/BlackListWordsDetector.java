@@ -74,6 +74,11 @@ public class BlackListWordsDetector {
 		return profanes;
 	}
 	
+	public int forbiddenPhrases(String s){
+		
+		return numberOfAlerts(s);
+	}
+	
 	public static void main(String[] args) {
 		
 		BlackListWordsDetector b = new BlackListWordsDetector("data/blacklists/en_us.isBlackList.txt");

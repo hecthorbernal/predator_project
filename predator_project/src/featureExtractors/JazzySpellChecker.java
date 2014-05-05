@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 
@@ -23,7 +24,34 @@ public class JazzySpellChecker implements SpellCheckListener {
 
 	private SpellChecker spellChecker;
 	private List<String> misspelledWords;
+	HashSet<String> uniqueMisspelledWords = new HashSet<>();
 
+	public JazzySpellChecker() {
+
+		misspelledWords = new ArrayList<String>();
+		initialize();
+	}
+	
+	private static SpellDictionaryHashMap dictionaryHashMap;
+
+	static{
+
+		File dict = new File("dictionary/dictionary.txt");
+		try {
+			dictionaryHashMap = new SpellDictionaryHashMap(dict);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void initialize(){
+		spellChecker = new SpellChecker(dictionaryHashMap);
+		spellChecker.addSpellCheckListener(this);  
+	}
+
+	
 	/**
 	 * get a list of misspelled words from the text
 	 * @param text
@@ -44,36 +72,21 @@ public class JazzySpellChecker implements SpellCheckListener {
 		StringWordTokenizer texTok = new StringWordTokenizer(text,
 				new TeXWordFinder());
 		spellChecker.checkSpelling(texTok);
+		
+		// add words to hashset
+		for (String s: misspelledWords)
+			uniqueMisspelledWords.add(s);
+		
 		int count = misspelledWords.size();
 		misspelledWords.clear();
 		return count;
 	}
-
-	private static SpellDictionaryHashMap dictionaryHashMap;
-
-	static{
-
-		File dict = new File("dictionary/dictionary.txt");
-		try {
-			dictionaryHashMap = new SpellDictionaryHashMap(dict);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	
+	public int numberOfUniqueMisspelledWords(){
+		return uniqueMisspelledWords.size();
 	}
-
-	private void initialize(){
-		spellChecker = new SpellChecker(dictionaryHashMap);
-		spellChecker.addSpellCheckListener(this);  
-	}
-
-
-	public JazzySpellChecker() {
-
-		misspelledWords = new ArrayList<String>();
-		initialize();
-	}
+	
+	
 
 	/**
 	 * correct the misspelled words in the input String and return the result
@@ -120,7 +133,9 @@ public class JazzySpellChecker implements SpellCheckListener {
 				builder.append(" ");
 
 			}
+			
 		}
+		
 		return builder.toString().trim();
 	}
 

@@ -3,10 +3,22 @@
  */
 package preprocessing;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import featureExtractors.BlackListWordsDetector;
+import featureExtractors.EmoticonAnalyzer;
 import featureExtractors.JazzySpellChecker;
+import featureExtractors.LinguisticFeaturesDetectorTrieST;
+import featureExtractors.SentimentAnalyser;
 
 
 /**
@@ -14,54 +26,126 @@ import featureExtractors.JazzySpellChecker;
  *
  */
 public class FeatureExtractor {
-	
-	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
-	 */
-	public static int letterLines(String s) {
-		
-		//TODO implement method
-		return -1;
-		
+
+	// constants used for addressing variables in array of features
+	final static int letterLines = 0;
+	final static int wordLines = 1;
+	final static int numberOfLines = 2;
+	final static int spaces = 3;
+	final static int funkyWords = 4;
+	final static int posEmoticons = 5;
+	final static int neuEmoticons = 6;
+	final static int negEmoticons = 7;
+	final static int consecutiveLetters = 8;
+	final static int alert = 9;
+	final static int blacklist = 10;
+	final static int misspelledWords = 11; 
+	final static int negativeSent = 12; 
+	final static int positiveSent = 13;
+
+	private static SentimentAnalyser sentiments = new SentimentAnalyser("data/AFINN-111.txt");
+	private static BlackListWordsDetector forbiddenPhrasesDetector = new BlackListWordsDetector("data/blacklists/en_us.matchWholeWord.txt");
+	private static BlackListWordsDetector alertDetector = new BlackListWordsDetector("data/blacklists/en_us.isAlert.txt");
+	private static LinguisticFeaturesDetectorTrieST blackListDetectorTrieST = new LinguisticFeaturesDetectorTrieST("data/blacklists/en_us.isBlackList.txt");
+	private static JazzySpellChecker spellChecker = new JazzySpellChecker();
+	private static EmoticonAnalyzer emoticonAnalyzer = new EmoticonAnalyzer();
+
+
+	public static void addFeaturesToSubset(String inputFile, String outputName){
+
+		addFeaturesToSubset(readSubset(inputFile), outputName);
+
 	}
-	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
-	 */
-	public static int wordLines(String s) {
+
+	public static void addFeaturesToSubset(List<Message> subset, String outputName){
+
+		// For statitistics
+		HashSet<String> uniqueWords = new HashSet<>();
+		HashSet<String> uniqueUsers = new HashSet<>();
+
+		int countMisspelledWords;
+		int countNumberOfUniqueWords;
+		int countNumberOfLines = 0;
+		int countUniqueUsers;
+
 		
-		//TODO implement method
-		return -1;
+		for(Message cm: subset) {
+
+			// Forbidden phrases
+			cm.features[wordLines] = forbiddenPhrasesDetector.forbiddenPhrases(cm.message);
+
+			cm.features[numberOfLines] = numberOfLines(cm.message);
+			cm.features[spaces] = blackListDetectorTrieST.numberOfWordsWithSpaces(cm.message);
+			cm.features[letterLines] = blackListDetectorTrieST.numberOfOneLetterLines(cm.message);
+
+			// remove <nl> tags before further feature extraction and lowercase string
+			cm.message = cm.message.replace("<nl>", " ").replace("$","");
+
+			cm.features[funkyWords] = funkyWords(cm.message);
+			cm.features[consecutiveLetters] = consecutiveLetters(cm.message);
+			cm.features[alert] = alertDetector.numberOfAlerts(cm.message);
+			cm.features[blacklist] = blackListDetectorTrieST.numberOfBlackListWords(cm.message);			
+
+			// Emoticon features
+			cm.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(cm.message);
+			cm.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(cm.message);
+			cm.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(cm.message);
+
+			cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
+			cm.features[negativeSent] = sentiments.getNegativeSentiment(cm.message);
+			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
+
+			// Correct spelling errors before export
+			cm.message = spellChecker.getCorrectedText(cm.message);
+			
+			
+			/*
+			 * Statistics updates in loop
+			 */
+			
+			// collect unique words in hashset
+			for(String s: cm.message.split(" "))
+				uniqueWords.add(s);
+			
+			// add citaion marks to message before export
+			cm.message = "\"" + cm.message + "\"";
+			
+			// update hashset of unique users
+			uniqueUsers.add(cm.senderID);
+			//update number of lines
+			
+			// count number of lines
+			countNumberOfLines += cm.features[numberOfLines];
+
+		}
 		
+		// Statistics summarize
+		countMisspelledWords = spellChecker.numberOfUniqueMisspelledWords();
+		countNumberOfUniqueWords = uniqueWords.size();
+		countUniqueUsers = uniqueUsers.size();
+		String saveFilePath = "data/subsetsWithFeatures/";
+
+		// save to csv file - use method from dataparser
+		generateCsvFile(subset, saveFilePath +".csv");
+		
+		// save statistics to file
+		generateStatFile(saveFilePath + "_stats.txt", countUniqueUsers, countNumberOfLines, countNumberOfUniqueWords,countMisspelledWords);
+
 	}
-	
+
 	/**
 	 * @param s string to extract feature from
 	 * @return feature value as integer
 	 */
 	public static int numberOfLines(String s) {
-		
+
 		return (s.split("<nl>").length);
-		
+
 	}
-	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
-	 */
-	public static int spaces(String s) {
-		
-		//TODO implement method
-		return -1;
-		
-	}
-	
+
 	/**
 	 * I asume that this is the same as "Non Letter Words"
-	  * don't match contractions
+	 * don't match contractions
 	 * @param s string to extract feature from
 	 * @return feature value as integer
 	 */
@@ -82,42 +166,10 @@ public class FeatureExtractor {
 			}
 		}
 		return counter;
-		
+
 	}
-	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
-	 */
-	public static int posEmoticons(String s) {
-		
-		//TODO implement method
-		return -1;
-		
-	}
-	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
-	 */
-	public static int neuEmoticons(String s) {
-		
-		//TODO implement method
-		return -1;
-		
-	}
-	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
-	 */
-	public static int negEmoticons(String s) {
-		
-		//TODO implement method
-		return -1;
-		
-	}
-	
+
+
 	/**
 	 * Cosecutive identical letters CL
 	 * More than 2 identical consecutive letters
@@ -135,60 +187,134 @@ public class FeatureExtractor {
 			}
 		}
 		return counter;
-		
+
+	}
+
+
+
+	private static ArrayList<Message> readSubset(String file) {
+		ArrayList<Message> set = new ArrayList<>();
+		Message newMessage;
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(file); 
+			//Construct BufferedReader from InputStreamReader
+			BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+			String line = null;
+			while ((line = br.readLine()) != null) {
+
+				newMessage = new Message();
+				String[] tuple = line.split(",");
+				newMessage.isPredator = tuple[0];
+				newMessage.senderID = tuple[1];
+				newMessage.message = tuple[2];
+
+				set.add(newMessage);
+
+			}
+
+			br.close();
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		System.out.println(file + " imported");
+		return set;
 	}
 	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
+	
+	/*
+	 * Generates statistic file
 	 */
-	public static int alert(String s) {
+	private static void generateStatFile(String sFileName, int nUsers, int nLines, int uWords, int mWords){
 		
-		//TODO implement method
-		return -1;
+		try
 		
+		{
+			FileWriter writer = new FileWriter(sFileName);
+
+			// Create headings
+			writer.append("Filename, NumberOfUsers, NumberOfLines, UniqueWords, MisspelledWords");
+			writer.append('\n');
+			writer.append(sFileName + "," + nUsers  + "," + nLines + "," + uWords + "," + mWords);
+			writer.append('\n');
+
+			writer.flush();
+			writer.close();
+		}
+
+		catch(IOException e)
+
+		{
+			e.printStackTrace();
+		}
+
+		System.out.println("Exported statistic file: " + sFileName);
+
 	}
 	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
+	/*
+	 * Generates CSV file from a subset and save it to file
+	 * 
 	 */
-//	public static int blackList(String s) {
-//		
-//		//TODO CANNOT BE IMPLMENTED HERE
-//		return -1;
-//		
-//	}
+	private static void generateCsvFile(List<Message> subset, String sFileName)
 	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
-	 */
-//	public static int misspelledWords(String s) {
-//		
-//		//NOT IMPLEMENTED HERE - USE JAZZYSPELLCHECKER
-//		return -1;
-//	}
+	{
+		try
+		{
+			FileWriter writer = new FileWriter(sFileName);
+
+			// Create headings
+			writer.append("predator,senderID,letterLines,wordLines,numberOfLines,spaces,funkyWords,");
+			writer.append("posEmoticons,neuEmoticons,negEmoticons,consecutiveLetters,alert,blacklist,");
+			writer.append("misspelledWords,negativeSent,positiveSent,message");
+			writer.append('\n');
+
+			// add lines
+
+			for(Message message: subset) {
+
+				writer.append(message.isPredator);
+				writer.append(',');
+				writer.append(message.senderID);
+				writer.append(',');
+
+				// add features to line
+				for (int i = 0; i < message.features.length; i++) {
+					writer.append(Integer.toString(message.features[i]));
+					writer.append(',');	
+				}
+
+				// add message to line
+				String csvMessage = message.message;
+				csvMessage = csvMessage.replace("", "");
+				csvMessage = csvMessage.replace("\n", " ");
+
+				writer.append(csvMessage);
+				writer.append('\n');
+
+			}
+
+			writer.flush();
+			writer.close();
+		}
+
+		catch(IOException e)
+
+		{
+			e.printStackTrace();
+		}
+
+		System.out.println("Exported csv file: " + sFileName);
+
+	}
 	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
-	 */
-//	public static int negativeSent(String s) {
-//		
-//		//TODO CANNOT BE IMPLMENTED HERE
-//		return -1;
-//		
-//	}
-	
-	/**
-	 * @param s string to extract feature from
-	 * @return feature value as integer
-	 */
-//	public static int PositiveSent(String s) {
-//		
-//		//TODO CANNOT BE IMPLMENTED HERE
-//		return -1;
-//		
-//	}
+	public static void main (String args[]) {
+		
+		addFeaturesToSubset("data/rawfiles/HP15_predator_over_15min_chunk1_raw_processed.csv", "data/subsetsWithFeatures/test");
+		
+	}
+
 }
