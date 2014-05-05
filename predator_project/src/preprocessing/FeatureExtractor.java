@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -62,74 +63,115 @@ public class FeatureExtractor {
 		// For statitistics
 		HashSet<String> uniqueWords = new HashSet<>();
 		HashSet<String> uniqueUsers = new HashSet<>();
-
 		int countMisspelledWords;
 		int countNumberOfUniqueWords;
 		int countNumberOfLines = 0;
 		int countUniqueUsers;
 
-		
+		float avgOccurrenceAlertWords = 0;;
+		float avgOccurrenceBlacklistWords = 0;
+
+		float avgLetterLines = 0;
+		float avgWordLines = 0;
+		float avgNumberOfLines = 0;
+		float avgSpaces = 0;
+		float avgNonletterwords = 0;
+		float avgConsecutiveLetters = 0;
+		float avgMisspellings = 0;
+
 		for(Message cm: subset) {
 
-			// Forbidden phrases
+			// forbidden phrases
 			cm.features[wordLines] = forbiddenPhrasesDetector.forbiddenPhrases(cm.message);
+			avgWordLines += cm.features[wordLines];
 
 			cm.features[numberOfLines] = numberOfLines(cm.message);
+			avgNumberOfLines += cm.features[numberOfLines];
+
 			cm.features[spaces] = blackListDetectorTrieST.numberOfWordsWithSpaces(cm.message);
+			avgSpaces += cm.features[spaces];
+
 			cm.features[letterLines] = blackListDetectorTrieST.numberOfOneLetterLines(cm.message);
+			avgLetterLines += cm.features[letterLines];
 
 			// remove <nl> tags before further feature extraction and lowercase string
 			cm.message = cm.message.replace("<nl>", " ").replace("$","");
 
 			cm.features[funkyWords] = funkyWords(cm.message);
+			avgNonletterwords += cm.features[funkyWords];
+
 			cm.features[consecutiveLetters] = consecutiveLetters(cm.message);
+			avgConsecutiveLetters += cm.features[consecutiveLetters];
+
 			cm.features[alert] = alertDetector.numberOfAlerts(cm.message);
+			avgOccurrenceAlertWords += cm.features[alert];
+			
 			cm.features[blacklist] = blackListDetectorTrieST.numberOfBlackListWords(cm.message);			
+			avgOccurrenceBlacklistWords += cm.features[blacklist];
 
 			// Emoticon features
 			cm.features[posEmoticons] = emoticonAnalyzer.positiveEmoticons(cm.message);
 			cm.features[negEmoticons] = emoticonAnalyzer.negativeEmoticons(cm.message);
 			cm.features[neuEmoticons] = emoticonAnalyzer.neutralEmoticons(cm.message);
 
-			cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
 			cm.features[negativeSent] = sentiments.getNegativeSentiment(cm.message);
 			cm.features[positiveSent] = sentiments.getPositiveSentiment(cm.message);
 
+			cm.features[misspelledWords] = spellChecker.countMisspelledWords(cm.message);
+			avgMisspellings += cm.features[misspelledWords];
+
 			// Correct spelling errors before export
 			cm.message = spellChecker.getCorrectedText(cm.message);
-			
-			
+
+
 			/*
 			 * Statistics updates in loop
 			 */
-			
+
 			// collect unique words in hashset
 			for(String s: cm.message.split(" "))
 				uniqueWords.add(s);
-			
+
 			// add citaion marks to message before export
 			cm.message = "\"" + cm.message + "\"";
-			
+
 			// update hashset of unique users
 			uniqueUsers.add(cm.senderID);
 			//update number of lines
-			
+
 			// count number of lines
 			countNumberOfLines += cm.features[numberOfLines];
 
 		}
-		
+
 		// Statistics summarize
 		countMisspelledWords = spellChecker.numberOfUniqueMisspelledWords();
 		countNumberOfUniqueWords = uniqueWords.size();
 		countUniqueUsers = uniqueUsers.size();
-		String saveFilePath = "data/subsetsWithFeatures/";
+
+		avgOccurrenceAlertWords /= countUniqueUsers;
+		avgOccurrenceBlacklistWords /= countUniqueUsers;
+		
+		avgLetterLines /= countUniqueUsers ;
+		avgWordLines /= countUniqueUsers;
+		avgNumberOfLines /= countUniqueUsers;
+		avgSpaces /= countUniqueUsers;
+		avgNonletterwords /= countUniqueUsers;
+		avgConsecutiveLetters /= countUniqueUsers;
+		avgMisspellings /= countUniqueUsers;
+
+
+		String saveFilePath = "data/subsetsWithFeatures/"+ outputName;
 
 		// save to csv file - use method from dataparser
 		generateCsvFile(subset, saveFilePath +".csv");
-		
+
 		// save statistics to file
-		generateStatFile(saveFilePath + "_stats.txt", countUniqueUsers, countNumberOfLines, countNumberOfUniqueWords,countMisspelledWords);
+		generateStatFile(saveFilePath + "_stats.txt",
+				countUniqueUsers, countNumberOfLines, countNumberOfUniqueWords,countMisspelledWords,
+				avgOccurrenceAlertWords, avgOccurrenceBlacklistWords,
+				avgLetterLines, avgWordLines, avgNumberOfLines, avgSpaces, avgNonletterwords, avgConsecutiveLetters, avgMisspellings
+				);
 
 	}
 
@@ -140,6 +182,18 @@ public class FeatureExtractor {
 	public static int numberOfLines(String s) {
 
 		return (s.split("<nl>").length);
+
+	}
+
+	/**
+	 * returns count of words in a message
+	 * for calculating average occurrence of different features
+	 * @param s
+	 * @return
+	 */
+	public static int numberOfWords(String s) {
+
+		return(s.replace("<nl>", " ").split(" ").length);
 
 	}
 
@@ -223,22 +277,39 @@ public class FeatureExtractor {
 		System.out.println(file + " imported");
 		return set;
 	}
-	
-	
+
+
 	/*
 	 * Generates statistic file
 	 */
-	private static void generateStatFile(String sFileName, int nUsers, int nLines, int uWords, int mWords){
-		
+	private static void generateStatFile(String sFileName,
+			int nUsers,
+			int nLines,
+			int uWords,
+			int mWords,
+			float avgAlert,
+			float avgBlacklist,
+			float LL,
+			float WL,
+			float NL,
+			float SP,
+			float NLW,
+			float CL,
+			float MS
+			){
+
+	
 		try
-		
+
 		{
 			FileWriter writer = new FileWriter(sFileName);
 
 			// Create headings
-			writer.append("Filename, NumberOfUsers, NumberOfLines, UniqueWords, MisspelledWords");
+			writer.append("Filename, NumberOfUsers, NumberOfLines, UniqueWords, MisspelledWords, avgAlertWords, avgBlacklistWords, LL, WL, NL, SP, NLW, CL, MS");
 			writer.append('\n');
-			writer.append(sFileName + "," + nUsers  + "," + nLines + "," + uWords + "," + mWords);
+			writer.append(sFileName + "," + nUsers  + "," + nLines + "," + uWords + "," + mWords + ",");
+			writer.append(avgAlert + "," + avgBlacklist + ",");
+			writer.append(LL + "," + WL+ "," + NL + "," + SP + "," + NLW + "," + CL + "," + MS);
 			writer.append('\n');
 
 			writer.flush();
@@ -254,13 +325,13 @@ public class FeatureExtractor {
 		System.out.println("Exported statistic file: " + sFileName);
 
 	}
-	
+
 	/*
 	 * Generates CSV file from a subset and save it to file
 	 * 
 	 */
 	private static void generateCsvFile(List<Message> subset, String sFileName)
-	
+
 	{
 		try
 		{
@@ -310,11 +381,11 @@ public class FeatureExtractor {
 		System.out.println("Exported csv file: " + sFileName);
 
 	}
-	
+
 	public static void main (String args[]) {
-		
-		addFeaturesToSubset("data/rawfiles/HP15_predator_over_15min_chunk1_raw_processed.csv", "data/subsetsWithFeatures/test");
-		
+
+		addFeaturesToSubset("data/rawfiles/HP15_predator_over_15min_chunk1_raw_processed.csv", "test");
+
 	}
 
 }
