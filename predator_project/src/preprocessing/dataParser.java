@@ -238,17 +238,26 @@ public class dataParser {
 				//randomly.
 				Collections.shuffle(predators);
 				for(int i=0 ; i<numberOfPredators; i++){
-					writer.append(predators.get(i) + "\n");
+					balancedSubset.add(predators.get(i));
 				}
 				System.out.println(numberOfPredators + " random predators added to balanced subset.");
+				//all non predators are added.
 				for (String conversation: nonPredators){
-					writer.append(conversation+"\n");
+					balancedSubset.add(conversation);
 				}
 				System.out.println(numberOfNonPredators + " non predators added to balanced subset.");
+				
+				//The balanced subset is written to a file,
+				//after it has been randomly shuffled.
+				Collections.shuffle(balancedSubset);
+				for (String conversation: balancedSubset){
+					writer.append(conversation+"\n");
+				}
 			}
 			else {
+				//The predators are added to the balanced subset.
 				for (String conversation: predators){
-					writer.append(conversation +"\n");
+					balancedSubset.add(conversation);
 				}
 				System.out.println(numberOfPredators + " predators added to balanced subset.");
 				//The array holding the non predators are shuffled,
@@ -257,9 +266,16 @@ public class dataParser {
 				//randomly.
 				Collections.shuffle(nonPredators, new Random(nonPredators.size()));
 				for(int i=0 ; i<numberOfNonPredators; i++){
-					writer.append(nonPredators.get(i)+"\n");
+					balancedSubset.add(nonPredators.get(i));
 				}
 				System.out.println(numberOfNonPredators + " random non predators added to balanced subset.");
+				
+				//The balanced subset is written to a file,
+				//after it has been randomly shuffled.
+				Collections.shuffle(balancedSubset);
+				for(String conversation: balancedSubset){
+					writer.append(conversation+"\n");
+				}
 			}
 			writer.close();
 		}
