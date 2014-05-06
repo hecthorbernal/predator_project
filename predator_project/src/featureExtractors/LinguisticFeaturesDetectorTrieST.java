@@ -61,7 +61,8 @@ public class LinguisticFeaturesDetectorTrieST {
 		for(String s: text.split("<nl>")) {
 		
 			sub = s.replaceAll("\\n", "").replaceAll("\\r", "").replaceAll("\\s", "");
-			// System.out.println(sub);
+			
+			//System.out.println(sub);
 			
 				count+= numberOfBlackListWords(sub);	
 		}
@@ -110,11 +111,11 @@ public class LinguisticFeaturesDetectorTrieST {
 	public static void main(String args[]){
 
 		// Small test
-		LinguisticFeaturesDetectorTrieST myDetector = new LinguisticFeaturesDetectorTrieST("data/blacklists/en_us.isBlacklist.txt");
+		LinguisticFeaturesDetectorTrieST myDetector = new LinguisticFeaturesDetectorTrieST("data/blacklists/en_us.isBlackList.txt");
 
 		System.out.println(myDetector.wordTrie.size());
 
-		String s = "ssexy sex fuck shi tabuse f\ru\ncking whoreass***homo";
+		String s = "i m coming b�by<nl>ahhh<nl>omg<nl>sexy girl";
 		String s2 = "s e x";
 		String s3 = "s\r\n e x";
 
@@ -122,7 +123,7 @@ public class LinguisticFeaturesDetectorTrieST {
 		
 		System.out.println(myDetector.numberOfWordsWithSpaces(s2));
 
-		System.out.println(myDetector.numberOfOneLetterLines(s3));
+		System.out.println(myDetector.numberOfOneLetterLines(s));
 		
 
 	}

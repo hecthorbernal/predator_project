@@ -78,8 +78,12 @@ public class FeatureExtractor {
 		float avgNonletterwords = 0;
 		float avgConsecutiveLetters = 0;
 		float avgMisspellings = 0;
+		
+		int i = 0;
 
 		for(Message cm: subset) {
+			
+			System.out.println( i++ + cm.message);
 
 			// forbidden phrases
 			cm.features[wordLines] = forbiddenPhrasesDetector.forbiddenPhrases(cm.message);
@@ -384,7 +388,7 @@ public class FeatureExtractor {
 
 	public static void main (String args[]) {
 
-		addFeaturesToSubset("data/rawfiles/HP15_predator_over_15min_chunk1_raw_processed.csv", "test");
+		addFeaturesToSubset("data/balancedSubsets/HP15_20P.csv", "HP15_20P");
 
 	}
 

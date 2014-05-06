@@ -130,6 +130,8 @@ public class TrieST<Value> {
 		if (x.val != null) return x;
 		if (d == key.length()) return x;
 		char c = key.charAt(d);
+		if(Integer.valueOf(c) > R) // ignores non-utf characters
+			return null;
 		return getBlackListWord(x.next[c], key, d+1);
 	}
 	
