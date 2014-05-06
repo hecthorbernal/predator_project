@@ -75,7 +75,7 @@ public class JazzySpellChecker implements SpellCheckListener {
 		
 		// add words to hashset
 		for (String s: misspelledWords)
-			uniqueMisspelledWords.add(s);
+			uniqueMisspelledWords.add(s.toLowerCase().trim());
 		
 		int count = misspelledWords.size();
 		misspelledWords.clear();

@@ -83,7 +83,7 @@ public class FeatureExtractor {
 
 		for(Message cm: subset) {
 			
-			System.out.println( i++ + cm.message);
+			// System.out.println( i++ + cm.message);
 
 			// forbidden phrases
 			cm.features[wordLines] = forbiddenPhrasesDetector.forbiddenPhrases(cm.message);
