@@ -112,7 +112,7 @@ public class JazzySpellChecker implements SpellCheckListener {
 		String[] tempWords = line.split("\\s++");
 		for (String tempWord : tempWords){
 
-			if(tempWord.matches("\\w++[.,!?']*")) {
+			if(tempWord.matches("[.,!?']*\\w++[.,!?']*")) {
 
 				if (!spellChecker.isCorrect(tempWord)){
 					@SuppressWarnings("unchecked")
