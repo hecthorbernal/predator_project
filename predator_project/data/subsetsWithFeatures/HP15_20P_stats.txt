@@ -1,0 +1,2 @@
+Filename, NumberOfUsers, NumberOfLines, UniqueWords, MisspelledWords, avgAlertWords, avgBlacklistWords, LL, WL, NL, SP, NLW, CL, MS
+data/subsetsWithFeatures/HP15_20P_stats.txt,651,4889,3884,941,0.13824885,0.53763443,0.16436252,0.22273426,7.5099845,0.11981567,3.654378,0.20890938,1.4761904
