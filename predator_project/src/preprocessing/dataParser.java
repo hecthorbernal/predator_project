@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -128,56 +131,10 @@ public class dataParser {
 
 		//Example: Generate balanced HP15 set
 		//		myDataParser.randomNP("data/balancedSubsets/HP15_20P.csv", 02);
-		myDataParser.generateBalacedSubset("data/rawFiles/W15_predator_raw.csv", "data/rawFiles/W15_non_predator_raw.csv","data/balancedSubsets/HP15_20P.csv", 20);
+		myDataParser.generateBalacedSubset("data/rawFiles/W15_predator_raw.csv", "data/rawFiles/W15_non_predator_raw.csv","data/balancedSubsets/W15_20P.csv", 20);
+		myDataParser.generateBalacedSubset("data/rawFiles/HP15_predator_raw.csv","data/rawFiles/W15_non_predator_raw.csv","data/balancedSubsets/HP15_20P.csv", 20);
 	}
 
-	/**
-	 * Choose a the number of random conversations that 
-	 * corresponds to the percentage of predators wanted in 
-	 * the balanced subset.	 
-	 * @param outputFile
-	 * @param percent_of_predatory_lines
-	 */
-	private void randomSubset1(String outputFile, int percent_of_predatory_lines){
-		//TODO Implement
-		int totalNumOfNP = np_conversations.size();
-		int numOfP = p_conversations.size(); 
-		//		The number of nonPredators needed to make the right rate between np and p.
-		int numOfNP = totalNumOfNP*(1-percent_of_predatory_lines); 
-		//		List<Conversation> shuffledList = new ArrayList<Conversation>(np_conversations);
-		////		Create a shuffled list to choose np randomly. 
-		//		Collections.shuffle(shuffledList, new Random(shuffledList.size()));
-		//Shufles list of np conversations:
-		Collections.shuffle(np_conversations, new Random(np_conversations.size()));
-		//Extracts a random subset of np_predator to constitute with some percentages.
-		List<Conversation> balancedSubset = new ArrayList<Conversation>();
-		for (int x=0; x<numOfNP; x++){
-			balancedSubset.add(np_conversations.get(x));
-		}
-		for (Conversation conversation: p_conversations){
-			balancedSubset.add(conversation);
-		}
-
-
-		//		np_conversations = balancedSubset;
-		try
-		{
-			FileWriter writer = new FileWriter(outputFile);
-
-			// add lines
-			for(Conversation conversation: balancedSubset) {
-
-				writer.append(conversation.toString() + "\n");
-			}
-
-			writer.close();
-		}
-		catch(IOException e)
-
-		{
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Generate a balanced subset using a non predatory file and a predatory
@@ -197,24 +154,31 @@ public class dataParser {
 		ArrayList<String> predators = new ArrayList<String>();
 		ArrayList<String> nonPredators = new ArrayList<String>();
 		ArrayList<String> balancedSubset = new ArrayList<String>();
+		HashSet<String> uniquePredators = new HashSet<String>();
+		HashSet<String> uniqueNonPredators = new HashSet<String>();
+		
 		int numberOfPredators = 0;
 		try {
 			Scanner scannerP = new Scanner(predator_File);
 			Scanner scannerNP = new Scanner(non_predatory_file);
 			while (scannerP.hasNextLine()) {
 				String line = scannerP.nextLine();
+				String id = (line.split(","))[1];
+				uniquePredators.add(id);
 				predators.add(line);
-				numberOfPredators++;
 			}
 			scannerP.close();
 			while (scannerNP.hasNextLine()) {
 				String line = scannerNP.nextLine();
+				String id = (line.split(","))[1];
+				uniqueNonPredators.add(id);
 				nonPredators.add(line);
 			}
 			scannerNP.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		numberOfPredators = uniquePredators.size();
 		
 		try
 		
@@ -225,27 +189,38 @@ public class dataParser {
 			//is evaluated by finding first what 1% of the balanced subset are 
 			//(numberOfPredators/percent_of_predatory_lines) and the multiplying
 			// with the percentage wanted of non predators.
-			int numberOfNonPredators = (int) Math.round(((100 -percent_of_predatory_lines)*((float)numberOfPredators/(float)percent_of_predatory_lines)));
+			
+			int numberOfNonPredators = (int) Math.round(((100 - percent_of_predatory_lines)*((float)numberOfPredators/(float)percent_of_predatory_lines)));
 			//In the case where there are not enough nonPredators,
 			//the number of predators has to be evaluated at chosen randomly.
 			System.out.println();
-			if(numberOfNonPredators>nonPredators.size()){
+			if(numberOfNonPredators>uniqueNonPredators.size()){
 				System.out.println("Error: not enough NP!!");
-				numberOfPredators = (int) Math.round((percent_of_predatory_lines*((float)nonPredators.size()/(float)(100 -percent_of_predatory_lines))));
+				numberOfPredators = (int) Math.round((percent_of_predatory_lines*((float)uniqueNonPredators.size()/(float)(100 -percent_of_predatory_lines))));
 				//The array holding the predators are shuffled,
 				// and afterwards it is possible to take the first
 				// x predators of the array, and still have chosen them
 				//randomly.
+				
+				uniqueNonPredators.clear();
+				uniquePredators.clear();
+				
 				Collections.shuffle(predators);
-				for(int i=0 ; i<numberOfPredators; i++){
-					balancedSubset.add(predators.get(i));
+				for(String predator: predators){
+					if(!uniquePredators.contains(predator)){
+						balancedSubset.add(predator);
+						uniquePredators.add(predator);
+					if(uniquePredators.size() == numberOfPredators) break;
+					}
 				}
-				System.out.println(numberOfPredators + " random predators added to balanced subset.");
+				System.out.println(numberOfPredators + " unique random predators added to balanced subset.");
 				//all non predators are added.
-				for (String conversation: nonPredators){
-					balancedSubset.add(conversation);
+				for (String nonPredator: nonPredators){
+					if (!uniquePredators.contains(nonPredator)){
+						balancedSubset.add(nonPredator);
+					}
 				}
-				System.out.println(numberOfNonPredators + " non predators added to balanced subset.");
+				System.out.println(numberOfNonPredators + " unique non predators added to balanced subset.");
 				
 				//The balanced subset is written to a file,
 				//after it has been randomly shuffled.
@@ -256,19 +231,25 @@ public class dataParser {
 			}
 			else {
 				//The predators are added to the balanced subset.
-				for (String conversation: predators){
-					balancedSubset.add(conversation);
+				for (String predator: predators){
+					if(!uniquePredators.contains(predator)){
+						balancedSubset.add(predator);
+					}
 				}
-				System.out.println(numberOfPredators + " predators added to balanced subset.");
+				System.out.println(numberOfPredators + " unique predators added to balanced subset.");
 				//The array holding the non predators are shuffled,
 				// and afterwards it is possible to take the first
 				// x non predators of the array, and still have chosen them
 				//randomly.
 				Collections.shuffle(nonPredators, new Random(nonPredators.size()));
-				for(int i=0 ; i<numberOfNonPredators; i++){
-					balancedSubset.add(nonPredators.get(i));
+				for(String nonPredator: nonPredators){
+					if (!uniqueNonPredators.contains(nonPredator)){
+						balancedSubset.add(nonPredator);
+						uniqueNonPredators.add(nonPredator);
+					}
+					if(uniqueNonPredators.size() == numberOfNonPredators) break;
 				}
-				System.out.println(numberOfNonPredators + " random non predators added to balanced subset.");
+				System.out.println(numberOfNonPredators + " unique random non predators added to balanced subset.");
 				
 				//The balanced subset is written to a file,
 				//after it has been randomly shuffled.
