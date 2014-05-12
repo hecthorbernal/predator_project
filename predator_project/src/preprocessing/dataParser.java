@@ -58,9 +58,14 @@ public class dataParser {
 	private static final String nonPredatoryFile = null;
 
 
+	public dataParser() {
+		
+	}
+	
 	public dataParser(String file) {
 
 		this.conversations = new StaXParser().readConfig(file);
+	
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -145,7 +150,7 @@ public class dataParser {
 	 * @param outputFile
 	 * @param percent_of_predatory_lines
 	 */
-	private void generateBalacedSubset(String predatoryFile, String nonPredatorFile,
+	public void generateBalacedSubset(String predatoryFile, String nonPredatorFile,
 			String outputFile, int percent_of_predatory_lines){	
 		System.out.println("Generator of balaced subsets implemented");
 		// Location of file to read
