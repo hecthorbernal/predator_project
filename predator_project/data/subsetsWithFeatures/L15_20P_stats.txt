@@ -1,0 +1,2 @@
+Filename, NumberOfUsers, NumberOfLines, UniqueWords, MisspelledWords, avgAlertWords, avgBlacklistWords, LL, WL, NL, SP, NLW, CL, MS
+data/subsetsWithFeatures/L15_20P_stats.txt,710,4613,3266,1195,0.19014084,0.46338028,0.116901405,0.1887324,6.4971833,0.0971831,2.3873239,0.15211268,0.14225352
