@@ -39,6 +39,7 @@ public class dataParser {
 	private List<Conversation> conversations;
 	private static List<Conversation> np_conversations;
 	private static List<Conversation> p_conversations;
+	private static List<Conversation> test_conversations;
 
 	// constants used for addressing variables in array of features
 	final static int letterLines = 0;
@@ -71,8 +72,11 @@ public class dataParser {
 	public static void main(String[] args) throws IOException {
 
 		// create dataParser from xml-file 
-		dataParser myDataParser = new dataParser("data/pan12-training.xml");
-		myDataParser.splitConversationListByPredatorOrNot();
+		dataParser myDataParser = new dataParser("data/pan12-sexual-predator-identification-test-corpus-2012-05-17.xml");
+		//for trainning
+		//myDataParser.splitConversationListByPredatorOrNot();
+		//for tests
+		myDataParser.splitConversationList();
 		// Now we have a List<Conversations> :-)
 		// Each Conversation carries a List<Messages> (author, time, text)
 
@@ -84,60 +88,69 @@ public class dataParser {
 		//		
 		//		System.out.println(mySubSet.size());
 
-		//Process the predator data
-		List<Message> mySubSetL15_P = myDataParser.generateL15(p_conversations);
-		System.out.println(mySubSetL15_P.size());
-		generateRawCsvFile(mySubSetL15_P, "data/rawFiles/L15_predator_raw.csv");
+//		Process the test data
+		List<Message> mySubSetTEST = myDataParser.generateTestSet(test_conversations);
+		System.out.println(mySubSetTEST.size());
+		generateRawCsvFile(mySubSetTEST, "data/rawFiles/TEST_raw.csv");
 		//		List<Message> L15_P = readRawSubset("data/rawFiles/L15_predator_raw.csv");
 		//		addFeaturesToSubset(L15_P);
 		//		generateCsvFile(L15_P, "data/subsets/L15_P.csv");
 		//		System.out.println(L15_P.size());
 
-		//Process the non-predator data
-		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
-		System.out.println(mySubSetL15_NP.size());
-		generateRawCsvFile(mySubSetL15_NP, "data/rawFiles/L15_non_predator_raw.csv");
-		//		List<Message> L15_NP = readRawSubset("data/rawFiles/L15_non_predator_raw.csv");
-		//		// Add features to L15_NP
-		//		addFeaturesToSubset(L15_NP);
-		//		generateCsvFile(L15_NP, "data/subsets/L15_NP.csv");
-		//		System.out.println(L15_NP.size());
-
-		//Generate W15 predator
-		List<Message> mySubSetW15_P = myDataParser.generateW15(p_conversations, "data/W15_P_splitted_convers_list");
-		//TEST CSV export
-		System.out.println(mySubSetW15_P.size());
-		generateRawCsvFile(mySubSetW15_P, "data/rawFiles/W15_predator_raw.csv");
-		//		List<Message> W15_P = readRawSubset("data/rawFiles/W15_predator_raw.csv");
-		//		addFeaturesToSubset(W15_P);
-		//		generateCsvFile(W15_P, "data/subsets/W15_P.csv");
-		//		System.out.println(W15_P.size());
-
-		//Generate W15 non-predator
-		List<Message> mySubSetW15_NP = myDataParser.generateW15(np_conversations, "data/W15_NP_splitted_convers_list");
-		//TEST CSV export
-		System.out.println(mySubSetW15_NP.size());
-		generateRawCsvFile(mySubSetW15_NP, "data/rawFiles/W15_non_predator_raw.csv");
-		//		List<Message> W15_NP = readRawSubset("data/rawFiles/W15_non_predator_raw.csv");
-		//		addFeaturesToSubset(W15_NP);
-		//		generateCsvFile(W15_NP, "data/subsets/W15_NP.csv");
-		//		System.out.println(W15_NP.size());
-
-		//Generate HP15
-		myDataParser.generateHP15(p_conversations, "data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
-		//This should be run only when the HP15 conversations over 15 min have been manually shortened.
-		List<Message> mySubSetHP15_P = myDataParser.mergeHP15_files("data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
-		System.out.println(mySubSetHP15_P.size());
-		generateRawCsvFile(mySubSetHP15_P, "data/rawFiles/HP15_predator_raw.csv");
-		//		List<Message> HP15_P = readRawSubset("data/rawFiles/HP15_predator_raw.csv");
-		//		addFeaturesToSubset(HP15_P);
-		//		generateCsvFile(HP15_P, "data/subsets/HP15_P.csv");
-		//		System.out.println(HP15_P.size());
-
-		//Example: Generate balanced HP15 set
-		//		myDataParser.randomNP("data/balancedSubsets/HP15_20P.csv", 02);
-		myDataParser.generateBalacedSubset("data/rawFiles/W15_predator_raw.csv", "data/rawFiles/W15_non_predator_raw.csv","data/balancedSubsets/W15_20P.csv", 20);
-		myDataParser.generateBalacedSubset("data/rawFiles/HP15_predator_raw.csv","data/rawFiles/W15_non_predator_raw.csv","data/balancedSubsets/HP15_20P.csv", 20);
+//		//Process the predator data
+//		List<Message> mySubSetL15_P = myDataParser.generateL15(p_conversations);
+//		System.out.println(mySubSetL15_P.size());
+//		generateRawCsvFile(mySubSetL15_P, "data/rawFiles/L15_predator_raw.csv");
+//		//		List<Message> L15_P = readRawSubset("data/rawFiles/L15_predator_raw.csv");
+//		//		addFeaturesToSubset(L15_P);
+//		//		generateCsvFile(L15_P, "data/subsets/L15_P.csv");
+//		//		System.out.println(L15_P.size());
+//
+//		//Process the non-predator data
+//		List<Message> mySubSetL15_NP = myDataParser.generateL15(np_conversations);
+//		System.out.println(mySubSetL15_NP.size());
+//		generateRawCsvFile(mySubSetL15_NP, "data/rawFiles/L15_non_predator_raw.csv");
+//		//		List<Message> L15_NP = readRawSubset("data/rawFiles/L15_non_predator_raw.csv");
+//		//		// Add features to L15_NP
+//		//		addFeaturesToSubset(L15_NP);
+//		//		generateCsvFile(L15_NP, "data/subsets/L15_NP.csv");
+//		//		System.out.println(L15_NP.size());
+//
+//		//Generate W15 predator
+//		List<Message> mySubSetW15_P = myDataParser.generateW15(p_conversations, "data/W15_P_splitted_convers_list");
+//		//TEST CSV export
+//		System.out.println(mySubSetW15_P.size());
+//		generateRawCsvFile(mySubSetW15_P, "data/rawFiles/W15_predator_raw.csv");
+//		//		List<Message> W15_P = readRawSubset("data/rawFiles/W15_predator_raw.csv");
+//		//		addFeaturesToSubset(W15_P);
+//		//		generateCsvFile(W15_P, "data/subsets/W15_P.csv");
+//		//		System.out.println(W15_P.size());
+//
+//		//Generate W15 non-predator
+//		List<Message> mySubSetW15_NP = myDataParser.generateW15(np_conversations, "data/W15_NP_splitted_convers_list");
+//		//TEST CSV export
+//		System.out.println(mySubSetW15_NP.size());
+//		generateRawCsvFile(mySubSetW15_NP, "data/rawFiles/W15_non_predator_raw.csv");
+//		//		List<Message> W15_NP = readRawSubset("data/rawFiles/W15_non_predator_raw.csv");
+//		//		addFeaturesToSubset(W15_NP);
+//		//		generateCsvFile(W15_NP, "data/subsets/W15_NP.csv");
+//		//		System.out.println(W15_NP.size());
+//
+//		//Generate HP15
+//		myDataParser.generateHP15(p_conversations, "data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
+//		//This should be run only when the HP15 conversations over 15 min have been manually shortened.
+//		List<Message> mySubSetHP15_P = myDataParser.mergeHP15_files("data/rawFiles/HP15_predator_under_15min_raw.csv", "data/rawFiles/HP15_predator_over_15min_raw.csv");
+//		System.out.println(mySubSetHP15_P.size());
+//		generateRawCsvFile(mySubSetHP15_P, "data/rawFiles/HP15_predator_raw.csv");
+//		//		List<Message> HP15_P = readRawSubset("data/rawFiles/HP15_predator_raw.csv");
+//		//		addFeaturesToSubset(HP15_P);
+//		//		generateCsvFile(HP15_P, "data/subsets/HP15_P.csv");
+//		//		System.out.println(HP15_P.size());
+//
+//		//Example: Generate balanced HP15 set
+//		//		myDataParser.randomNP("data/balancedSubsets/HP15_20P.csv", 02);
+//		myDataParser.generateBalacedSubset("data/rawFiles/W15_predator_raw.csv", "data/rawFiles/W15_non_predator_raw.csv","data/balancedSubsets/W15_20P.csv", 20);
+//		myDataParser.generateBalacedSubset("data/rawFiles/HP15_predator_raw.csv","data/rawFiles/W15_non_predator_raw.csv","data/balancedSubsets/HP15_20P.csv", 20);
 	}
 
 
@@ -278,6 +291,50 @@ public class dataParser {
 	}
 
 
+	private void splitConversationList() {
+		//The list new_list contains now coversation where only one author is present.
+		List<Conversation> newList = splitConversatitionsByAuthor(conversations);
+
+		List<Conversation> test_list = new ArrayList<Conversation>();
+
+		//Instantiate the predator identifier
+		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan12-testset-p_list.txt");
+
+		for(Conversation c: newList) {
+			int firstMessageTime = 0;
+			int lastMessageTime = 0;
+			int firsNotNormalized = 0;
+			boolean isFirst = false;	
+			for(ConversationMessage cm: c.messages) {
+				//The timestamps will be parsed to minutes for an easier calculation of the duartion.
+				//The normalized time of the message added to the object cm for much easier processing.
+				String c_time = cm.getTime();
+				int time = timeToInt(c_time);
+				if(!isFirst){
+					firsNotNormalized = time;
+					int normalized = timeNormalizer(firsNotNormalized, time);
+					firstMessageTime = normalized;
+					cm.setNormalized_time(normalized);
+					isFirst = true;
+				}else{
+					int normalized = timeNormalizer(firsNotNormalized, time);
+					lastMessageTime = normalized;
+					cm.setNormalized_time(normalized);
+				}
+			}
+			if(predatorDetector.isAPredator(c.getAuthor()).equalsIgnoreCase("p")){
+				c.setPredator(true);
+				test_list.add(c);
+			}else{
+				c.setPredator(false);
+				test_list.add(c);
+			}
+		}
+//		create subset from conversations
+		dataParser.test_conversations = test_list;
+		System.out.println("Authors have been separated from each other.");
+
+	}
 
 
 	/**
@@ -412,6 +469,20 @@ public class dataParser {
 	 * Create set L15
 	 * @param print_output TODO
 	 */
+	private List<Message> generateTestSet(List<Conversation> conversations ) {
+
+		//Iterate through the messages to get:
+		//1. The lenght of each conversation
+		//Discard all messages thart havent been send during the last 15 minutes of the 
+		//conversation (L15).
+		List<Conversation> finalList = new ArrayList<Conversation>();
+		for(Conversation c: conversations) {
+			//instantiate to something big.
+				finalList.add(c);
+		}
+		// create subset from conversations
+		return generateSubSet(finalList);
+	}
 	private List<Message> generateL15(List<Conversation> conversations ) {
 
 		//Iterate through the messages to get:
