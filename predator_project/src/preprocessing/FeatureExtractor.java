@@ -388,9 +388,10 @@ public class FeatureExtractor {
 
 	public static void main (String args[]) {
 
-		addFeaturesToSubset("data/balancedSubsets/HP15_20P.csv", "HP15_20P");
-		addFeaturesToSubset("data/balancedSubsets/W15_20P.csv", "W15_20P");
-		addFeaturesToSubset("data/balancedSubsets/L15_20P.csv", "L15_20P");
+//		addFeaturesToSubset("data/balancedSubsets/HP15_20P.csv", "HP15_20P");
+//		addFeaturesToSubset("data/balancedSubsets/W15_20P.csv", "W15_20P");
+//		addFeaturesToSubset("data/balancedSubsets/L15_20P.csv", "L15_20P");
+		addFeaturesToSubset("data/rawFiles/TEST_raw.csv", "TEST_SET");
 
 	}
 
