@@ -1,0 +1,2 @@
+Filename, NumberOfUsers, NumberOfLines, UniqueWords, MisspelledWords, avgAlertWords, avgBlacklistWords, LL, WL, NL, SP, NLW, CL, MS
+data/subsetsWithFeatures/HP15_20P_huliu_profane_stats.txt,650,5750,3541,837,0.6138462,2.7969232,0.8523077,0.38923076,8.846154,0.32307693,2.9538462,0.19384615,1.3107692

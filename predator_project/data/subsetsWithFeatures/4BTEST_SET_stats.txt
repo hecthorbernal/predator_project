@@ -1,0 +1,2 @@
+Filename, NumberOfUsers, NumberOfLines, UniqueWords, MisspelledWords, avgAlertWords, avgBlacklistWords, LL, WL, NL, SP, NLW, CL, MS
+data/subsetsWithFeatures/4BTEST_SET_stats.txt,12329,96377,25715,13488,0.14461838,0.61318845,0.19149971,0.16895126,7.8170977,0.11558115,4.707032,0.24162544,1.1404818

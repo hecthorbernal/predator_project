@@ -1,0 +1,2 @@
+Filename, NumberOfUsers, NumberOfLines, UniqueWords, MisspelledWords, avgAlertWords, avgBlacklistWords, LL, WL, NL, SP, NLW, CL, MS
+data/subsetsWithFeatures/HP15_20P_huliu_stats.txt,650,5750,3541,837,0.28,0.6476923,0.18769231,0.31384614,8.846154,0.101538464,2.9538462,0.19384615,1.3107692
