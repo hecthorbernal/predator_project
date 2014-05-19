@@ -91,7 +91,7 @@ public class dataParser {
 //		Process the test data
 		List<Message> mySubSetTEST = myDataParser.generateTestSet(test_conversations);
 		System.out.println(mySubSetTEST.size());
-		generateRawCsvFile(mySubSetTEST, "data/rawFiles/TEST_raw.csv");
+		generateRawCsvFile(mySubSetTEST, "data/rawFiles/test_raw_only_P.csv");
 		//		List<Message> L15_P = readRawSubset("data/rawFiles/L15_predator_raw.csv");
 		//		addFeaturesToSubset(L15_P);
 		//		generateCsvFile(L15_P, "data/subsets/L15_P.csv");
@@ -298,13 +298,15 @@ public class dataParser {
 		List<Conversation> test_list = new ArrayList<Conversation>();
 
 		//Instantiate the predator identifier
-		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan12-testset-p_list.txt");
-
+		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id_NEW.txt");
+		PredatorLineIdentifier pli = new PredatorLineIdentifier("data/predatory_lines_list.txt");
+		int p_c = 0;
 		for(Conversation c: newList) {
 			int firstMessageTime = 0;
 			int lastMessageTime = 0;
 			int firsNotNormalized = 0;
 			boolean isFirst = false;	
+			boolean containsPredLines = false;
 			for(ConversationMessage cm: c.messages) {
 				//The timestamps will be parsed to minutes for an easier calculation of the duartion.
 				//The normalized time of the message added to the object cm for much easier processing.
@@ -322,9 +324,13 @@ public class dataParser {
 					cm.setNormalized_time(normalized);
 				}
 			}
+			
 			if(predatorDetector.isAPredator(c.getAuthor()).equalsIgnoreCase("p")){
-				c.setPredator(true);
-				test_list.add(c);
+				if(pli.isAPredatorLine(c.getId())){
+					c.setPredator(true);
+					p_c++;
+					test_list.add(c);
+				}
 			}else{
 				c.setPredator(false);
 				test_list.add(c);
@@ -332,7 +338,7 @@ public class dataParser {
 		}
 //		create subset from conversations
 		dataParser.test_conversations = test_list;
-		System.out.println("Authors have been separated from each other.");
+		System.out.println("Authors have been separated from each other. Predators found = " + p_c);
 
 	}
 
@@ -353,7 +359,7 @@ public class dataParser {
 		List<Conversation> non_predator_list = new ArrayList<Conversation>();
 
 		//Instantiate the predator identifier
-		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
+		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id_NEW.txt");
 
 		for(Conversation c: newList) {
 			//instantiate to something big.
@@ -604,7 +610,7 @@ public class dataParser {
 		List<Message> subSet = new ArrayList<Message>();
 
 		//Instantiate the predator identifier
-		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id.txt");
+		PredatorIdentifier predatorDetector = new PredatorIdentifier("data/pan2012-list-of-predators-id_NEW.txt");
 
 		for(Conversation c: newList) {
 			String messageText  = ""; // "\""; added as last step in feature-extraction
@@ -800,6 +806,7 @@ public class dataParser {
 	private static List<Conversation> splitConversatitionsByAuthor(List<Conversation> conversations){
 		// Split conversation so they only contain one author each
 		List <Conversation> new_list = new ArrayList<Conversation>();
+		PredatorLineIdentifier pli = new PredatorLineIdentifier("data/predatory_lines_list.txt");
 		for(Conversation c: conversations) {
 			//Create a list of lists of conversations one per author
 			ArrayList<Conversation> byAuthor = new ArrayList<Conversation>();
