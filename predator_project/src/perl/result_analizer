@@ -3,8 +3,10 @@
 use strict;
 use warnings;
 use Text::Table;
-
-open my $results, '/home/hector/Dropbox/ITU/DataMining/result.csv' or die $!;
+use Getopt::Long;
+my $file;
+GetOptions ("file=s" => \$file);
+open my $results, $file or die $!;
 my %map;
 my $num = 0;
 my $inst = 0;
@@ -13,8 +15,8 @@ while(my $line  = <$results>){
 	next unless $line =~ /^\d.*/;
 	my @attrs = split(";", $line);
 	#print "id = $attrs[14]\nlabel = $attrs[15]\nprediction = $attrs[18]\n";
-	${$map{$attrs[14]}}{id} = $attrs[15];  
-	push (@{$map{$attrs[14]}{labels}}, $attrs[18]);
+	${$map{$attrs[-4]}}{id} = $attrs[-5];  
+	push (@{$map{$attrs[-4]}{labels}}, $attrs[-1]);
 	$num++;
 }
 close $results;
