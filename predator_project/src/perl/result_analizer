@@ -8,16 +8,25 @@ my $file;
 GetOptions ("file=s" => \$file);
 open my $results, $file or die $!;
 my %map;
+my %one_enogh;
 my $num = 0;
 my $inst = 0;
 my $first;
+
 while(my $line  = <$results>){
 	next unless $line =~ /^\d.*/;
+	chomp $line;
 	my @attrs = split(";", $line);
-	#print "id = $attrs[14]\nlabel = $attrs[15]\nprediction = $attrs[18]\n";
 	${$map{$attrs[-4]}}{id} = $attrs[-5];  
 	push (@{$map{$attrs[-4]}{labels}}, $attrs[-1]);
 	$num++;
+	if(exists $one_enogh{$attrs[-4]}){
+		next if ${$one_enogh{$attrs[-4]}}{predicted} eq "p";
+		${$one_enogh{$attrs[-4]}}{predicted} = $attrs[-1];
+	}else{
+		${$one_enogh{$attrs[-4]}}{predicted} = $attrs[-1];
+		${$one_enogh{$attrs[-4]}}{label} = $attrs[-5];
+	}
 }
 close $results;
 my $tp = 0; 
@@ -50,6 +59,8 @@ for my $key (keys %map){
 
 	}
 }
+
+print "MAJORITY VOTES\n";
 my $tb = Text::Table->new( "actual", "predicted p:", "predicted np:");
 $tb->load( [ "p:", $tp, $fn ],
        	[ "np:", $fp, $tn ]);
@@ -64,6 +75,43 @@ my $f1 = sprintf("%.3f", f_mes(1));
 my $f3 = sprintf("%.3f", f_mes(3));
 
 my $tb2 = Text::Table->new( "precision", "recall", "f0.5", "f1", "f3");
+$tb2->load( [ $prec, $rec, $f_5, $f1, $f3 ]);
+print "\n";
+print $tb2;
+
+$tp = 0; 
+$tn = 0;
+$fp = 0;
+$fn = 0;
+for my $key(keys %one_enogh){
+	if(${$one_enogh{$key}}{label} eq "p"){
+		$tp++ if ${$one_enogh{$key}}{predicted} eq "p";
+		$fn++ if ${$one_enogh{$key}}{predicted} eq "np";
+		#print ${$one_enogh{$key}}{predicted};
+	}elsif(${$one_enogh{$key}}{label} eq "np"){
+		$fp++ if ${$one_enogh{$key}}{predicted} eq "p";
+		$tn++ if ${$one_enogh{$key}}{predicted} eq "np";
+	}else{
+		print "there's something wrong!\n";
+	}	
+}
+
+
+
+print "\nONE PREDICTION AS P LABELS P\n";
+$tb = Text::Table->new( "actual", "predicted p:", "predicted np:");
+$tb->load( [ "p:", $tp, $fn ],
+       	[ "np:", $fp, $tn ]);
+
+print $tb;
+
+$prec = sprintf("%.3f", ($tp/($tp+$fp)));
+$rec = sprintf("%.3f", ($tp/($tp+$fn)));
+$f_5 = sprintf("%.3f", f_mes(0.5));
+$f1 = sprintf("%.3f", f_mes(1));
+$f3 = sprintf("%.3f", f_mes(3));
+
+$tb2 = Text::Table->new( "precision", "recall", "f0.5", "f1", "f3");
 $tb2->load( [ $prec, $rec, $f_5, $f1, $f3 ]);
 print "\n";
 print $tb2;
