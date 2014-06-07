@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use List::Util qw(shuffle);
+use Text::Table;
+use Getopt::Long;
+my ($file, $percent);
+GetOptions (
+	"file=s" => \$file,
+	"percent_p=i" => \$percent  	
+);
+open my $results, $file or die $!;
+my (@np, @p);
+my $np_count = 0;
+my $p_count = 0;
+while(my $line  = <$results>){
+	my $cp = $line;
+	chomp $line;
+	my @attrs = split(",", $line);
+	if($attrs[0] eq "p"){
+		push(@p, $cp);
+		$p_count++;
+	}elsif($attrs[0] eq "np"){
+		push(@np, $cp);
+		$np_count++;
+
+	}
+}
+close $results;
+
+print "Total predatory tuples: $p_count\n";
+print "Total non_predatory tuples: $np_count\n";
+my $hundred = ($p_count * 100 )/$percent;
+my $np_required = ((100-$percent)*$hundred)/100;
+if($np_required <= $np_count ){
+	my $out_file = $file . "_bal";
+	open my $output, '>out_file.csv' or die $!;
+	foreach my $line(@p){
+		print $output $line;
+	}
+	@np = shuffle @np;
+	for(my $i = 0; $i < $np_required; $i++){
+		print $output $np[$i];
+	}
+	close $output;
+	#print "results writen to $output\n";
+}else{
+	print "Implement the rest. NP is not big enough! np_req = $np_required hundred = $hundred percent = $percent\n";
+}
+
