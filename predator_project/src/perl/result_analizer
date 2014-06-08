@@ -17,6 +17,9 @@ while(my $line  = <$results>){
 	next unless $line =~ /^\d.*/;
 	chomp $line;
 	my @attrs = split(";", $line);
+	$attrs[-1] =~ s/"//g;
+	$attrs[-5] =~ s/"//g;
+	$attrs[-4] =~ s/"//g;
 	${$map{$attrs[-4]}}{id} = $attrs[-5];  
 	push (@{$map{$attrs[-4]}{labels}}, $attrs[-1]);
 	$num++;
@@ -24,7 +27,7 @@ while(my $line  = <$results>){
 		next if ${$one_enogh{$attrs[-4]}}{predicted} eq "p";
 		${$one_enogh{$attrs[-4]}}{predicted} = $attrs[-1];
 	}else{
-		${$one_enogh{$attrs[-4]}}{predicted} = $attrs[-1];
+				${$one_enogh{$attrs[-4]}}{predicted} = $attrs[-1];
 		${$one_enogh{$attrs[-4]}}{label} = $attrs[-5];
 	}
 }
@@ -36,11 +39,13 @@ my $fn = 0;
 for my $key (keys %map){
 	$inst++;
 	my $p = ${$map{$key}}{id};
+	$p =~ s/"//g;
 	my @labels = @{$map{$key}{labels}};
 	my $l_p = 0; 
 	my $l_np = 0;
 	foreach my $l(@labels){
 		chomp($l);
+		$l =~ s/"//g;
 		$l_p++ if($l eq "p");
 		$l_np++ if $l eq "np";
 	}
@@ -56,7 +61,6 @@ for my $key (keys %map){
 		}else{
 			$fp++;
 		}
-
 	}
 }
 
@@ -87,12 +91,11 @@ for my $key(keys %one_enogh){
 	if(${$one_enogh{$key}}{label} eq "p"){
 		$tp++ if ${$one_enogh{$key}}{predicted} eq "p";
 		$fn++ if ${$one_enogh{$key}}{predicted} eq "np";
-		#print ${$one_enogh{$key}}{predicted};
 	}elsif(${$one_enogh{$key}}{label} eq "np"){
 		$fp++ if ${$one_enogh{$key}}{predicted} eq "p";
 		$tn++ if ${$one_enogh{$key}}{predicted} eq "np";
 	}else{
-		print "there's something wrong!\n";
+		die "there's something wrong!\n";
 	}	
 }
 
