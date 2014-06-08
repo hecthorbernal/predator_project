@@ -35,6 +35,7 @@ my $np_required = ((100-$percent)*$hundred)/100;
 if($np_required <= $np_count ){
 	my $out_file = $file . "_bal";
 	open my $output, '>out_file.csv' or die $!;
+	print $output "predator,senderID,letterLines,wordLines,numberOfLines,spaces,funkyWords,posEmoticons,neuEmoticons,negEmoticons,consecutiveLetters,alert,blacklist,misspelledWords,negativeSent,positiveSent,message\n";
 	foreach my $line(@p){
 		print $output $line;
 	}
