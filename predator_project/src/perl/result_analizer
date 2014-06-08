@@ -12,6 +12,10 @@ my %one_enogh;
 my $num = 0;
 my $inst = 0;
 my $first;
+my $tp = 0; 
+my $tn = 0;
+my $fp = 0;
+my $fn = 0;
 
 while(my $line  = <$results>){
 	next unless $line =~ /^\d.*/;
@@ -20,6 +24,15 @@ while(my $line  = <$results>){
 	$attrs[-1] =~ s/"//g;
 	$attrs[-5] =~ s/"//g;
 	$attrs[-4] =~ s/"//g;
+	if($attrs[-5] eq "p"){
+		$tp++ if $attrs[-1] eq "p";
+		$fn++ if $attrs[-1] eq "np";
+	}elsif($attrs[-5] eq "np"){
+		$fp++ if $attrs[-1] eq "p";
+		$tn++ if $attrs[-1] eq "np";
+	}else{
+		die "there's something wrong!\n";
+	}	
 	${$map{$attrs[-4]}}{id} = $attrs[-5];  
 	push (@{$map{$attrs[-4]}{labels}}, $attrs[-1]);
 	$num++;
@@ -32,10 +45,30 @@ while(my $line  = <$results>){
 	}
 }
 close $results;
-my $tp = 0; 
-my $tn = 0;
-my $fp = 0;
-my $fn = 0;
+print "USING EACH INSTANCE\n";
+my $tb = Text::Table->new( "actual", "predicted p:", "predicted np:");
+$tb->load( [ "p:", $tp, $fn ],
+       	[ "np:", $fp, $tn ]);
+
+print $tb;
+
+print "\nTotal tuples = $num\nTotal instances = $inst\n";
+my $prec = sprintf("%.3f", ($tp/($tp+$fp)));
+my $rec = sprintf("%.3f", ($tp/($tp+$fn)));
+my $f_5 = sprintf("%.3f", f_mes(0.5));
+my $f1 = sprintf("%.3f", f_mes(1));
+my $f3 = sprintf("%.3f", f_mes(3));
+
+my $tb2 = Text::Table->new( "precision", "recall", "f0.5", "f1", "f3");
+$tb2->load( [ $prec, $rec, $f_5, $f1, $f3 ]);
+print "\n";
+print $tb2;
+print "\n";
+
+$tp = 0; 
+$tn = 0;
+$fp = 0;
+$fn = 0;
 for my $key (keys %map){
 	$inst++;
 	my $p = ${$map{$key}}{id};
@@ -65,23 +98,24 @@ for my $key (keys %map){
 }
 
 print "MAJORITY VOTES\n";
-my $tb = Text::Table->new( "actual", "predicted p:", "predicted np:");
+$tb = Text::Table->new( "actual", "predicted p:", "predicted np:");
 $tb->load( [ "p:", $tp, $fn ],
        	[ "np:", $fp, $tn ]);
 
 print $tb;
 
 print "\nTotal tuples = $num\nTotal instances = $inst\n";
-my $prec = sprintf("%.3f", ($tp/($tp+$fp)));
-my $rec = sprintf("%.3f", ($tp/($tp+$fn)));
-my $f_5 = sprintf("%.3f", f_mes(0.5));
-my $f1 = sprintf("%.3f", f_mes(1));
-my $f3 = sprintf("%.3f", f_mes(3));
+$prec = sprintf("%.3f", ($tp/($tp+$fp)));
+$rec = sprintf("%.3f", ($tp/($tp+$fn)));
+$f_5 = sprintf("%.3f", f_mes(0.5));
+$f1 = sprintf("%.3f", f_mes(1));
+$f3 = sprintf("%.3f", f_mes(3));
 
-my $tb2 = Text::Table->new( "precision", "recall", "f0.5", "f1", "f3");
+$tb2 = Text::Table->new( "precision", "recall", "f0.5", "f1", "f3");
 $tb2->load( [ $prec, $rec, $f_5, $f1, $f3 ]);
 print "\n";
 print $tb2;
+print "\n";
 
 $tp = 0; 
 $tn = 0;
@@ -118,10 +152,10 @@ $tb2 = Text::Table->new( "precision", "recall", "f0.5", "f1", "f3");
 $tb2->load( [ $prec, $rec, $f_5, $f1, $f3 ]);
 print "\n";
 print $tb2;
-
+print "\n";
 
 sub f_mes{
 	my $fB = shift;
-	return ((($fB^2)+1)*($prec*$rec))/(($fB^2)*$prec+$rec);
+	return ((($fB**2)+1)*($prec*$rec))/(($fB**2)*$prec+$rec);
 }
 
