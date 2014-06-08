@@ -4,9 +4,10 @@ use warnings;
 use List::Util qw(shuffle);
 use Text::Table;
 use Getopt::Long;
-my ($file, $percent);
+my ($file, $percent,$output_file);
 GetOptions (
 	"file=s" => \$file,
+	"output=s" => \$output_file,
 	"percent_p=i" => \$percent  	
 );
 open my $results, $file or die $!;
@@ -33,8 +34,8 @@ print "Total non_predatory tuples: $np_count\n";
 my $hundred = ($p_count * 100 )/$percent;
 my $np_required = ((100-$percent)*$hundred)/100;
 if($np_required <= $np_count ){
-	my $out_file = $file . "_bal";
-	open my $output, '>out_file.csv' or die $!;
+	#my $out_file = $file . "_bal";
+	open my $output, ">", $output_file or die $!;
 	print $output "predator,senderID,letterLines,wordLines,numberOfLines,spaces,funkyWords,posEmoticons,neuEmoticons,negEmoticons,consecutiveLetters,alert,blacklist,misspelledWords,negativeSent,positiveSent,message\n";
 	foreach my $line(@p){
 		print $output $line;
