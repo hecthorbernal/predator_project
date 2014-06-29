@@ -1,0 +1,70 @@
+#!/usr/lib/perl
+use strict;
+use warnings;
+use Text::SimpleTable::AutoWidth;
+use YAML qw/Dump LoadFile DumpFile/;
+
+my $chat_dir = '/m/OS/speciale/output/';
+my $output_done = '/m/OS/speciale/done.yml';
+my ($chat_id, $is_bully, $auth_id, $severity);
+my %map;
+my $last = undef;
+opendir(my $dir, $chat_dir) or die $!;
+while( (my $subdir = readdir($dir))){
+	next if $subdir =~ /^\.+$/;
+	my $subdir = $chat_dir . $subdir;
+	opendir(my $chat_dir, $subdir) or die $!;
+	while((my $chat = readdir($chat_dir))){
+		#next unless $chat eq '13394600.xls';
+		chomp($chat);
+		my $done = LoadFile($output_done);
+		#print Dump($done);
+		#print "exists\n" if exists($$done{$chat});
+		next if exists($$done{$chat});
+		$chat_id = $chat;
+		next if $chat =~ /^\.+$/;
+		$chat = $subdir . "/" . $chat;
+		$last = analize_chat($chat);
+		last if $last;#print $text;
+	}
+	closedir($chat_dir);
+	last if $last;
+}
+closedir($dir);
+
+
+sub analize_chat{
+	my $file = shift;
+	open my $chat, $file or die $!;
+	my $t1 = Text::SimpleTable::AutoWidth->new();
+	$t1->fixed_width(150);
+	my $text = "";
+	while(my $line = <$chat>){
+		my @line = split('\t', $line);
+		if($line[6]){
+			$severity =  $line[6]; 
+			$auth_id = $line[0] ;
+		}
+		$t1->row("$line[0]", "$line[1]", "$line[5]");
+	}
+	close $chat;
+	print $t1->draw;
+	print "author: $auth_id\nseverity: $severity\n";
+	my ($wrong, $label);
+	while(!$wrong){
+		print "select \"B\" for bully, \"P\" for predator or \"N\" for non-bully/predator\n";
+		$label = <STDIN>;
+		chomp($label);
+		$wrong = 1 if $label =~ /^[bpnq]$/i;
+	}
+	return 1 if $label =~ /q/i;
+	my %data = ('label' => $label,
+		   'author' => $auth_id,
+		   'severity' => $severity
+	   );
+	my $done = LoadFile($output_done);
+	chomp($chat_id);
+	$$done{$chat_id} = \%data; 
+	DumpFile($output_done, $done);
+	return undef;
+}
