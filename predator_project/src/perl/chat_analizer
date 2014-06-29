@@ -52,7 +52,7 @@ sub analize_chat{
 	print "author: $auth_id\nseverity: $severity\n";
 	my ($wrong, $label);
 	while(!$wrong){
-		print "select \"B\" for bully, \"P\" for predator or \"N\" for non-bully/predator\n";
+		print "select \"B\" for bully, \"P\" for predator or \"N\" for non-bully/predator or \"Q\" for quit and save\n";
 		$label = <STDIN>;
 		chomp($label);
 		$wrong = 1 if $label =~ /^[bpnq]$/i;
