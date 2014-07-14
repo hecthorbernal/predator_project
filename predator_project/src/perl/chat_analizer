@@ -1,12 +1,19 @@
-#!/usr/lib/perl
+#!/usr/bin/perl
 use strict;
 use warnings;
 use Text::SimpleTable::AutoWidth;
 use YAML qw/Dump LoadFile DumpFile/;
+use utf8;
+use Encode::Guess;
+use Text::Iconv;
+use Time::HiRes qw(usleep);
+use Encode qw(decode encode);
 
 my $chat_dir = '/m/OS/speciale/output/';
-my $output_done = '/m/OS/speciale/done.yml';
-my ($chat_id, $is_bully, $auth_id, $severity);
+my $output_done = '/home/hector/Dropbox/ITU/Speciale/done.yml';
+my ($chat_id, $is_bully, $file_id);
+my $num = 0;
+my $num_now = 0;
 my %map;
 my $last = undef;
 opendir(my $dir, $chat_dir) or die $!;
@@ -17,6 +24,7 @@ while( (my $subdir = readdir($dir))){
 	while((my $chat = readdir($chat_dir))){
 		#next unless $chat eq '13394600.xls';
 		chomp($chat);
+		$file_id = $chat;
 		my $done = LoadFile($output_done);
 		#print Dump($done);
 		#print "exists\n" if exists($$done{$chat});
@@ -35,21 +43,68 @@ closedir($dir);
 
 sub analize_chat{
 	my $file = shift;
+	my %bully;
 	open my $chat, $file or die $!;
+	my $u_id = $file;
+	$u_id =~ s/^\/(.+\/)+(\d+)\.xls$/$2/;
+	print "U_ID = $u_id\n";
+	my $subd_id = $1;
+	$subd_id =~ s/^.*(\d+)\/$/$1/;
+	if($subd_id == 0){
+		my $done = LoadFile($output_done);
+		chomp($chat_id);
+		if(exists $$done{$chat_id}){
+			die "file already checked in another severity level\n";
+		}
+		$num = keys %$done;
+		$num_now++;
+		my $bully = 'A.' . $chat_id;
+		$bully =~ s/^(.*)\.xls$/$1/;
+		$bully{$bully} = 0;
+		my %data = ('label' => 'n',
+			'author' => \%bully
+		);
+		$$done{$chat_id} = \%data; 
+		DumpFile($output_done, $done);
+		print "file $chat_id marked as \'n\'";
+		return undef;
+	}
 	my $t1 = Text::SimpleTable::AutoWidth->new();
 	$t1->fixed_width(150);
+	$t1->row('Sender', 'Reciever', 'Message', 'Severity'); 
+	#$t1->captions('Sender', 'Reciever', 'Message', 'Severity'); 
 	my $text = "";
 	while(my $line = <$chat>){
-		my @line = split('\t', $line);
+		$line =~ s/\r/ /g;
+#		my $enc = guess_encoding($line, qw/ascii utf8/);
+#		my $converter = Text::Iconv->new($$enc,"utf-8");
+#		my $converted #= $converter->convert($line);
+		my $standard_string = decode("ascii", $line);
+		my @line = split('\t', $standard_string);
+		#my @line = split('\t', $line);
 		if($line[6]){
-			$severity =  $line[6]; 
-			$auth_id = $line[0] ;
+			$t1->row("---", "---", "---", "---"); 
+			if($line[0] =~ /$u_id/){
+				$t1->row("$line[0]", "$line[1]", "-> $line[5]","$line[6]" );
+			}else{
+				$t1->row("$line[0]", "$line[1]", "$line[5]","$line[6]" );
+			}
+			$t1->row("---", "---", "---", "---"); 
+			$bully{$line[0]} = $line[6];
+		}else{
+			if($line[0] =~ /$u_id/){
+				$t1->row("$line[0]", "$line[1]", "-> $line[5]", "");
+			}else{
+				$t1->row("$line[0]", "$line[1]", "$line[5]", "");
+			}
 		}
-		$t1->row("$line[0]", "$line[1]", "$line[5]");
+		#usleep(1000);
 	}
 	close $chat;
 	print $t1->draw;
-	print "author: $auth_id\nseverity: $severity\n";
+	print "$num total done\n" if $num > 0;
+	print "$num_now done now.\n";
+	print "file $file_id\n";
 	my ($wrong, $label);
 	while(!$wrong){
 		print "select \"B\" for bully, \"P\" for predator or \"N\" for non-bully/predator or \"Q\" for quit and save\n";
@@ -59,11 +114,15 @@ sub analize_chat{
 	}
 	return 1 if $label =~ /q/i;
 	my %data = ('label' => $label,
-		   'author' => $auth_id,
-		   'severity' => $severity
+		   'author' => \%bully
 	   );
 	my $done = LoadFile($output_done);
 	chomp($chat_id);
+	if(exists $$done{$chat_id}){
+		die "file already checked in another severity level\n";
+	}
+	$num = keys %$done;
+	$num_now++;
 	$$done{$chat_id} = \%data; 
 	DumpFile($output_done, $done);
 	return undef;
